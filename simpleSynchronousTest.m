@@ -46,9 +46,9 @@ function simpleSynchronousTest()
         vrep.simxStartSimulation(clientID,vrep.simx_opmode_blocking);
 
         % Now step a few times:
-        for i=0:1000
-            %disp('Press a key to step the simulation!');
-            %pause;
+        for i=0:10
+            disp('Press a key to step the simulation!');
+            pause;
             vrep.simxSynchronousTrigger(clientID);
         end
 
