@@ -6,7 +6,7 @@
     vrep=remApi('remoteApi'); % using the prototype file (remoteApiProto.m)
     vrep.simxFinish(-1); % just in case, close all opened connections
     clientID=vrep.simxStart('127.0.0.1',19997,true,true,5000,5);
-
+    
     if (clientID>-1)
         disp('Connected to remote API server');
 
@@ -25,14 +25,21 @@
             pause;
             getSensors;
             
-            %print sensors (for test)
-            quad_gyro_data
-            quad_pos
-            quad_target_pos
-            quad_angles
+            if (1) %print sensors (for test)
+            {    
+                quad_gyro_data
+                quad_pos
+                quad_target_pos
+                quad_angles
+            }
+           
             
-            %Write to motors
-            setMotors([0.1 0.1 0.1 0.1]);
+            % Motormixer
+            % mixedMotors = motormixer(R, P, Y, T)
+            
+            % Send actuation
+            setMotors(clientID, mixedMotors)
+            
             
             vrep.simxSynchronousTrigger(clientID);
         end
