@@ -18,6 +18,9 @@
         
         % start the simulation:
         vrep.simxStartSimulation(clientID,vrep.simx_opmode_blocking);
+        
+        % Init variables
+        init_variables;
 
         % Now step a few times:
         for i=0:10

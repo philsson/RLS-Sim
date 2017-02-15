@@ -1,39 +1,40 @@
-function [ Control_Signal ] = PID_CONTROLLER(pid_data)
+function [ Control_Signal ] = PID_CONTROLLER(pd_index)
 
-
-%--pid_data. --
-
-%previous_error = = input pid previous error
-%integral = pid integral buffer 
-%e = input pid error
-%dt == sample time
-%Kp
-%Ki
-%Kd
+% Variable to read from motormixer for windup prevention
+global motorLimitReached;
+global pid_data;
+global dt;
 
 % -- Init values -
 
-if isempty(pid_data.Kp)
+if isempty(pid_data(pd_index).Kp)
     
-    pid_data.Kp = 1;
-    pid_data.Ki = 0;
-    pid_data.Kd = 0;
+    pid_data(pd_index).Kp = 1;
+    pid_data(pd_index).Ki = 0;
+    pid_data(pd_index).Kd = 0;
     
-    pid_data.previous_error = 0;
-    pid_data.integral = 0;
-    pid_data.dt = 1;
-    pid_data.e = 0;   
+    pid_data(pd_index).prev_e = 0;
+    pid_data(pd_index).integral = 0;
+    %pid_data(pd_index).dt = 1;    % Vi skulle kunna ha en global variabel till detta. Då alla dt kommer vara samma och mäts från simuleringen
+    pid_data(pd_index).e = 0;   
 
 end
 
 % -- PID controller --
+derivative = (pid_data(pd_index).e - pid_data(pd_index).prev_e)/dt;
 
-derivative = (pid_data.e - pid_data.previous_error)/pid_data.dt;
-pid_data.integral = pid_data.integral + (pid_data.e*pid_data.dt);
+% Integral is only added if saturation is not reached
+if ~motorLimitReached
+    pid_data(pd_index).integral = pid_data(pd_index).integral + (pid_data(pd_index).e*dt);
+% Make sure the integral does not overflow
+pid_data(pd_index).integral = constrain(pid_data(pd_index).integral,pid_data(pd_index).i_max);
 
-pid_data.previous_error = pid_data.e;
+pid_data(pd_index).prev_e = pid_data(pd_index).e;
 
-Control_Signal = pid_data.Kp*pid_data.e + pid_data.Ki*pid_data.integral +  pid_data.Kd*derivative;
+Control_Signal = ...
+    pid_data(pd_index).Kp*pid_data(pd_index).e +...
+    pid_data(pd_index).Ki*pid_data(pd_index).integral +...
+    pid_data(pd_index).Kd*derivative;
 
 end
 
