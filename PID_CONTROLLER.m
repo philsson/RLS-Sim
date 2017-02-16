@@ -26,6 +26,7 @@ derivative = (pid_data(pd_index).e - pid_data(pd_index).prev_e)/dt;
 % Integral is only added if saturation is not reached
 if ~motorLimitReached
     pid_data(pd_index).integral = pid_data(pd_index).integral + (pid_data(pd_index).e*dt);
+end
 % Make sure the integral does not overflow
 pid_data(pd_index).integral = constrain(pid_data(pd_index).integral,pid_data(pd_index).i_max);
 

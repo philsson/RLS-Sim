@@ -15,6 +15,7 @@ outputs(pd_index.height) =  PID_CONTROLLER(pd_index.height);
 outputs(pd_index.p_x) =     PID_CONTROLLER(pd_index.p_x);
 outputs(pd_index.p_y) =     PID_CONTROLLER(pd_index.p_y);
 
+% 
 % TODO: rotation matrix on yaw
 set_points(pd_index.a_roll) = outputs(pd_index.p_x);
 set_points(pd_index.a_pitch) = outputs(pd_index.p_y);
