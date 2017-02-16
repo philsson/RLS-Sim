@@ -32,7 +32,7 @@ clear;
         getSensors;
         
         % Now step a few times:
-        for i=0:100
+        for i=0:500
         
             %disp('Press a key to step the simulation!');
             %pause;
@@ -55,6 +55,8 @@ clear;
             % Send actuation
             setMotors(clientID, mixedMotors);
             
+            % Bring quad back to position
+            %vrep.simxSetObjectPosition(clientID,quad_base,-1,[0 0 0.5],vrep.simx_opmode_oneshot);
             
             vrep.simxSynchronousTrigger(clientID);
            
