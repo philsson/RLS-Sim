@@ -17,9 +17,17 @@ outputs(pd_index.p_y)       =  PID_CONTROLLER(pd_index.p_y);
 
 % 
 % TODO: rotation matrix on yaw
-set_points(pd_index.a_roll)     = constrain(outputs(pd_index.p_x)*cos(quad_angles(3)/180*pi) - outputs(pd_index.p_y)*sin(quad_angles(3)/180*pi),pid_data(pd_index.a_roll).saturation);
-set_points(pd_index.a_pitch)    = constrain(outputs(pd_index.p_x)*sin(quad_angles(3)/180*pi) + outputs(pd_index.p_y)*cos(quad_angles(3)/180*pi),pid_data(pd_index.a_pitch).saturation);
-set_points(pd_index.compass)    = 0;
+set_points(pd_index.a_roll)     =...
+    constrain(...
+    outputs(pd_index.p_x)*sin(quad_angles(3)/180*pi) - outputs(pd_index.p_y)*cos(quad_angles(3)/180*pi),...
+    pid_data(pd_index.a_roll).saturation);
+
+set_points(pd_index.a_pitch)    =...
+    constrain(...
+    outputs(pd_index.p_x)*cos(quad_angles(3)/180*pi) + outputs(pd_index.p_y)*sin(quad_angles(3)/180*pi),...
+    pid_data(pd_index.a_pitch).saturation);
+
+set_points(pd_index.compass)    = 0; %Freaks out on 90. Why!?!?!?
 
 pid_data(pd_index.a_roll).e     = set_points(pd_index.a_roll)       -   states(pd_index.a_roll);
 pid_data(pd_index.a_pitch).e    = set_points(pd_index.a_pitch)      -   states(pd_index.a_pitch);

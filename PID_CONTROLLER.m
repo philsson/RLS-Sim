@@ -35,7 +35,8 @@ pid_data(pd_index).prev_e = pid_data(pd_index).e;
 Control_Signal = ...
     pid_data(pd_index).Kp*pid_data(pd_index).e +...
     pid_data(pd_index).Ki*pid_data(pd_index).integral +...
-    pid_data(pd_index).Kd*derivative;
+    pid_data(pd_index).Kd*pt1filter(pd_index,derivative);
 
+Control_Signal = constrain(Control_Signal,pid_data(pd_index).saturation);
 end
 

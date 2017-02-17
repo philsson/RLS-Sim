@@ -31,8 +31,11 @@ clear;
         %better call it once before
         getSensors;
         
+        vrep.simxSetObjectPosition(clientID,quad_target,-1,[-1 -1 0.5],vrep.simx_opmode_oneshot);
+        
         % Now step a few times:
         for i=0:500
+        %while (1)
         
             %disp('Press a key to step the simulation!');
             %pause;
@@ -40,6 +43,7 @@ clear;
            
             %set_points
             %states
+            %outputs
            
             % Calculate all PID loop outputs
             run_control;
@@ -56,7 +60,7 @@ clear;
             setMotors(clientID, mixedMotors);
             
             % Bring quad back to position
-            %vrep.simxSetObjectPosition(clientID,quad_base,-1,[0 0 0.5],vrep.simx_opmode_oneshot);
+            %vrep.simxSetObjectPosition(clientID,quad_target,-1,[1 0 0.5],vrep.simx_opmode_oneshot);
             
             vrep.simxSynchronousTrigger(clientID);
            
