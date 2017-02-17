@@ -21,13 +21,16 @@ set_points(pd_index.a_roll)     =...
     constrain(...
     outputs(pd_index.p_x)*sin(quad_angles(3)/180*pi) - outputs(pd_index.p_y)*cos(quad_angles(3)/180*pi),...
     pid_data(pd_index.a_roll).saturation);
+%set_points(pd_index.a_roll) = 10; %Overwrite roll
 
 set_points(pd_index.a_pitch)    =...
     constrain(...
     outputs(pd_index.p_x)*cos(quad_angles(3)/180*pi) + outputs(pd_index.p_y)*sin(quad_angles(3)/180*pi),...
     pid_data(pd_index.a_pitch).saturation);
+%set_points(pd_index.a_pitch) = 10; %Overwrite pitch
 
-set_points(pd_index.compass)    = 90; %Freaks out on 90. Why!?!?!?
+set_points(pd_index.compass)    = 0; %Freaks out on 90. Why!?!?!?
+set_points(pd_index.compass)    = quad_angles(3); % Overwrite yaw to be the same as the read value
 
 pid_data(pd_index.a_roll).e     = set_points(pd_index.a_roll)       -   states(pd_index.a_roll);
 pid_data(pd_index.a_pitch).e    = set_points(pd_index.a_pitch)      -   states(pd_index.a_pitch);
@@ -43,6 +46,10 @@ set_points(pd_index.g_roll)  = constrain(outputs(pd_index.a_roll),pid_data(pd_in
 %set_points(pd_index.g_roll) = set_points(pd_index.g_roll) + sin_wave(20)*30;
 set_points(pd_index.g_pitch) = constrain(outputs(pd_index.a_pitch),pid_data(pd_index.g_pitch).saturation);
 set_points(pd_index.g_yaw)   = constrain(outputs(pd_index.compass),pid_data(pd_index.g_yaw).saturation);
+
+set_points(pd_index.g_roll)  = 0.5; % Overwride gyro
+set_points(pd_index.g_pitch) = 0.5;
+
 
 pid_data(pd_index.g_roll).e     = set_points(pd_index.g_roll)       -   states(pd_index.g_roll);
 pid_data(pd_index.g_pitch).e    = set_points(pd_index.g_pitch)      -   states(pd_index.g_pitch);
