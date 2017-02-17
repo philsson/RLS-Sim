@@ -25,7 +25,7 @@ derivative = (pid_data(pd_index).e - pid_data(pd_index).prev_e)/dt;
 
 % Integral is only added if saturation is not reached
 if ~motorLimitReached
-    pid_data(pd_index).integral = pid_data(pd_index).integral + (pid_data(pd_index).e*dt);
+    pid_data(pd_index).integral = pid_data(pd_index).integral + pid_data(pd_index).Ki*(pid_data(pd_index).e*dt);
 end
 % Make sure the integral does not overflow
 pid_data(pd_index).integral = constrain(pid_data(pd_index).integral,pid_data(pd_index).i_max);
@@ -34,7 +34,7 @@ pid_data(pd_index).prev_e = pid_data(pd_index).e;
 
 Control_Signal = ...
     pid_data(pd_index).Kp*pid_data(pd_index).e +...
-    pid_data(pd_index).Ki*pid_data(pd_index).integral +...
+    pid_data(pd_index).integral +...
     pid_data(pd_index).Kd*pt1filter(pd_index,derivative);
 
 Control_Signal = constrain(Control_Signal,pid_data(pd_index).saturation);

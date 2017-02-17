@@ -27,7 +27,7 @@ set_points(pd_index.a_pitch)    =...
     outputs(pd_index.p_x)*cos(quad_angles(3)/180*pi) + outputs(pd_index.p_y)*sin(quad_angles(3)/180*pi),...
     pid_data(pd_index.a_pitch).saturation);
 
-set_points(pd_index.compass)    = 0; %Freaks out on 90. Why!?!?!?
+set_points(pd_index.compass)    = 90; %Freaks out on 90. Why!?!?!?
 
 pid_data(pd_index.a_roll).e     = set_points(pd_index.a_roll)       -   states(pd_index.a_roll);
 pid_data(pd_index.a_pitch).e    = set_points(pd_index.a_pitch)      -   states(pd_index.a_pitch);
