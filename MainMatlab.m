@@ -34,8 +34,8 @@ clear;
         vrep.simxSetObjectPosition(clientID,quad_target,-1,[-1 -1 0.5],vrep.simx_opmode_oneshot);
         
         % Now step a few times:
-        for i=0:300
-        %while (1)
+        %for i=0:300
+        while (1)
         
             %disp('Press a key to step the simulation!');
             %pause;
