@@ -11,6 +11,11 @@ clear;
     vrep.simxFinish(-1); % just in case, close all opened connections
     clientID=vrep.simxStart('127.0.0.1',19997,true,true,5000,5);
     
+    %global loop_counter;
+    loop_counter = 0;
+    %global stop_sim;
+    stop_sim = false;
+    
     if (clientID>-1)
     
         disp('Connected to remote API server');
@@ -31,7 +36,9 @@ clear;
         %better call it once before
         getSensors;
         
-        vrep.simxSetObjectPosition(clientID,quad_target,-1,[-1 -1 0.5],vrep.simx_opmode_oneshot);
+        if (~logs_enabled)
+            vrep.simxSetObjectPosition(clientID,quad_target,-1,[-1 -1 1],vrep.simx_opmode_oneshot);
+        end
         
         % Now step a few times:
         %for i=0:300
@@ -40,14 +47,20 @@ clear;
             %disp('Press a key to step the simulation!');
             %pause;
             
+            
+            
             getSensors;
            
+            % Now we see the result of previouse actuation
+            logData;
+            
             %set_points
             %states
             %outputs
            
             % Calculate all PID loop outputs
             run_control;
+            
             
             % Motormixer
             mixedMotors = motormixer(...
@@ -65,6 +78,10 @@ clear;
             
             vrep.simxSynchronousTrigger(clientID);
            
+            loop_counter = loop_counter + 1;
+            if stop_sim
+                break;
+            end
         end
 
         % stop the simulation:

@@ -1,5 +1,7 @@
 % Here we retrieve all sensor data from the simulation
 
+global dt;
+
 % "Get time step". This gets us the delta time between iterations. Can
 % differ between iterations depending on the sim setup
 %dT = vrep.simxGetSimulationTimeStep(clientID)
@@ -32,17 +34,25 @@ end
 [returnCode, quad_pos] = vrep.simxGetObjectPosition(clientID,quad_base,-1,vrep.simx_opmode_oneshot);
 [returnCode, quad_target_pos] = vrep.simxGetObjectPosition(clientID,quad_target,-1,vrep.simx_opmode_oneshot);
 
+if ~(exist('old_pos','var'))
+    old_pos = [0 0];
+end
 
 % Import to "states"
 states(pd_index.height)  = quad_pos(3);
 states(pd_index.p_x)     = quad_pos(1);
 states(pd_index.p_y)     = quad_pos(2);
+states(pd_index.v_x)     = (quad_pos(1) - old_pos(1)) / dt;
+states(pd_index.v_x)     = (quad_pos(2) - old_pos(2)) / dt;
 states(pd_index.a_roll)  = quad_angles(1);
 states(pd_index.a_pitch) = quad_angles(2);
 states(pd_index.compass) = quad_angles(3);
 states(pd_index.g_roll)  = quad_gyro_data(1);
 states(pd_index.g_pitch) = quad_gyro_data(2);
 states(pd_index.g_yaw)   = quad_gyro_data(3);
+
+% log old position for velocities
+old_pos = [quad_pos(1), quad_pos(2)];
 
 %Joystick
 if use_joystick

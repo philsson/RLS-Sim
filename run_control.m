@@ -3,9 +3,12 @@
 
 % Follow the green boll
 if (follow_target)
-    set_points(pd_index.height) = constrain(quad_target_pos(3),pid_data(pd_index.height).saturation);
-    set_points(pd_index.p_x)    = constrain(quad_target_pos(1),pid_data(pd_index.p_x).saturation);
-    set_points(pd_index.p_y)    = constrain(quad_target_pos(2),pid_data(pd_index.p_y).saturation);
+    %set_points(pd_index.height) = constrain(quad_target_pos(3),pid_data(pd_index.height).saturation);
+    %set_points(pd_index.p_x)    = constrain(quad_target_pos(1),pid_data(pd_index.p_x).saturation);
+    %set_points(pd_index.p_y)    = constrain(quad_target_pos(2),pid_data(pd_index.p_y).saturation);
+    set_points(pd_index.height) = quad_target_pos(3);
+    set_points(pd_index.p_x)    = quad_target_pos(1);
+    set_points(pd_index.p_y)    = quad_target_pos(2);
 else
     set_points(pd_index.height) = 0.5;
 end
@@ -24,20 +27,30 @@ end
 outputs(pd_index.p_x)       =  PID_CONTROLLER(pd_index.p_x);
 outputs(pd_index.p_y)       =  PID_CONTROLLER(pd_index.p_y);
 
+
+set_points(pd_index.v_x) = outputs(pd_index.p_x);
+set_points(pd_index.v_y) = outputs(pd_index.p_y);
+
+
+pid_data(pd_index.v_x).e    = set_points(pd_index.v_x)      -   states(pd_index.v_x);
+pid_data(pd_index.v_y).e    = set_points(pd_index.v_y)      -   states(pd_index.v_y);
+
+outputs(pd_index.v_x)       =  PID_CONTROLLER(pd_index.v_x);
+outputs(pd_index.v_y)       =  PID_CONTROLLER(pd_index.v_y);
+
 % 
 % TODO: rotation matrix on yaw
 set_points(pd_index.a_roll)     =...
     constrain(...
-    outputs(pd_index.p_x)*sin(quad_angles(3)/180*pi) - outputs(pd_index.p_y)*cos(quad_angles(3)/180*pi),...
+    outputs(pd_index.v_x)*sin(quad_angles(3)/180*pi) - outputs(pd_index.v_y)*cos(quad_angles(3)/180*pi),...
     pid_data(pd_index.a_roll).saturation);
 %set_points(pd_index.a_roll) = 10; %Overwrite roll
 
 set_points(pd_index.a_pitch)    =...
     constrain(...
-    outputs(pd_index.p_x)*cos(quad_angles(3)/180*pi) + outputs(pd_index.p_y)*sin(quad_angles(3)/180*pi),...
+    outputs(pd_index.v_x)*cos(quad_angles(3)/180*pi) + outputs(pd_index.v_y)*sin(quad_angles(3)/180*pi),...
     pid_data(pd_index.a_pitch).saturation);
 %set_points(pd_index.a_pitch) = 10; %Overwrite pitch
-
 
 
 % Test to set heading to green ball
@@ -79,14 +92,30 @@ if (use_joystick && joy_gyro && (RC.roll^2 + RC.pitch^2 + RC.yaw^2) > joy_rate*0
     set_points(pd_index.g_pitch) = RC.pitch;
     set_points(pd_index.g_yaw)   = RC.yaw;
 else
-    set_points(pd_index.g_roll)  = constrain(outputs(pd_index.a_roll),pid_data(pd_index.g_roll).saturation);
-    %set_points(pd_index.g_roll) = set_points(pd_index.g_roll) + sin_wave(20)*30;
-    set_points(pd_index.g_pitch) = constrain(outputs(pd_index.a_pitch),pid_data(pd_index.g_pitch).saturation);
-    set_points(pd_index.g_yaw)   = constrain(outputs(pd_index.compass),pid_data(pd_index.g_yaw).saturation);
+    %set_points(pd_index.g_roll)  = constrain(outputs(pd_index.a_roll),pid_data(pd_index.g_roll).saturation);
+    %%set_points(pd_index.g_roll) = set_points(pd_index.g_roll) + sin_wave(20)*30;
+    %set_points(pd_index.g_pitch) = constrain(outputs(pd_index.a_pitch),pid_data(pd_index.g_pitch).saturation);
+    %set_points(pd_index.g_yaw)   = constrain(outputs(pd_index.compass),pid_data(pd_index.g_yaw).saturation);
+    
+    set_points(pd_index.g_roll)  = outputs(pd_index.a_roll);
+    set_points(pd_index.g_pitch) = outputs(pd_index.a_pitch);
+    set_points(pd_index.g_yaw)   = outputs(pd_index.compass);
 end
 
-%set_points(pd_index.g_roll)  = 0.0; % Overwride gyro
-%set_points(pd_index.g_pitch) = 0.5;
+if (logs_enabled(1) && step_enabled(1))
+    set_points(pd_index.g_roll) = step_amplitude;
+end
+if (logs_enabled(2) && step_enabled(2))
+    set_points(pd_index.g_pitch) = step_amplitude;
+end
+if (logs_enabled(3) && step_enabled(3))
+    set_points(pd_index.g_yaw) = step_amplitude; 
+end
+%loop_counter*dt
+if (mod(loop_counter*dt*1000,step_interval_ms) == 0)
+    step_amplitude = (-1)*step_amplitude;
+end
+
 
 
 pid_data(pd_index.g_roll).e     = set_points(pd_index.g_roll)       -   states(pd_index.g_roll);
@@ -100,16 +129,5 @@ outputs(pd_index.g_pitch) = PID_CONTROLLER(pd_index.g_pitch);
 outputs(pd_index.g_yaw)   = PID_CONTROLLER(pd_index.g_yaw);
 
 
-% Retrieve amount of control loops
-%control_loops = fieldnames(pd_index);
-% Loop through all control loops. ex 1..7
-%for i = 1:numel(control_loops)  
-    % Calculating errors
-%    pid_data(i).e = set_points(i) - states(i);
-    
-    % Running control loops
-%    outputs(i) = PID_CONTROLLER(i);
-%end    
-    
 
 
