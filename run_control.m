@@ -20,7 +20,6 @@ pid_data(pd_index.p_y).e    = set_points(pd_index.p_y)      -   states(pd_index.
 % Generating position and height outputs 
 if (joy_throttle && (abs(map(RC.throttle,throttle_rate,1)) > 0.05))
     outputs(pd_index.height)    =  RC.throttle;
-    outputs(pd_index.height)
 else
     outputs(pd_index.height)    =  PID_CONTROLLER(pd_index.height);
 end

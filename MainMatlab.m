@@ -13,7 +13,7 @@ clear;
     
     %global loop_counter;
     loop_counter = 0;
-    %global stop_sim;
+    global stop_sim;
     stop_sim = false;
     
     if (clientID>-1)
@@ -60,6 +60,7 @@ clear;
            
             % Calculate all PID loop outputs
             run_control;
+            run_RLS;
             
             
             % Motormixer
@@ -79,11 +80,15 @@ clear;
             vrep.simxSynchronousTrigger(clientID);
            
             loop_counter = loop_counter + 1;
-            if stop_sim
+            if stop_sim % Set in "logData" after the amount of samples is reached
                 break;
             end
         end
-
+        
+        if (loop_counter < ISE_samples)
+            logData % This last time to plot only
+        end
+        
         % stop the simulation:
         vrep.simxStopSimulation(clientID,vrep.simx_opmode_blocking);
 
@@ -96,4 +101,5 @@ clear;
     vrep.delete(); % call the destructor!
     
     disp('Program ended');
+    loop_counter % prints its value
 %end %End of function

@@ -1,17 +1,24 @@
 %----------------------------- CONFIG SECTION ----------------------------%
 
-adjust_heading = true;       % Heading will be adjust to the trajectory
+adjust_heading = false;       % Heading will be adjust to the trajectory
 nav_heading_threshold = 0.4; % The distance required for the heading to be set
 follow_target = true;        % Follow the position of the green boll
 
 calcISE = true;             % If this is true then we will log "ISE_samples" many iterations and calculate the ISE.
+ISE_samples = 600;
+global stop_on_imaginary_numbers;
+stop_on_imaginary_numbers = false;
 
-ISE_samples = 1000;
+% Enable log for:   X(roll)   Y(pitch)      Z(yaw)
+logs_enabled  =  [  false      false       true];
+step_enabled  =  [  false      false       true]; %Didact Delta
 
-% Enable log for: X(roll)   Y(pitch)      Z(yaw)
-logs_enabled =  [  true      false       false];
-step_enabled =  [  true      false       false];
-step_amplitude   = 10;  % Rotational rate to give as target value
+adapt_enabled =  [  false      false       true];
+rand_RLS_data =  [  false      false       false];
+log_PID_evo   =  [  false      false       true];
+apply_evo     =  [  false      false       true];
+
+step_amplitude   = 2;  % Rotational rate to give as target value
 step_interval_ms = 500; % Needs LDM to work. Revise implementation (in run_control)
 
 % Joystick config. 
@@ -22,6 +29,44 @@ joy_throttle = true;         % Override throttle with RC
 joy_rate = 100; throttle_rate = 1;
 
 %------------------------------- END CONFIG ------------------------------%
+
+rls_data(3).complexity = 2;
+rls_data(3).weights = [0.991194695654943;1.52707228415760];
+rls_data(3).V = [0.000365467599922413,0.00161109681383160;0.00149687443546999,0.0643581194383997];
+rls_data(3).fi = [1.00129127502441;0.00218887038622889];     
+rls_data(3).K = [0.000369767417428262;0.00164041127527678];  
+rls_data(3).error = 0.00500453202033391; 
+% Denna fanns inte med i Johans init
+rls_data(3).RlsOut = 0.995817163910197;
+
+% Initialize random rls data for axis 'i'
+for i=1:3
+    if (adapt_enabled(i) && rand_RLS_data(i))
+        [rls_data(i) FOPDT_data(i,1:2)] = init_rand_rls_data();
+    end
+end
+
+%%%%%%% TEMP INITIALIZATION FOR DEBUG %%%%%%%%
+logFOPDT = zeros(2,ISE_samples);
+
+%rls
+rls.weights = zeros(2,ISE_samples);
+rls.V = zeros(4,ISE_samples);
+rls.fi = zeros(2,ISE_samples);
+rls.K = zeros(2,ISE_samples);
+rls.error = zeros(ISE_samples);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if log_PID_evo(1)
+    xPIDlog = zeros(3,ISE_samples);
+end
+if log_PID_evo(2)
+    yPIDlog = zeros(3,ISE_samples);
+end
+if log_PID_evo(3)
+    zPIDlog = zeros(3,ISE_samples);
+end
+
 
 if use_joystick
     joy = vrjoystick(1);
@@ -91,7 +136,7 @@ pid_data = struct(... %alt |   p_x | p_y | v_x |  v_y |  a_roll | a_pitch | comp
     'i_max',          {100,    100,  100,  100,   100,   100,     100,      100,      100,     100,      100},...
     'e',              {0,      0,    0,    0,     0,     0,       0,        0,        0,       0,        0},...
     'prev_e',         {0,      0,    0,    0,     0,     0,       0,        0,        0,       0,        0},...
-    'saturation',     {1,      3,    3,    10,    10     50,      50,       90,       2,       2,        2},...
+    'saturation',     {1,      2,    2,    10,    10     50,      50,       90,       2,       2,        2},...
     'filter',         {ASF,     ASF,    ASF,    ASF,    ASF,    ASF,     ASF,      ASF,      ASF,     ASF,      ASF});
 
 
