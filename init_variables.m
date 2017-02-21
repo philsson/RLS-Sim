@@ -5,9 +5,9 @@ nav_heading_threshold = 0.4; % The distance required for the heading to be set
 follow_target = true;        % Follow the position of the green boll
 
 calcISE = true;             % If this is true then we will log "ISE_samples" many iterations and calculate the ISE.
-ISE_samples = 600;
+ISE_samples = 1000;
 global stop_on_imaginary_numbers;
-stop_on_imaginary_numbers = false;
+stop_on_imaginary_numbers = true;
 
 % Enable log for:   X(roll)   Y(pitch)      Z(yaw)
 logs_enabled  =  [  false      false       true];
@@ -16,7 +16,7 @@ step_enabled  =  [  false      false       true]; %Didact Delta
 adapt_enabled =  [  false      false       true];
 rand_RLS_data =  [  false      false       false];
 log_PID_evo   =  [  false      false       true];
-apply_evo     =  [  false      false       true];
+apply_evo     =  [  false      false       false];
 
 step_amplitude   = 2;  % Rotational rate to give as target value
 step_interval_ms = 500; % Needs LDM to work. Revise implementation (in run_control)

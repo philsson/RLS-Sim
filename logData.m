@@ -48,9 +48,9 @@ if (log_PID_evo(3) && loop_counter <= ISE_samples && loop_counter ~= 0 && ~stop_
     zPIDlog(3,loop_counter) = pid_data(pd_index.g_yaw).Kd;
     
     % for now when they are not used
-    zPIDlog(1,loop_counter) = PID_Values(1);
-    zPIDlog(2,loop_counter) = PID_Values(2);
-    zPIDlog(3,loop_counter) = PID_Values(3);
+    zPIDlog(1,loop_counter) = real(PID_Values(1));
+    zPIDlog(2,loop_counter) = real(PID_Values(2));
+    zPIDlog(3,loop_counter) = real(PID_Values(3));
 elseif ((log_PID_evo(3) && loop_counter > ISE_samples) || stop_sim)
     figure;
     plot(zPIDlog(1:3,1:loop_counter-1)');
