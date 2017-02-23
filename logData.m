@@ -71,7 +71,7 @@ if (loop_counter ~= 0)
 end
 if stop_sim
     figure
-    plot(logFOPDT(1:2,1:loop_counter-1)');
+    plot(logFOPDT(1:2,1:loop_counter)');
     title('FOPDT')
     
     figure
