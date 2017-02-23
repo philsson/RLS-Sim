@@ -18,6 +18,8 @@ rls_data.K = rls_data.V*rls_data.fi;
 rls_data.error = y - rls_data.fi'*rls_data.weights;
 rls_data.V = rls_data.V - inv(b)*rls_data.V*rls_data.fi*rls_data.fi'*rls_data.V;
 
+        %inv kan skrivas som 1/b då b är en skalär
+
 %-- Update fi values ---
 y_in = circshift(rls_data.fi(1:(length(rls_data.fi))/2),1)';
 u_in = circshift(rls_data.fi(((length(rls_data.fi))/2) + 1:end),1)';
@@ -28,6 +30,10 @@ u_in(1) = u;
 rls_data.fi = [y_in u_in]';
 
 %-- Update outputs ---
+
+if (rls_data.weights(1) >= 1)
+    rls_data.weights(1) = 0.9999;
+end
 
 rls_data.RlsOut = rls_data.fi'*rls_data.weights;
 

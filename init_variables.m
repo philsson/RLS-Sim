@@ -1,25 +1,26 @@
 %----------------------------- CONFIG SECTION ----------------------------%
 
-adjust_heading = false;       % Heading will be adjust to the trajectory
+adjust_heading = true;       % Heading will be adjust to the trajectory
 nav_heading_threshold = 0.4; % The distance required for the heading to be set
 follow_target = true;        % Follow the position of the green boll
 
 calcISE = true;             % If this is true then we will log "ISE_samples" many iterations and calculate the ISE.
-ISE_samples = 1000;
+ISE_samples = 3000;
 global stop_on_imaginary_numbers;
-stop_on_imaginary_numbers = true;
+stop_on_imaginary_numbers = false;
 
 % Enable log for:   X(roll)   Y(pitch)      Z(yaw)
 logs_enabled  =  [  false      false       true];
-step_enabled  =  [  false      false       true]; %Didact Delta
+step_enabled  =  [  false      false       false]; %Didact Delta
 
 adapt_enabled =  [  false      false       true];
 rand_RLS_data =  [  false      false       false];
+save_RLS_data =  [  false      false       true];
 log_PID_evo   =  [  false      false       true];
-apply_evo     =  [  false      false       false];
+apply_evo     =  [  false      false       true];
 
 step_amplitude   = 2;  % Rotational rate to give as target value
-step_interval_ms = 500; % Needs LDM to work. Revise implementation (in run_control)
+step_interval_ms = 600; % Needs LDM to work. Revise implementation (in run_control)
 
 % Joystick config. 
 % INFO: If sticks are centered normal behaviour will resume
@@ -30,19 +31,33 @@ joy_rate = 100; throttle_rate = 1;
 
 %------------------------------- END CONFIG ------------------------------%
 
-rls_data(3).complexity = 2;
-rls_data(3).weights = [0.991194695654943;1.52707228415760];
-rls_data(3).V = [0.000365467599922413,0.00161109681383160;0.00149687443546999,0.0643581194383997];
-rls_data(3).fi = [1.00129127502441;0.00218887038622889];     
-rls_data(3).K = [0.000369767417428262;0.00164041127527678];  
-rls_data(3).error = 0.00500453202033391; 
-% Denna fanns inte med i Johans init
-rls_data(3).RlsOut = 0.995817163910197;
+rlsfileX = 'rlsdataX.mat'; rlsfileY = 'rlsdataY.mat'; rlsfileZ = 'rlsdataZ.mat';
 
-% Initialize random rls data for axis 'i'
+
+rls_data(3).complexity = 2;
+rls_data(3).weights = [0.9830;4.7619];
+rls_data(3).V = [1.1436e-07 8.3823e-07;8.3808e-07 3.1926e-04];
+rls_data(3).fi = [-5.6491;-5.2720e-04];     
+rls_data(3).K = [-6.4503e-07;-4.7110e-06];  
+rls_data(3).error = -0.1044; 
+% Denna fanns inte med i Johans init
+rls_data(3).RlsOut = -5.5556;
+
+% Initialize random rls data or load stored data for axis 'i'
 for i=1:3
     if (adapt_enabled(i) && rand_RLS_data(i))
         [rls_data(i) FOPDT_data(i,1:2)] = init_rand_rls_data();
+    else
+        switch i
+            case 1
+                disp('no data available')
+            case 2
+                disp('no data available')
+            case 3
+                rls_data(3) = load(rlsfileZ);
+            otherwise
+                disp('no data available')
+        end
     end
 end
 

@@ -94,6 +94,10 @@ clear;
 
         % Now close the connection to V-REP:    
         vrep.simxFinish(clientID);
+        
+        % Saving RLS data to file
+        disp('run "saveRLDdata" to save RLS data if it was pleasant');
+        %saveRLSdata; % We might not always want to run this
     
     else
         disp('Failed connecting to remote API server');
