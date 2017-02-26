@@ -15,7 +15,6 @@ if isempty(pid_data(pd_index).Kp)
     
     pid_data(pd_index).prev_e = 0;
     pid_data(pd_index).integral = 0;
-    %pid_data(pd_index).dt = 1;    % Vi skulle kunna ha en global variabel till detta. Då alla dt kommer vara samma och mäts från simuleringen
     pid_data(pd_index).e = 0;   
 
 end

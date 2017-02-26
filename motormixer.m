@@ -2,8 +2,14 @@ function [ motors ] = motormixer( R,P,Y,T )
     %MOTORMIXER Summary of this function goes here
     %   Detailed explanation goes here
 
+    % These two are used for RLS training
+    global pd_index;
+    global outputs;
+        
     % Upper motor limit
     motors_max = 2;
+    % Check how much the combined output wants to be
+    
 
     mixer = [
     %    R  P  Y T
@@ -39,6 +45,15 @@ function [ motors ] = motormixer( R,P,Y,T )
     %motorLimitReached = (floor && roof);
     motorLimitReached = roof;
     
+    % Simple scaling for RLS to get correct training data
+    if roof
+
+        combined_output = abs(R) + abs(P) + abs(Y) + T;
+        outputs(pd_index.g_roll) = (R / combined_output) * motors_max;
+        outputs(pd_index.g_pitch) = (P / combined_output) * motors_max;
+        outputs(pd_index.g_yaw) = (Y / combined_output) * motors_max;
+    end  
+    
 end
 
 % Some test notes
@@ -48,7 +63,7 @@ end
 % positiv rotationshastighet i roll
 % positiv roll vinkel (-90 minskar, ex -100)
 
-% 0 1 1 0 gav (lutar bakåt i bild)
+% 0 1 1 0 gav (lutar bak??t i bild)
 % positiv rotationshastighet i pitch
 % positiv lutning i pitch
 
@@ -57,19 +72,19 @@ end
 % negativ vridning i yaw
 
 %efter fix
-% 0 1 0 1 gav (vrider sig vänster)
+% 0 1 0 1 gav (vrider sig v??nster)
 % gyro postiv
-% acc positiv (-350 som är +10)
+% acc positiv (-350 som ??r +10)
 
-% 0 0 1 1 (rollar höger i bild)
+% 0 0 1 1 (rollar h??ger i bild)
 % gyro negativ
 % ACC negativ
 
-% 1 0 0 1 (pitchar neråt i bild)
+% 1 0 0 1 (pitchar ner??t i bild)
 % gyro negativ
 % ACC negativ
 
-%ACC viloläge -1.5708         0    3.1416 (-90, 0, 180)
+%ACC vilol??ge -1.5708         0    3.1416 (-90, 0, 180)
 
 %M1 = [1 -1 -1 1]
 %M2 = [1 1  1 1]

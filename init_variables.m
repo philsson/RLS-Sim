@@ -2,61 +2,76 @@
 
 adjust_heading = true;       % Heading will be adjust to the trajectory
 nav_heading_threshold = 0.4; % The distance required for the heading to be set
-follow_target = true;        % Follow the position of the green boll
+follow_target = false;        % Follow the position of the green boll
+use_philips_rls = false;
+apply_evo_freq = 100; % in milliseconds
 
 calcISE = true;             % If this is true then we will log "ISE_samples" many iterations and calculate the ISE.
-ISE_samples = 3000;
+ISE_samples = 400;
 global stop_on_imaginary_numbers;
 stop_on_imaginary_numbers = false;
 
 % Enable log for:   X(roll)   Y(pitch)      Z(yaw)
 logs_enabled  =  [  false      false       true];
-step_enabled  =  [  false      false       false]; %Didact Delta
+step_enabled  =  [  false      false       true]; %Didact Delta
 
 adapt_enabled =  [  false      false       true];
 rand_RLS_data =  [  false      false       false];
 save_RLS_data =  [  false      false       true];
 log_PID_evo   =  [  false      false       true];
-apply_evo     =  [  false      false       true];
+apply_evo     =  [  false      false       false];
 
-step_amplitude   = 2;  % Rotational rate to give as target value
-step_interval_ms = 600; % Needs LDM to work. Revise implementation (in run_control)
+rand_steps = true; % if enabled steps will be random in time and amplitude constrained by the next two variables
+step_amplitude   = 35;  % Rotational rate to give as target value
+step_interval_ms = 1000; % Needs LDM to work. Revise implementation (in run_control)
 
 % Joystick config. 
 % INFO: If sticks are centered normal behaviour will resume
 use_joystick = false;         % If enabled joystick can be used
 joy_gyro = true;             % Override the gyro output with RC
-joy_throttle = true;         % Override throttle with RC
+joy_throttle = false;         % Override throttle with RC
 joy_rate = 100; throttle_rate = 1;
 
 %------------------------------- END CONFIG ------------------------------%
 
+%--- Workspace variables
+time_fraction = 1; % for rand step. Desides how much of the time step is used. Initialized 1
+time_since_last_step = 0; % Actually interations
+step_sign = 1;
+
+
 rlsfileX = 'rlsdataX.mat'; rlsfileY = 'rlsdataY.mat'; rlsfileZ = 'rlsdataZ.mat';
-
-
-rls_data(3).complexity = 2;
-rls_data(3).weights = [0.9830;4.7619];
-rls_data(3).V = [1.1436e-07 8.3823e-07;8.3808e-07 3.1926e-04];
-rls_data(3).fi = [-5.6491;-5.2720e-04];     
-rls_data(3).K = [-6.4503e-07;-4.7110e-06];  
-rls_data(3).error = -0.1044; 
-% Denna fanns inte med i Johans init
-rls_data(3).RlsOut = -5.5556;
 
 % Initialize random rls data or load stored data for axis 'i'
 for i=1:3
-    if (adapt_enabled(i) && rand_RLS_data(i))
-        [rls_data(i) FOPDT_data(i,1:2)] = init_rand_rls_data();
-    else
-        switch i
-            case 1
-                disp('no data available')
-            case 2
-                disp('no data available')
-            case 3
-                rls_data(3) = load(rlsfileZ);
-            otherwise
-                disp('no data available')
+    if adapt_enabled(i)
+        FOPDT_Data(i,1:2) = [1 1]; % TODO:  Not sure what good initial values for this is
+        if rand_RLS_data(i)
+            if use_philips_rls
+                rls_data(i) = philip_init_rls_data(2);
+                
+                disp('temp fix. Setting manual tuning backtracked values')
+                %rls_data(i).weights = [0.8088; 46.2830]
+            else
+                [rls_data(i) FOPDT_data(i,1:2)] = init_rand_rls_data();
+                
+                % TODO: Temp fix. Giving "optimal values" (From tuning)
+                disp('temp fix. Setting manual tuning backtracked values')
+                rls_data(i).weights = [0.8088; 46.2830]
+            end
+
+        else
+            switch i
+                case 1
+                    disp('no data available')
+                case 2
+                    disp('no data available')
+                case 3
+                    disp('loading data from file for z-axis')
+                    rls_data(3) = load(rlsfileZ);
+                otherwise
+                    disp('no data available')
+            end
         end
     end
 end
@@ -107,6 +122,9 @@ global dt;
 %dt = 0.05;
 dt = 0.025;
 
+%converting it to iterations
+apply_evo_freq = (apply_evo_freq/1000)/dt;
+
 % Global value for antiwindup
 global motorLimitReached;
 motorLimitReached = false;
@@ -119,6 +137,7 @@ RC = struct(...
     'aux1',     0);
 
 % Index of pid_data structures. Ex "pid_data(pd_index.g_roll)"
+global pd_index;
 pd_index = struct(...
     'height',     1,...     % altitude
     'p_x',        2,...     % position x (roll)
@@ -151,7 +170,7 @@ pid_data = struct(... %alt |   p_x | p_y | v_x |  v_y |  a_roll | a_pitch | comp
     'i_max',          {100,    100,  100,  100,   100,   100,     100,      100,      100,     100,      100},...
     'e',              {0,      0,    0,    0,     0,     0,       0,        0,        0,       0,        0},...
     'prev_e',         {0,      0,    0,    0,     0,     0,       0,        0,        0,       0,        0},...
-    'saturation',     {1,      2,    2,    10,    10     50,      50,       90,       2,       2,        2},...
+    'saturation',     {1,      2,    2,    10,    10     50,      50,       90,       2,       2,        1.5},...
     'filter',         {ASF,     ASF,    ASF,    ASF,    ASF,    ASF,     ASF,      ASF,      ASF,     ASF,      ASF});
 
 
@@ -160,4 +179,5 @@ set_points  = zeros(1,length(fieldnames(pd_index)));
 % Array of sensor data
 states      = zeros(1,length(fieldnames(pd_index)));
 % Array of contro outputs
+global outputs;
 outputs     = zeros(1,length(fieldnames(pd_index)));

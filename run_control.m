@@ -1,3 +1,9 @@
+global outputs;
+global pd_index;
+global dt;
+
+
+
 
 % Setting set-points
 
@@ -62,6 +68,8 @@ if (adjust_heading)
     else
         set_points(pd_index.compass)    = quad_angles(3); %Previous setpoint?
     end
+else
+    set_points(pd_index.compass)    = quad_angles(3);
 end
 
    
@@ -95,24 +103,41 @@ else
     %%set_points(pd_index.g_roll) = set_points(pd_index.g_roll) + sin_wave(20)*30;
     %set_points(pd_index.g_pitch) = constrain(outputs(pd_index.a_pitch),pid_data(pd_index.g_pitch).saturation);
     %set_points(pd_index.g_yaw)   = constrain(outputs(pd_index.compass),pid_data(pd_index.g_yaw).saturation);
-    
-    set_points(pd_index.g_roll)  = outputs(pd_index.a_roll);
-    set_points(pd_index.g_pitch) = outputs(pd_index.a_pitch);
-    set_points(pd_index.g_yaw)   = outputs(pd_index.compass);
+    if ~step_enabled(1)
+        set_points(pd_index.g_roll)  = outputs(pd_index.a_roll);
+    end
+    if ~step_enabled(2)
+        set_points(pd_index.g_pitch) = outputs(pd_index.a_pitch);
+    end
+    if ~step_enabled(3)
+        set_points(pd_index.g_yaw)   = outputs(pd_index.compass);
+    end
 end
 
-if (logs_enabled(1) && step_enabled(1))
-    set_points(pd_index.g_roll) = step_amplitude;
-end
-if (logs_enabled(2) && step_enabled(2))
-    set_points(pd_index.g_pitch) = step_amplitude;
-end
-if (logs_enabled(3) && step_enabled(3))
-    set_points(pd_index.g_yaw) = step_amplitude; 
-end
-%loop_counter*dt
-if (mod(loop_counter*dt*1000,step_interval_ms) == 0)
-    step_amplitude = (-1)*step_amplitude;
+
+% Steps (if active)
+time_since_last_step = time_since_last_step + 1;
+if (time_since_last_step*dt*1000 > time_fraction*step_interval_ms)
+    time_since_last_step = 0; % Reset step time
+    
+    for i=1:3
+        if (logs_enabled(i) && step_enabled(i))
+                step_sign = sign(set_points(pd_index.g_yaw - 3 + i));
+                if step_sign == 0
+                    step_sign = 1;
+                end
+                step_sign = -step_sign;
+                if (rand_steps)
+
+                    set_points(pd_index.g_yaw - 3 + i) = step_sign*rand*step_amplitude;
+                    time_fraction = rand;
+
+                else
+                    set_points(pd_index.g_yaw - 3 + i) = step_sign*step_amplitude
+                    time_fraction = 1;
+                end
+        end
+    end
 end
 
 

@@ -62,11 +62,11 @@ end
 if (loop_counter ~= 0)
     logFOPDT(1:2,loop_counter) =  FOPDT_Data(3,1:2);
     
-    rls.weights(1:2,loop_counter) = rls_data(3).weights;
-    rls.V(1:4,loop_counter) = [rls_data(3).V(1), rls_data(3).V(2), rls_data(3).V(3), rls_data(3).V(4)];
-    rls.fi(1:2,loop_counter) = rls_data(3).fi;
-    rls.K(1:2,loop_counter) = rls_data(3).K;
-    rls.error(loop_counter) = rls_data(3).error;
+    rls.weights(1:rls_data(3).complexity,loop_counter) = rls_data(3).weights;
+    %rls.V(1:rls_data(3).complexity,1:rls_data(3).complexity,loop_counter) = rls_data(3).V(1:rls_data(3).complexity,1:rls_data(3).complexity);%[rls_data(3).V(1), rls_data(3).V(2), rls_data(3).V(3), rls_data(3).V(4)];
+    %rls.fi(1:rls_data(3).complexity,loop_counter) = rls_data(3).fi;
+    %rls.K(1:rls_data(3).complexity,loop_counter) = rls_data(3).K;
+    %rls.error(loop_counter) = rls_data(3).error; 
 
 end
 if stop_sim

@@ -52,7 +52,7 @@ function [ PID_Values ] = Get_Tuning_Parameters( FOPDT_data, L )
     end
     
     if isreal(Ti)
-        Ki = (1/Ti)*Kp;
+        Ki = (1/Ti)*Kp; % Eller Kp/Ti
     else
         disp('Ti not real')
         stop = true;

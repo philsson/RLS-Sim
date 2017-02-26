@@ -1,4 +1,7 @@
 % This file is built on the "simpleSynchronousTest.m"
+clear all
+close all
+hold off
 clc;
 clear;
 
@@ -15,6 +18,8 @@ clear;
     loop_counter = 0;
     global stop_sim;
     stop_sim = false;
+    
+    global outputs;
     
     if (clientID>-1)
     
@@ -70,6 +75,8 @@ clear;
                 outputs(pd_index.g_yaw),...
                 outputs(pd_index.height) + 1);
 
+            % RLS uses information from motormixer
+            run_RLS;
             
             % Send actuation
             setMotors(clientID, mixedMotors);
@@ -96,7 +103,7 @@ clear;
         vrep.simxFinish(clientID);
         
         % Saving RLS data to file
-        disp('run "saveRLDdata" to save RLS data if it was pleasant');
+        disp('run "saveRLSdata" to save RLS data if it was pleasant');
         %saveRLSdata; % We might not always want to run this
     
     else
