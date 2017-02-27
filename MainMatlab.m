@@ -65,7 +65,6 @@ clear;
            
             % Calculate all PID loop outputs
             run_control;
-            run_RLS;
             
             
             % Motormixer

@@ -1,36 +1,37 @@
 %----------------------------- CONFIG SECTION ----------------------------%
 
-adjust_heading = true;       % Heading will be adjust to the trajectory
-nav_heading_threshold = 0.4; % The distance required for the heading to be set
-follow_target = false;        % Follow the position of the green boll
-use_philips_rls = false;
-apply_evo_freq = 100; % in milliseconds
+adjust_heading = true;       % Heading will be adjust to the trajectory (vrider nosen mot gröna bollen true/false)
+nav_heading_threshold = 0.4; % The distance required for the heading to be set (avstånd från grön kula)
+follow_target = true;        % Follow the position of the green boll 
+use_philips_rls = true;      % RLS phillip
+apply_evo_freq = 100;        % in milliseconds (hur ofta pid tuninge rules ska tillämpas)
 
-calcISE = true;             % If this is true then we will log "ISE_samples" many iterations and calculate the ISE.
-ISE_samples = 400;
-global stop_on_imaginary_numbers;
+calcISE = true;             % If this is true then we will log "ISE_samples" many iterations and calculate the ISE (mean error).
+ISE_samples = 500;        % Hur många iterationer simuleringen kör
+
+global stop_on_imaginary_numbers;       % Säger sig själv
 stop_on_imaginary_numbers = false;
 
-% Enable log for:   X(roll)   Y(pitch)      Z(yaw)
-logs_enabled  =  [  false      false       true];
-step_enabled  =  [  false      false       true]; %Didact Delta
+%                   X(roll)   Y(pitch)      Z(yaw)
+logs_enabled  =  [  false      false       true]; % Enable log
+step_enabled  =  [  false      false       true]; % Didact Delta, korrigerar set points, fjärkontroll och görna kula eller step rerefernser
 
-adapt_enabled =  [  false      false       true];
-rand_RLS_data =  [  false      false       false];
-save_RLS_data =  [  false      false       true];
-log_PID_evo   =  [  false      false       true];
-apply_evo     =  [  false      false       false];
+adapt_enabled =  [  false      false       true]; % RLS startas tillsammans med tuning reglerna men appliceras inte
+rand_RLS_data =  [  false      false       false]; % If false then its loaded from files
+save_RLS_data =  [  false      false       true]; % Vikterna för RLS data sparas (obs måste skrivas i command window först)
+log_PID_evo   =  [  false      false       true]; % Logar pidarna
+apply_evo     =  [  false      false       true]; % Tillämpar tuning reglerna under realtid
 
-rand_steps = true; % if enabled steps will be random in time and amplitude constrained by the next two variables
-step_amplitude   = 35;  % Rotational rate to give as target value
-step_interval_ms = 1000; % Needs LDM to work. Revise implementation (in run_control)
+rand_steps = false; % if enabled steps will be random in time and amplitude constrained by the next two variables
+step_amplitude   = 20;  % Rotational rate to give as target value
+step_interval_ms = 800; % Needs LDM to work. Revise implementation (in run_control)
 
 % Joystick config. 
 % INFO: If sticks are centered normal behaviour will resume
 use_joystick = false;         % If enabled joystick can be used
 joy_gyro = true;             % Override the gyro output with RC
-joy_throttle = false;         % Override throttle with RC
-joy_rate = 100; throttle_rate = 1;
+joy_throttle = true;         % Override throttle with RC
+joy_rate = 100; throttle_rate = 1; % Rc rate på radion 
 
 %------------------------------- END CONFIG ------------------------------%
 
@@ -85,6 +86,7 @@ rls.V = zeros(4,ISE_samples);
 rls.fi = zeros(2,ISE_samples);
 rls.K = zeros(2,ISE_samples);
 rls.error = zeros(ISE_samples);
+rls.out = zeros(ISE_samples);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if log_PID_evo(1)

@@ -24,18 +24,22 @@ if (calcISE && loop_counter <= ISE_samples && loop_counter ~= 0 && ~stop_sim)
     end
 elseif ((calcISE && loop_counter > ISE_samples) || stop_sim)
     stop_sim = true;
+    
     if logs_enabled(1)
-        figure;
+        fig_xLOG = figure;
+        figure(fig_xLOG);
         plot(xLOG(1:2,1:loop_counter-1)');
         title('xLOG')
     end
     if logs_enabled(2)
-        figure;
+        fig_yLOG = figure;
+        figure(fig_yLOG);
         plot(yLOG(1:2,1:loop_counter-1)');
         title('yLOG')
     end
     if logs_enabled(3)
-        figure;
+        fig_zLOG = figure;
+        figure(fig_zLOG);
         plot(zLOG(1:2,1:loop_counter-1)');
         title('zLOG')
     end
@@ -52,7 +56,8 @@ if (log_PID_evo(3) && loop_counter <= ISE_samples && loop_counter ~= 0 && ~stop_
     zPIDlog(2,loop_counter) = real(PID_Values(2));
     zPIDlog(3,loop_counter) = real(PID_Values(3));
 elseif ((log_PID_evo(3) && loop_counter > ISE_samples) || stop_sim)
-    figure;
+    fig_PID = figure;
+    figure(fig_PID);
     plot(zPIDlog(1:3,1:loop_counter-1)');
     title('PID Z')
     legend('P','I','D')
@@ -63,26 +68,44 @@ if (loop_counter ~= 0)
     logFOPDT(1:2,loop_counter) =  FOPDT_Data(3,1:2);
     
     rls.weights(1:rls_data(3).complexity,loop_counter) = rls_data(3).weights;
-    %rls.V(1:rls_data(3).complexity,1:rls_data(3).complexity,loop_counter) = rls_data(3).V(1:rls_data(3).complexity,1:rls_data(3).complexity);%[rls_data(3).V(1), rls_data(3).V(2), rls_data(3).V(3), rls_data(3).V(4)];
-    %rls.fi(1:rls_data(3).complexity,loop_counter) = rls_data(3).fi;
-    %rls.K(1:rls_data(3).complexity,loop_counter) = rls_data(3).K;
-    %rls.error(loop_counter) = rls_data(3).error; 
-
+    % Om vi kör Johans RLS
+    if ~use_philips_rls
+        rls.V(1:rls_data(3).complexity,1:rls_data(3).complexity,loop_counter) = rls_data(3).V(1:rls_data(3).complexity,1:rls_data(3).complexity);%[rls_data(3).V(1), rls_data(3).V(2), rls_data(3).V(3), rls_data(3).V(4)];
+        rls.fi(1:rls_data(3).complexity,loop_counter) = rls_data(3).fi;
+        rls.K(1:rls_data(3).complexity,loop_counter) = rls_data(3).K;
+        rls.error(loop_counter) = rls_data(3).error; 
+        rls.out(loop_counter) = rls_data(3).RlsOut;
+    else
+        rls.out(loop_counter) = rls_data(3).out;
+    end
 end
 if stop_sim
-    figure
+    FOPDT = figure;
+    figure(FOPDT);
     plot(logFOPDT(1:2,1:loop_counter)');
     title('FOPDT')
     
     figure
     hold on
     plot(rls.weights(1:2,1:loop_counter-1)');
-    plot(rls.V(1:4,1:loop_counter-1)');
-    plot(rls.fi(1:2,1:loop_counter-1)');
-    plot(rls.K(1:2,1:loop_counter-1)');
-    plot(rls.error(1:loop_counter-1)');
+    
+    % If using Johans RLS
+    if ~use_philips_rls
+        plot(rls.V(1:4,1:loop_counter-1)');
+        plot(rls.fi(1:2,1:loop_counter-1)');
+        plot(rls.K(1:2,1:loop_counter-1)');
+        plot(rls.error(1:loop_counter-1)');
+    else
+        plot(rls.error(1:loop_counter-1)');
+    end
     title('RLS data')
     legend('w1','w2','V1','V2','V3','V4','fi1','fi2','k1','k2','e');
+    hold off
+    
+    % Go back to zLOG and plot the RLS expected output
+    figure(fig_zLOG)
+    hold on
+    plot(rls.out(1:loop_counter-1)');
     hold off
 end
 

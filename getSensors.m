@@ -1,6 +1,7 @@
 % Here we retrieve all sensor data from the simulation
 
 global dt;
+global stop_sim;
 
 % "Get time step". This gets us the delta time between iterations. Can
 % differ between iterations depending on the sim setup
@@ -36,6 +37,8 @@ end
 
 if ~(exist('old_pos','var'))
     old_pos = [0 0];
+elseif isnan(old_pos)
+    old_pos = [0 0];
 end
 
 % Import to "states"
@@ -50,6 +53,11 @@ states(pd_index.compass) = quad_angles(3);
 states(pd_index.g_roll)  = quad_gyro_data(1);
 states(pd_index.g_pitch) = quad_gyro_data(2);
 states(pd_index.g_yaw)   = quad_gyro_data(3);
+
+if isnan(states)
+    disp('some states are NaN!. Maybe quad out of range in simulation')
+    stop_sim = true;
+end
 
 % log old position for velocities
 old_pos = [quad_pos(1), quad_pos(2)];

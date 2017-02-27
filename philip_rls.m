@@ -30,6 +30,8 @@ function [ rls_data ] = philip_rls( y_measured, u, rls_data )
     % (0,1) /P
     %rls_data.weights(1) = constrain(rls_data.weights(1),1);
     %rls_data.weights(2) = constrain(rls_data.weights(1),2);
+    
+    rls_data.out = phi*rls_data.weights;
 
 end
 

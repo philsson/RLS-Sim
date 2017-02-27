@@ -15,6 +15,8 @@ function [ rls_data ] = philip_init_rls_data( sysorder )
     rls_data.weights = zeros(sysorder,1); % weights are initialized to zeros
 
     rls_data.u_history = zeros(sysorder,1); % Store the amount of system control signals as sysorder
+    
+    rls_data.out = 0;
 
 end
 

@@ -133,7 +133,7 @@ if (time_since_last_step*dt*1000 > time_fraction*step_interval_ms)
                     time_fraction = rand;
 
                 else
-                    set_points(pd_index.g_yaw - 3 + i) = step_sign*step_amplitude
+                    set_points(pd_index.g_yaw - 3 + i) = step_sign*step_amplitude;
                     time_fraction = 1;
                 end
         end
