@@ -15,3 +15,7 @@ FOPDT_ReversedData = Get_FOPDT_Data(rls_data_from_reversedPID.weights,dt)
 
 %%
 Get_Tuning_Parameters(FOPDT_ReversedData,dt/2)
+
+%% to save these values to file
+rls_data(3) = reversePIDs(Kp,Ki,Kd,0);
+saveRLSdata;
