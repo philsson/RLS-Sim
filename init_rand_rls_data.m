@@ -5,11 +5,26 @@ function [ rls_data, FOPDT_Data ] = init_rand_rls_data()
 
 % TODO: Where is the forgetting factor. Should this not be ~0.99?
 
-    rls_data.complexity = 2;
+rls_data.complexity = 2;
+
+if (0) % Johans approach
+
     rls_data.weights = rand(1,rls_data.complexity)';
     rls_data.V = rand(rls_data.complexity,rls_data.complexity);
     rls_data.fi = rand(1,rls_data.complexity)';     
     rls_data.K = rand(1,rls_data.complexity)';  
+
+% Min test
+else
+    
+    rls_data.weights = ones(1,rls_data.complexity)'*0.5;
+    rls_data.V = ones(rls_data.complexity,rls_data.complexity);
+    rls_data.fi = zeros(1,rls_data.complexity)';     
+    rls_data.K = -ones(1,rls_data.complexity)'*1e10;  
+
+    
+end
+    
     rls_data.error = 0; 
 
     % Denna fanns inte med i Johans init

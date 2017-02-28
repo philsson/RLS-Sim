@@ -3,28 +3,35 @@
 adjust_heading = true;       % Heading will be adjust to the trajectory (vrider nosen mot gröna bollen true/false)
 nav_heading_threshold = 0.4; % The distance required for the heading to be set (avstånd från grön kula)
 follow_target = true;        % Follow the position of the green boll 
-use_philips_rls = true;      % RLS phillip
+use_philips_rls = false;      % RLS phillip
 apply_evo_freq = 100;        % in milliseconds (hur ofta pid tuninge rules ska tillämpas)
 
 calcISE = true;             % If this is true then we will log "ISE_samples" many iterations and calculate the ISE (mean error).
-ISE_samples = 500;        % Hur många iterationer simuleringen kör
+ISE_samples = 1000;        % Hur många iterationer simuleringen kör
 
 global stop_on_imaginary_numbers;       % Säger sig själv
 stop_on_imaginary_numbers = false;
 
 %                   X(roll)   Y(pitch)      Z(yaw)
-logs_enabled  =  [  false      false       true]; % Enable log
-step_enabled  =  [  false      false       true]; % Didact Delta, korrigerar set points, fjärkontroll och görna kula eller step rerefernser
+logs_enabled  =  [  true      true       true]; % Enable log
+step_enabled  =  [  false      false       false]; % Didact Delta, korrigerar set points, fjärkontroll och görna kula eller step rerefernser
 
-adapt_enabled =  [  false      false       true]; % RLS startas tillsammans med tuning reglerna men appliceras inte
-rand_RLS_data =  [  false      false       false]; % If false then its loaded from files
-save_RLS_data =  [  false      false       true]; % Vikterna för RLS data sparas (obs måste skrivas i command window först)
-log_PID_evo   =  [  false      false       true]; % Logar pidarna
+adapt_enabled =  [  true      true       true]; % RLS startas tillsammans med tuning reglerna men appliceras inte
+rand_RLS_data =  [  true      true       false]; % If false then its loaded from files
+save_RLS_data =  [  true      false       true]; % Vikterna för RLS data sparas (obs måste skrivas i command window först)
+log_PID_evo   =  [  true      true       true]; % Logar pidarna
 apply_evo     =  [  false      false       true]; % Tillämpar tuning reglerna under realtid
 
 rand_steps = false; % if enabled steps will be random in time and amplitude constrained by the next two variables
-step_amplitude   = 20;  % Rotational rate to give as target value
-step_interval_ms = 800; % Needs LDM to work. Revise implementation (in run_control)
+step_amplitude   = 60;  % Rotational rate to give as target value
+step_interval_ms = 5000; % Needs LDM to work. Revise implementation (in run_control)
+rand_target = true;
+rand_target_amplitude = [4 4 2]; % 
+
+% plot settings
+plot_FOPDT = false;
+plot_RLS = false;
+plot_MISE = true;
 
 % Joystick config. 
 % INFO: If sticks are centered normal behaviour will resume
@@ -57,16 +64,18 @@ for i=1:3
                 [rls_data(i) FOPDT_data(i,1:2)] = init_rand_rls_data();
                 
                 % TODO: Temp fix. Giving "optimal values" (From tuning)
-                disp('temp fix. Setting manual tuning backtracked values')
-                rls_data(i).weights = [0.8088; 46.2830]
+                %disp('temp fix. Setting manual tuning backtracked values')
+                %rls_data(i).weights = [0.8088; 46.2830]
             end
 
         else
             switch i
                 case 1
-                    disp('no data available')
+                    disp('loading data from file for x-axis')
+                    rls_data(1) = load(rlsfileX);
                 case 2
-                    disp('no data available')
+                    disp('loading data from file for y-axis')
+                    rls_data(2) = load(rlsfileY);
                 case 3
                     disp('loading data from file for z-axis')
                     rls_data(3) = load(rlsfileZ);
@@ -78,15 +87,23 @@ for i=1:3
 end
 
 %%%%%%% TEMP INITIALIZATION FOR DEBUG %%%%%%%%
-logFOPDT = zeros(2,ISE_samples);
+if plot_FOPDT
+    logFOPDT = zeros(2,ISE_samples);
+end
 
 %rls
-rls.weights = zeros(2,ISE_samples);
-rls.V = zeros(4,ISE_samples);
-rls.fi = zeros(2,ISE_samples);
-rls.K = zeros(2,ISE_samples);
-rls.error = zeros(ISE_samples);
-rls.out = zeros(ISE_samples);
+if plot_RLS
+    %rls.weights = zeros(2,ISE_samples);
+    %rls.V = zeros(4,ISE_samples);
+    %rls.fi = zeros(2,ISE_samples);
+    %rls.K = zeros(2,ISE_samples);
+    %rls.error = zeros(ISE_samples);
+    %for i = 1:3
+     %   if logs_enabled(i)
+      %      rls(i).out = zeros(ISE_samples);
+       % end
+   % end
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if log_PID_evo(1)
@@ -108,14 +125,17 @@ if calcISE
     if logs_enabled(1)
         xLOG = zeros(3,ISE_samples);
         MISEx = 0;
+        rls(1).out = zeros(1,ISE_samples);
     end
     if logs_enabled(2)
         yLOG = zeros(3,ISE_samples);
         MISEy = 0;
+        rls(2).out = zeros(1,ISE_samples);
     end
     if logs_enabled(3)
         zLOG = zeros(3,ISE_samples);
-        MISEz = 0;
+        MISEz = zeros(1,ISE_samples);
+        rls(3).out = zeros(1,ISE_samples);
     end
 end
 
@@ -165,7 +185,7 @@ ASF = [0, dt, 1/(2*pi*f_cut)];
 
 global pid_data;
 pid_data = struct(... %alt |   p_x | p_y | v_x |  v_y |  a_roll | a_pitch | compass | g_roll | g_pitch | g_yaw
-    'Kp',             {0.3,    2.5,  2.5,  1.0,   1.0,   2.2,     2.2,      5,        0.0018,  0.0025,   0.05},...
+    'Kp',             {0.3,    2.5,  2.5,  1.0,   1.0,   2.2,     2.2,      5,        0.0013,  0.0025,   0.05},...
     'Ki',             {0,      0,    0,    0,     0,     0,       0,        0,        0.0001,  0.0001,   0.004},...
     'Kd',             {0.3,    6,    6,    1,     1,     0,       0,        0,        0.0001,  0.0001,   0.00051},...
     'integral',       {0,      0,    0,    0,     0,     0,       0,        0,        0,       0,        0},...

@@ -11,7 +11,7 @@ for i=1:3
         FOPDT_Data(i,1:2) = Get_FOPDT_Data( rls_data(i).weights, dt );
         PID_Values = Get_Tuning_Parameters( FOPDT_Data(i,1:2), dt/2 );
             
-        % TODO: Why do we get imaginary part?
+       
         if (~isreal(PID_Values))
             disp('PID Data not real numbers!!!')
             

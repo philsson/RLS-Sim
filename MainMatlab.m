@@ -1,7 +1,6 @@
 % This file is built on the "simpleSynchronousTest.m"
 clear all
 close all
-hold off
 clc;
 clear;
 
@@ -41,8 +40,9 @@ clear;
         %better call it once before
         getSensors;
         
-        if (~logs_enabled)
-            vrep.simxSetObjectPosition(clientID,quad_target,-1,[-1 -1 1],vrep.simx_opmode_oneshot);
+        if (rand_target)
+            %vrep.simxSetObjectPosition(clientID,quad_target,-1,[-1 -1 1],vrep.simx_opmode_oneshot);
+            vrep.simxSetObjectPosition(clientID,quad_target,-1,[2*rand-2 2*rand-2 rand+1],vrep.simx_opmode_oneshot);
         end
         
         % Now step a few times:

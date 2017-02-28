@@ -3,8 +3,6 @@ global pd_index;
 global dt;
 
 
-
-
 % Setting set-points
 
 % Follow the green boll
@@ -43,20 +41,16 @@ pid_data(pd_index.v_y).e    = set_points(pd_index.v_y)      -   states(pd_index.
 outputs(pd_index.v_x)       =  PID_CONTROLLER(pd_index.v_x);
 outputs(pd_index.v_y)       =  PID_CONTROLLER(pd_index.v_y);
 
-% 
-% TODO: rotation matrix on yaw
+
 set_points(pd_index.a_roll)     =...
     constrain(...
     outputs(pd_index.v_x)*sin(quad_angles(3)/180*pi) - outputs(pd_index.v_y)*cos(quad_angles(3)/180*pi),...
     pid_data(pd_index.a_roll).saturation);
-%set_points(pd_index.a_roll) = 10; %Overwrite roll
 
 set_points(pd_index.a_pitch)    =...
     constrain(...
     outputs(pd_index.v_x)*cos(quad_angles(3)/180*pi) + outputs(pd_index.v_y)*sin(quad_angles(3)/180*pi),...
     pid_data(pd_index.a_pitch).saturation);
-%set_points(pd_index.a_pitch) = 10; %Overwrite pitch
-
 
 % Test to set heading to green ball
 %set_points(pd_index.compass)    = atan2(quad_target_pos(2)-quad_pos(2),quad_target_pos(1)-quad_pos(1));
@@ -137,6 +131,12 @@ if (time_since_last_step*dt*1000 > time_fraction*step_interval_ms)
                     time_fraction = 1;
                 end
         end
+    end
+    if rand_target
+        rand_xPos = 2*rand_target_amplitude(1)*rand-rand_target_amplitude(1);
+        rand_yPos = 2*rand_target_amplitude(2)*rand-rand_target_amplitude(1);
+        rand_zPos = rand_target_amplitude(3)*rand + 1;
+        vrep.simxSetObjectPosition(clientID,quad_target,-1,[rand_xPos rand_yPos rand_zPos],vrep.simx_opmode_oneshot);
     end
 end
 
