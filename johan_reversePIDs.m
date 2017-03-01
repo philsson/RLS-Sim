@@ -44,6 +44,7 @@ Td_find(4) = constants(2).a3*T(4)*((L/T(4))^constants(2).b3);
 
 
 Old_Td = Td_find(1);
+index = 1;
 
 for i = 1:4
     
