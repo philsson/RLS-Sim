@@ -5,35 +5,38 @@ nav_heading_threshold = 0.4; % The distance required for the heading to be set (
 follow_target = true;        % Follow the position of the green boll 
 
 use_philips_rls = false;      % RLS phillip
-apply_evo_freq = 100;        % in milliseconds (hur ofta pid tuninge rules ska tillämpas)
+apply_evo_freq = 200;        % in milliseconds (hur ofta pid tuninge rules ska tillämpas)
+apply_evo_first_offset = 0;
 
 calcISE = true;             % If this is true then we will log "ISE_samples" many iterations and calculate the ISE (mean error).
-ISE_samples = 500;        % Hur många iterationer simuleringen kör
+ISE_samples = 1500;        % Hur många iterationer simuleringen kör
 
 global stop_on_imaginary_numbers;       % Säger sig själv
 stop_on_imaginary_numbers = false;
 
 %                   X(roll)   Y(pitch)      Z(yaw)
-logs_enabled   =  [  false      false       true]; % Enable log
-step_enabled   =  [  false      false       true]; % Didact Delta, korrigerar set points, fjärkontroll och görna kula eller step rerefernser
+logs_enabled    =  [  true      true       true]; % Enable log
+step_enabled    =  [  false      false       false]; % Didact Delta, korrigerar set points, fjärkontroll och görna kula eller step rerefernser
+impulse_enabled =  [  false     false      false];
 
-adapt_enabled  =  [  true      true       true]; % RLS startas tillsammans med tuning reglerna men appliceras inte
-apply_evo      =  [  false      false       true]; % Tillämpar tuning reglerna under realtid
+adapt_enabled   =  [  true      true       true]; % RLS startas tillsammans med tuning reglerna men appliceras inte
+apply_evo       =  [  true      true       true]; % Tillämpar tuning reglerna under realtid
 
-rand_RLS_data  =  [  true      true       true]; % If false then its loaded from files
-save_RLS_data  =  [  true      true       true]; % Vikterna för RLS data sparas (obs måste skrivas i command window först)
-log_PID_evo    =  [  false      false       true]; % Logar pidarna
+rand_RLS_data   =  [  false      false       false]; % If false then its loaded from files
+save_RLS_data   =  [  true      true       true]; % Vikterna för RLS data sparas (obs måste skrivas i command window först)
+log_PID_evo     =  [  true      true       true]; % Loggar pidarna
 
 freq_resp_test =  [ false     false     false]; % Overwrides the control signal and induces a sine wave
 
-freq_resp_params = [ 0.1 20 ]; %  [Amplitude Frequency] Freq in hz
+freq_resp_params = [ 0.1 0.5 ]; %  [Amplitude Frequency] Freq in hz
 
 rand_steps = false; % if enabled steps will be random in time and amplitude constrained by the next two variables
-step_amplitude   = 30;  % Rotational rate to give as target value
-step_interval_ms = 1000; % Needs LDM to work. Revise implementation (in run_control)
+step_amplitude   = 5;  % Rotational rate to give as target value
+step_interval_ms = 500; % Needs LDM to work. Revise implementation (in run_control)
+impulse_amplitude = 0.5; % On the control signal
 rand_target = false;
 rand_target_amplitude = [2 2 2]; % 
-smooth_moving_target = false;
+smooth_moving_target = true;
 
 % plot settings
 plot_FOPDT = false;
@@ -50,8 +53,13 @@ joy_rate = 100; throttle_rate = 1; % Rc rate på radion
 %------------------------------- END CONFIG ------------------------------%
 
 %--- Workspace variables
+% delta time for simulation. Will be updated in main loop
+global dt;
+%dt = 0.010;
+dt = 0.025;
+
 time_fraction = 1; % for rand step. Desides how much of the time step is used. Initialized 1
-time_since_last_step = 0; % Actually interations
+time_since_last_step = step_interval_ms*dt*1000; % Actually interations
 step_sign = 1;
 
 
@@ -80,12 +88,15 @@ for i=1:3
                 case 1
                     disp('loading data from file for x-axis')
                     rls_data(1) = load(rlsfileX);
+                    rls_data(1).error = 0;
                 case 2
                     disp('loading data from file for y-axis')
                     rls_data(2) = load(rlsfileY);
+                    rls_data(2).error = 0;
                 case 3
                     disp('loading data from file for z-axis')
                     rls_data(3) = load(rlsfileZ);
+                    rls_data(3).error = 0;
                 otherwise
                     disp('no data available')
             end
@@ -124,36 +135,36 @@ if log_PID_evo(3) && logs_enabled(3)
 end
 
 
+
+
 if use_joystick
     joy = vrjoystick(1);
 end
 
 if calcISE
     if logs_enabled(1)
-        xLOG = zeros(3,ISE_samples);
+        xLOG = zeros(4,ISE_samples);
         MISEx = zeros(1,ISE_samples);
         TotMISEx = 0;
         rls(1).out = zeros(1,ISE_samples);
     end
     if logs_enabled(2)
-        yLOG = zeros(3,ISE_samples);
+        yLOG = zeros(4,ISE_samples);
         MISEy = zeros(1,ISE_samples);
         TotMISEy = 0;
         rls(2).out = zeros(1,ISE_samples);
     end
     if logs_enabled(3)
-        zLOG = zeros(3,ISE_samples);
+        zLOG = zeros(4,ISE_samples);
         MISEz = zeros(1,ISE_samples);
         TotMISEz = 0;
         rls(3).out = zeros(1,ISE_samples);
     end
-    U = zeros(3,ISE_samples);
+    U = zeros(4,ISE_samples);
+    gyro_derivatives = zeros(3);
 end
 
-% delta time for simulation. Will be updated in main loop
-global dt;
-%dt = 0.010;
-dt = 0.025;
+
 
 %converting it to iterations
 apply_evo_freq = (apply_evo_freq/1000)/dt;
@@ -198,7 +209,7 @@ global pid_data;
 pid_data = struct(... %alt |   p_x | p_y | v_x |  v_y |  a_roll | a_pitch | compass | g_roll | g_pitch | g_yaw
     'Kp',             {0.3,    2.5,  2.5,  1.0,   1.0,   2.2,     2.2,      5,        0.0013,  0.0025,   0.05},...
     'Ki',             {0,      0,    0,    0,     0,     0,       0,        0,        0.0001,  0.0001,   0.004},...
-    'Kd',             {0.3,    6,    6,    1,     1,     0,       0,        0,        0.0001,  0.0001,   0.00051},...
+    'Kd',             {0.3,    4,    4,    2,     2,     0,       0,        0,        0.0001,  0.0001,   0.00051},...
     'integral',       {0,      0,    0,    0,     0,     0,       0,        0,        0,       0,        0},...
     'i_max',          {100,    100,  100,  100,   100,   100,     100,      100,      100,     100,      100},...
     'e',              {0,      0,    0,    0,     0,     0,       0,        0,        0,       0,        0},...
@@ -208,9 +219,9 @@ pid_data = struct(... %alt |   p_x | p_y | v_x |  v_y |  a_roll | a_pitch | comp
 
 % Zirgel Niclos method
 % Z-axis Mindre Tu ger mindre D men större I
-pid_data(pd_index.g_yaw).Kp = 0.0294%00482;% 0.095 is Ku
-pid_data(pd_index.g_yaw).Ki =  0.2941%.5588%.2891;
-pid_data(pd_index.g_yaw).Kd = 7.3529e-04%588;
+%pid_data(pd_index.g_yaw).Kp = 0.0294%00482;% 0.095 is Ku
+%pid_data(pd_index.g_yaw).Ki =  0.2941%.5588%.2891;
+%pid_data(pd_index.g_yaw).Kd = 7.3529e-04%588;
 
 % Array of setpoints. Indexed by for ex "set_points(pd_index.roll)"
 set_points  = zeros(1,length(fieldnames(pd_index)));

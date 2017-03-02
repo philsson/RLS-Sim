@@ -41,6 +41,12 @@ elseif isnan(old_pos)
     old_pos = [0 0];
 end
 
+if ~(exist('old_gyro_data','var'))
+    old_gyro_data = [0 0 0];
+elseif isnan(old_pos)
+    old_gyro_data = [0 0 0];
+end
+
 % Import to "states"
 states(pd_index.height)  = quad_pos(3);
 states(pd_index.p_x)     = quad_pos(1);
@@ -61,6 +67,14 @@ end
 
 % log old position for velocities
 old_pos = [quad_pos(1), quad_pos(2)];
+
+if loop_counter > 1
+    for i = 1:3
+        gyro_derivatives(i) = (states(pd_index.g_roll -1 +i) - old_gyro_data(i))/dt;
+        old_gyro_data(i) = states(pd_index.g_roll -1 +i);
+    end
+end
+
 
 %Joystick
 if use_joystick

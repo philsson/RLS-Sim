@@ -10,7 +10,14 @@ Kd = 0.00051;
 Kp = pid_data(pd_index.g_roll).Kp
 Ki = pid_data(pd_index.g_roll).Ki
 Kd = pid_data(pd_index.g_roll).Kd
- 
+%%
+Kp = pid_data(pd_index.g_pitch).Kp
+Ki = pid_data(pd_index.g_pitch).Ki
+Kd = pid_data(pd_index.g_pitch).Kd
+%%
+ Kp = pid_data(pd_index.g_yaw).Kp
+Ki = pid_data(pd_index.g_yaw).Ki
+Kd = pid_data(pd_index.g_yaw).Kd
 %%
 rls_data_from_reversedPID = reversePIDs(Kp,Ki,Kd,0)
 

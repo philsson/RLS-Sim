@@ -65,7 +65,7 @@ clear;
             getSensors;
            
             % Now we see the result of previouse actuation
-            logData;
+           
             
             %set_points
             %states
@@ -97,6 +97,8 @@ clear;
             if stop_sim % Set in "logData" after the amount of samples is reached
                 break;
             end
+            
+             logData;
             
 
         end

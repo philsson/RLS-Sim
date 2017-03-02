@@ -20,7 +20,7 @@ for i=1:3
             end
         end
 
-        if (apply_evo(i) && (mod(loop_counter,apply_evo_freq) == 0))
+        if (apply_evo(i) && (mod(loop_counter,apply_evo_freq) == 0) && apply_evo_first_offset*dt/1000 > loop_counter)
             % TODO: This is just a quickfix. These numbers should NOT be
             % imaginary
             PID_Values = real(PID_Values);

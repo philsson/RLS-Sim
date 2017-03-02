@@ -161,12 +161,14 @@ outputs(pd_index.g_roll)  = PID_CONTROLLER(pd_index.g_roll);
 outputs(pd_index.g_pitch) = PID_CONTROLLER(pd_index.g_pitch);
 outputs(pd_index.g_yaw)   = PID_CONTROLLER(pd_index.g_yaw);
 
+if impulse_enabled(1) || impulse_enabled(2) || impulse_enabled(3)
+    outputs(pd_index.g_roll:pd_index.g_yaw) = [0 0 0];
+end
 for i = 1:3
     if freq_resp_test(i)
         outputs(pd_index.g_roll -1 +i) = sin_generator(freq_resp_params(1),freq_resp_params(2),loop_counter,dt);
     end
+    if impulse_enabled(i) && loop_counter == 100
+        outputs(pd_index.g_roll -1 +i) = impulse_amplitude;
+    end
 end
-
-
-
-

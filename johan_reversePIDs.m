@@ -95,7 +95,9 @@ if (rls_data.weights(1) >= 1)
     rls_data.weights(1) = 0.9999;
     disp('rls weights(1) was above 1 at initialization!')
 end
-
+if (rls_data.weights(2) <= 0)
+    rls_data.weights(2) = 0.0001;
+end
 
 
 end

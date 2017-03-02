@@ -12,7 +12,7 @@ global stop_sim;
 %disp(['loop counter: ', num2str(loop_counter)])
 if (calcISE && loop_counter <= ISE_samples && loop_counter ~= 0 && ~stop_sim)
     if logs_enabled(1)
-        xLOG(1:3,loop_counter) = [set_points(pd_index.g_roll) states(pd_index.g_roll) pid_data(pd_index.g_roll).e];
+        xLOG(1:4,loop_counter) = [set_points(pd_index.g_roll) states(pd_index.g_roll) pid_data(pd_index.g_roll).e gyro_derivatives(1)];
         if loop_counter > 1
             if step_enabled(1)
                 MISEx(loop_counter) = MISE(set_points(pd_index.g_roll),states(pd_index.g_roll),MISEx(loop_counter-1),time_since_last_step+1);
@@ -27,7 +27,7 @@ if (calcISE && loop_counter <= ISE_samples && loop_counter ~= 0 && ~stop_sim)
         %end
     end
     if logs_enabled(2)
-        yLOG(1:3,loop_counter) = [set_points(pd_index.g_pitch) states(pd_index.g_pitch) pid_data(pd_index.g_pitch).e];
+        yLOG(1:4,loop_counter) = [set_points(pd_index.g_pitch) states(pd_index.g_pitch) pid_data(pd_index.g_pitch).e gyro_derivatives(2)];
         if loop_counter > 1
             if step_enabled(2)
                 MISEy(loop_counter) = MISE(set_points(pd_index.g_pitch),states(pd_index.g_pitch),MISEy(loop_counter-1),time_since_last_step+1);
@@ -41,7 +41,7 @@ if (calcISE && loop_counter <= ISE_samples && loop_counter ~= 0 && ~stop_sim)
         %end
     end
     if logs_enabled(3)
-        zLOG(1:3,loop_counter) = [set_points(pd_index.g_yaw) states(pd_index.g_yaw) pid_data(pd_index.g_yaw).e];
+        zLOG(1:4,loop_counter) = [set_points(pd_index.g_yaw) states(pd_index.g_yaw) pid_data(pd_index.g_yaw).e gyro_derivatives(3)];
         if loop_counter > 1
             if step_enabled(3)
                 MISEz(loop_counter) = MISE(set_points(pd_index.g_yaw),states(pd_index.g_yaw),MISEz(loop_counter-1),time_since_last_step+1);
@@ -66,8 +66,11 @@ elseif ((calcISE && loop_counter > ISE_samples) || stop_sim)
     step_size = step_interval_ms/(1000*dt);
     if logs_enabled(1)
         fig_xLOG = figure;
+        hold on
         figure(fig_xLOG);
         plot(xLOG(1:2,1:loop_counter-1)');
+      
+        hold off
         title('xLOG')
         
         if plot_MISE %&& step_enabled(1)
@@ -80,7 +83,10 @@ elseif ((calcISE && loop_counter > ISE_samples) || stop_sim)
     if logs_enabled(2)
         fig_yLOG = figure;
         figure(fig_yLOG);
+        hold on
         plot(yLOG(1:2,1:loop_counter-1)');
+
+        hold off
         title('yLOG')
          
         if plot_MISE %&& step_enabled(2)
@@ -93,7 +99,10 @@ elseif ((calcISE && loop_counter > ISE_samples) || stop_sim)
     if logs_enabled(3)
         fig_zLOG = figure;
         figure(fig_zLOG);
+        hold on
         plot(zLOG(1:2,1:loop_counter-1)');
+
+        hold off
         title('zLOG')
          
         if plot_MISE% && step_enabled(3)
@@ -177,7 +186,7 @@ if (loop_counter ~= 0)
     % Om vi kör Johans RLS
     %if plot_RLS
     for i = 1:3
-        if logs_enabled(i)
+        if logs_enabled(i) && loop_counter > 1
             %rls(i).weights(1:rls_data(i).complexity,loop_counter) = rls_data(i).weights;
             if ~use_philips_rls
 
@@ -227,7 +236,8 @@ if stop_sim
     hold on
     grid on
     plot(rls(1).out(1:loop_counter-1)');
-    legend('r','y','y_{rls}')
+    %plot(xLOG(4,1:loop_counter-1)');
+    legend('r','y','y_{rls}')%,'y_d')
     hold off
   end
     
@@ -236,7 +246,8 @@ if stop_sim
     hold on
     grid on
     plot(rls(2).out(1:loop_counter-1)');
-    legend('r','y','y_{rls}')
+    %plot(yLOG(4,1:loop_counter-1)');
+    legend('r','y','y_{rls}')%,'y_d')
     hold off
   end
     
@@ -246,7 +257,8 @@ if stop_sim
     hold on
     grid on
     plot(rls(3).out(1:loop_counter-1)');
-    legend('r','y','y_{rls}')
+    %plot(zLOG(4,1:loop_counter-1)');
+    legend('r','y','y_{rls}')%,'y_d')
     hold off
   end
 end

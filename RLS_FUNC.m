@@ -13,7 +13,7 @@ function [ rls_data] = RLS_FUNC(y, u, rls_data)
 % -- RLS  --- 
 
 % Forgetting factor
-my = 1;
+my = 0.999;
 
 
 rls_data.error = y - rls_data.fi'*rls_data.weights;
@@ -23,7 +23,7 @@ b = my + rls_data.fi'*rls_data.V*rls_data.fi;
 % TODO: inv(b) can just be 1/b. Less computational heavy. As it is a scalar
 rls_data.V = (1/my)*rls_data.V - inv(b)*rls_data.V*rls_data.fi*rls_data.fi'*rls_data.V;
 
-%rls_data.
+%rls_data.K = rls_data.V*rls_data.fi;
 K = rls_data.V*rls_data.fi;
 
 %rls_data.weights = rls_data.weights + rls_data.K*rls_data.error;
