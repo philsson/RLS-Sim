@@ -14,6 +14,7 @@ function [ PID_Values ] = Get_Tuning_Parameters( FOPDT_data, L )
     end
 
     tau = L/T;
+    %tau = L/max(T,dt); % På förslag av Alexander, men fungerade inge bra.
 
     if tau <= 1
 
