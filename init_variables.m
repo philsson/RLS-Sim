@@ -1,27 +1,28 @@
 %----------------------------- CONFIG SECTION ----------------------------%
 
-adjust_heading = false;       % Heading will be adjust to the trajectory (vrider nosen mot gröna bollen true/false)
+adjust_heading = true;       % Heading will be adjust to the trajectory (vrider nosen mot gröna bollen true/false)
 nav_heading_threshold = 0.4; % The distance required for the heading to be set (avstånd från grön kula)
-follow_target = false;        % Follow the position of the green boll 
+follow_target = true;        % Follow the position of the green boll 
 
 use_philips_rls = false;      % RLS phillip
 apply_evo_freq = 100;        % in milliseconds (hur ofta pid tuninge rules ska tillämpas)
 
 calcISE = true;             % If this is true then we will log "ISE_samples" many iterations and calculate the ISE (mean error).
-ISE_samples = 1000;        % Hur många iterationer simuleringen kör
+ISE_samples = 500;        % Hur många iterationer simuleringen kör
 
 global stop_on_imaginary_numbers;       % Säger sig själv
 stop_on_imaginary_numbers = false;
 
 %                   X(roll)   Y(pitch)      Z(yaw)
 logs_enabled   =  [  false      false       true]; % Enable log
-step_enabled   =  [  false      false       false]; % Didact Delta, korrigerar set points, fjärkontroll och görna kula eller step rerefernser
+step_enabled   =  [  false      false       true]; % Didact Delta, korrigerar set points, fjärkontroll och görna kula eller step rerefernser
 
 adapt_enabled  =  [  true      true       true]; % RLS startas tillsammans med tuning reglerna men appliceras inte
-apply_evo      =  [  true      true       false]; % Tillämpar tuning reglerna under realtid
-rand_RLS_data  =  [  false      false       false]; % If false then its loaded from files
+apply_evo      =  [  false      false       true]; % Tillämpar tuning reglerna under realtid
+
+rand_RLS_data  =  [  true      true       true]; % If false then its loaded from files
 save_RLS_data  =  [  true      true       true]; % Vikterna för RLS data sparas (obs måste skrivas i command window först)
-log_PID_evo    =  [  true      true       true]; % Logar pidarna
+log_PID_evo    =  [  false      false       true]; % Logar pidarna
 
 freq_resp_test =  [ false     false     false]; % Overwrides the control signal and induces a sine wave
 
@@ -29,7 +30,7 @@ freq_resp_params = [ 0.1 20 ]; %  [Amplitude Frequency] Freq in hz
 
 rand_steps = false; % if enabled steps will be random in time and amplitude constrained by the next two variables
 step_amplitude   = 30;  % Rotational rate to give as target value
-step_interval_ms = 10000; % Needs LDM to work. Revise implementation (in run_control)
+step_interval_ms = 1000; % Needs LDM to work. Revise implementation (in run_control)
 rand_target = false;
 rand_target_amplitude = [2 2 2]; % 
 smooth_moving_target = false;
@@ -41,7 +42,7 @@ plot_MISE = true;
 
 % Joystick config. 
 % INFO: If sticks are centered normal behaviour will resume
-use_joystick = true;         % If enabled joystick can be used
+use_joystick = false;         % If enabled joystick can be used
 joy_gyro = true;             % Override the gyro output with RC
 joy_throttle = true;         % Override throttle with RC
 joy_rate = 100; throttle_rate = 1; % Rc rate på radion 

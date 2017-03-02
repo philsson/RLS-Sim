@@ -12,13 +12,25 @@ function [ rls_data] = RLS_FUNC(y, u, rls_data)
 
 % -- RLS  --- 
 
-b = 1 + rls_data.fi'*rls_data.V*rls_data.fi;
-rls_data.weights = rls_data.weights + rls_data.K*rls_data.error;
-rls_data.K = rls_data.V*rls_data.fi;
-rls_data.error = y - rls_data.fi'*rls_data.weights;
-rls_data.V = rls_data.V - inv(b)*rls_data.V*rls_data.fi*rls_data.fi'*rls_data.V;
+% Forgetting factor
+my = 1;
 
-        %inv kan skrivas som 1/b då b är en skalär
+
+rls_data.error = y - rls_data.fi'*rls_data.weights;
+
+b = my + rls_data.fi'*rls_data.V*rls_data.fi;
+
+% TODO: inv(b) can just be 1/b. Less computational heavy. As it is a scalar
+rls_data.V = (1/my)*rls_data.V - inv(b)*rls_data.V*rls_data.fi*rls_data.fi'*rls_data.V;
+
+%rls_data.
+K = rls_data.V*rls_data.fi;
+
+%rls_data.weights = rls_data.weights + rls_data.K*rls_data.error;
+rls_data.weights = rls_data.weights + K*rls_data.error;
+
+
+
 
 %-- Update fi values ---
 y_in = circshift(rls_data.fi(1:(length(rls_data.fi))/2),1)';
@@ -33,6 +45,10 @@ rls_data.fi = [y_in u_in]';
 
 if (rls_data.weights(1) >= 1)
     rls_data.weights(1) = 0.9999;
+end
+
+if (rls_data.weights(2) <= 0)
+    rls_data.weights(2) = 0.0001;
 end
 
 rls_data.RlsOut = rls_data.fi'*rls_data.weights;

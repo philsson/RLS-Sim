@@ -3,6 +3,7 @@ function [ PID_Values ] = Get_Tuning_Parameters( FOPDT_data, L )
     % used to stop simulation on error
     global stop_sim;
     global stop_on_imaginary_numbers;
+    global dt;
     stop = false;
 
     T = FOPDT_data(1);

@@ -18,9 +18,11 @@ if (0) % Johans approach
 else
     
     rls_data.weights = ones(1,rls_data.complexity)'*0.5;
-    rls_data.V = ones(rls_data.complexity,rls_data.complexity);
-    rls_data.fi = zeros(1,rls_data.complexity)';     
-    rls_data.K = -ones(1,rls_data.complexity)'*1e10;  
+    rls_data.V = eye(rls_data.complexity,rls_data.complexity)*10e10;%1e10;
+    rls_data.fi = zeros(1,rls_data.complexity)';   
+    
+    % 
+   % rls_data.K = -ones(1,rls_data.complexity)';  
 
     
 end
