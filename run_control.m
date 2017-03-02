@@ -14,7 +14,7 @@ if (follow_target)
     set_points(pd_index.p_x)    = quad_target_pos(1);
     set_points(pd_index.p_y)    = quad_target_pos(2);
 else
-    set_points(pd_index.height) = 0.5;
+    set_points(pd_index.height) = 1;
 end
 
 pid_data(pd_index.height).e = set_points(pd_index.height)   -   states(pd_index.height);
@@ -127,19 +127,28 @@ if (time_since_last_step*dt*1000 > time_fraction*step_interval_ms)
                     time_fraction = rand;
 
                 else
-                    set_points(pd_index.g_yaw - 3 + i) = step_sign*step_amplitude;
+                    set_points(pd_index.g_yaw - 3 + i) = step_sign*step_amplitude; 
                     time_fraction = 1;
                 end
         end
     end
-    if rand_target
+    if (rand_target && follow_target)
         rand_xPos = 2*rand_target_amplitude(1)*rand-rand_target_amplitude(1);
         rand_yPos = 2*rand_target_amplitude(2)*rand-rand_target_amplitude(1);
         rand_zPos = rand_target_amplitude(3)*rand + 1;
+        %green ball move command in v-rep
         vrep.simxSetObjectPosition(clientID,quad_target,-1,[rand_xPos rand_yPos rand_zPos],vrep.simx_opmode_oneshot);
     end
 end
 
+% Smooth moving target
+if (smooth_moving_target && follow_target)
+    
+    smooth_xPos = 2*rand_target_amplitude(1)*abs(sin(loop_counter/175))^2*abs(cos(loop_counter/450))-rand_target_amplitude(1);
+    smooth_yPos = 2*rand_target_amplitude(2)*abs(sin(loop_counter/250))*abs(cos(loop_counter/333))^3-rand_target_amplitude(1);
+    smooth_zPos = rand_target_amplitude(3)*abs(cos(loop_counter/1000)) + 1;
+    vrep.simxSetObjectPosition(clientID,quad_target,-1,[smooth_xPos smooth_yPos smooth_zPos],vrep.simx_opmode_oneshot);
+end
 
 
 pid_data(pd_index.g_roll).e     = set_points(pd_index.g_roll)       -   states(pd_index.g_roll);
@@ -151,6 +160,12 @@ pid_data(pd_index.g_yaw).e      = set_points(pd_index.g_yaw)        -   states(p
 outputs(pd_index.g_roll)  = PID_CONTROLLER(pd_index.g_roll);
 outputs(pd_index.g_pitch) = PID_CONTROLLER(pd_index.g_pitch);
 outputs(pd_index.g_yaw)   = PID_CONTROLLER(pd_index.g_yaw);
+
+for i = 1:3
+    if freq_resp_test(i)
+        outputs(pd_index.g_roll -1 +i) = sin_generator(freq_resp_params(1),freq_resp_params(2),loop_counter,dt);
+    end
+end
 
 
 

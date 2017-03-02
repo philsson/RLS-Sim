@@ -15,6 +15,7 @@ clear;
     
     %global loop_counter;
     loop_counter = 0;
+    sim_progress = 0;
     global stop_sim;
     stop_sim = false;
     
@@ -40,7 +41,7 @@ clear;
         %better call it once before
         getSensors;
         
-        if (rand_target)
+        if (rand_target && follow_target)
             %vrep.simxSetObjectPosition(clientID,quad_target,-1,[-1 -1 1],vrep.simx_opmode_oneshot);
             vrep.simxSetObjectPosition(clientID,quad_target,-1,[2*rand-2 2*rand-2 rand+1],vrep.simx_opmode_oneshot);
         end
@@ -49,6 +50,13 @@ clear;
         %for i=0:300
         while (1)
         
+            % Print progress in %
+            if (~mod(loop_counter,ISE_samples/10))
+                disp(sprintf('Simulation progress: %d%%',sim_progress))
+                sim_progress = sim_progress + 10;
+            end
+            
+            
             %disp('Press a key to step the simulation!');
             %pause;
             
@@ -89,6 +97,8 @@ clear;
             if stop_sim % Set in "logData" after the amount of samples is reached
                 break;
             end
+            
+
         end
         
         if (loop_counter < ISE_samples)
@@ -105,6 +115,7 @@ clear;
         disp('run "saveRLSdata" to save RLS data if it was pleasant');
         %saveRLSdata; % We might not always want to run this
     
+
     else
         disp('Failed connecting to remote API server');
     end

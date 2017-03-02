@@ -7,7 +7,7 @@ function [ motors ] = motormixer( R,P,Y,T )
     global outputs;
         
     % Upper motor limit
-    motors_max = 2;
+    motors_max = 3;
     % Check how much the combined output wants to be
     
 
@@ -22,6 +22,9 @@ function [ motors ] = motormixer( R,P,Y,T )
     % 
     motors = [R P Y T]*mixer;
 
+    % Test as if we had battery sag
+    %motors = [R*5 P Y T]*mixer;
+    
     global motorLimitReached;
     floor = false;
     roof = false;
@@ -49,10 +52,12 @@ function [ motors ] = motormixer( R,P,Y,T )
     if roof
 
         combined_output = abs(R) + abs(P) + abs(Y) + T;
-        outputs(pd_index.g_roll) = (R / combined_output) * motors_max;
-        outputs(pd_index.g_pitch) = (P / combined_output) * motors_max;
-        outputs(pd_index.g_yaw) = (Y / combined_output) * motors_max;
+        
+        outputs(pd_index.g_roll) = R * (motors_max / combined_output);
+        outputs(pd_index.g_pitch) = P * (motors_max / combined_output);
+        outputs(pd_index.g_yaw) = Y * (motors_max / combined_output);
     end  
+
     
 end
 

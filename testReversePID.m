@@ -6,7 +6,11 @@ global dt;
 Kp = 0.05;
 Ki = 0.004;
 Kd = 0.00051;
-
+%% From roll
+Kp = pid_data(pd_index.g_roll).Kp
+Ki = pid_data(pd_index.g_roll).Ki
+Kd = pid_data(pd_index.g_roll).Kd
+ 
 %%
 rls_data_from_reversedPID = reversePIDs(Kp,Ki,Kd,0)
 
@@ -18,3 +22,9 @@ Get_Tuning_Parameters(FOPDT_ReversedData,dt/2)
 
 %% to save these values to file
 rls_data(3).weights = rls_data_from_reversedPID.weights;
+
+
+% Anteckningar
+% Vikterna [ 0.9 1650 ] testades fram manuelt för roll och gav riktigt bra
+% startvärden, snarlika de manuellt tunade PID'arna
+% Get_Tuning_Parameters(Get_FOPDT_Data([0.9 1650],dt),dt/2)

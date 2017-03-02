@@ -1,8 +1,9 @@
 %----------------------------- CONFIG SECTION ----------------------------%
 
-adjust_heading = true;       % Heading will be adjust to the trajectory (vrider nosen mot gröna bollen true/false)
+adjust_heading = false;       % Heading will be adjust to the trajectory (vrider nosen mot gröna bollen true/false)
 nav_heading_threshold = 0.4; % The distance required for the heading to be set (avstånd från grön kula)
-follow_target = true;        % Follow the position of the green boll 
+follow_target = false;        % Follow the position of the green boll 
+
 use_philips_rls = false;      % RLS phillip
 apply_evo_freq = 100;        % in milliseconds (hur ofta pid tuninge rules ska tillämpas)
 
@@ -13,20 +14,25 @@ global stop_on_imaginary_numbers;       % Säger sig själv
 stop_on_imaginary_numbers = false;
 
 %                   X(roll)   Y(pitch)      Z(yaw)
-logs_enabled  =  [  true      true       true]; % Enable log
-step_enabled  =  [  false      false       false]; % Didact Delta, korrigerar set points, fjärkontroll och görna kula eller step rerefernser
+logs_enabled   =  [  false      false       true]; % Enable log
+step_enabled   =  [  false      false       false]; % Didact Delta, korrigerar set points, fjärkontroll och görna kula eller step rerefernser
 
-adapt_enabled =  [  true      true       true]; % RLS startas tillsammans med tuning reglerna men appliceras inte
-rand_RLS_data =  [  true      true       false]; % If false then its loaded from files
-save_RLS_data =  [  true      false       true]; % Vikterna för RLS data sparas (obs måste skrivas i command window först)
-log_PID_evo   =  [  true      true       true]; % Logar pidarna
-apply_evo     =  [  false      false       true]; % Tillämpar tuning reglerna under realtid
+adapt_enabled  =  [  true      true       true]; % RLS startas tillsammans med tuning reglerna men appliceras inte
+apply_evo      =  [  true      true       false]; % Tillämpar tuning reglerna under realtid
+rand_RLS_data  =  [  false      false       false]; % If false then its loaded from files
+save_RLS_data  =  [  true      true       true]; % Vikterna för RLS data sparas (obs måste skrivas i command window först)
+log_PID_evo    =  [  true      true       true]; % Logar pidarna
+
+freq_resp_test =  [ false     false     false]; % Overwrides the control signal and induces a sine wave
+
+freq_resp_params = [ 0.1 20 ]; %  [Amplitude Frequency] Freq in hz
 
 rand_steps = false; % if enabled steps will be random in time and amplitude constrained by the next two variables
-step_amplitude   = 60;  % Rotational rate to give as target value
-step_interval_ms = 5000; % Needs LDM to work. Revise implementation (in run_control)
-rand_target = true;
-rand_target_amplitude = [4 4 2]; % 
+step_amplitude   = 30;  % Rotational rate to give as target value
+step_interval_ms = 10000; % Needs LDM to work. Revise implementation (in run_control)
+rand_target = false;
+rand_target_amplitude = [2 2 2]; % 
+smooth_moving_target = false;
 
 % plot settings
 plot_FOPDT = false;
@@ -35,7 +41,7 @@ plot_MISE = true;
 
 % Joystick config. 
 % INFO: If sticks are centered normal behaviour will resume
-use_joystick = false;         % If enabled joystick can be used
+use_joystick = true;         % If enabled joystick can be used
 joy_gyro = true;             % Override the gyro output with RC
 joy_throttle = true;         % Override throttle with RC
 joy_rate = 100; throttle_rate = 1; % Rc rate på radion 
@@ -106,13 +112,13 @@ if plot_RLS
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if log_PID_evo(1)
+if log_PID_evo(1) && logs_enabled(1)
     xPIDlog = zeros(3,ISE_samples);
 end
-if log_PID_evo(2)
+if log_PID_evo(2) && logs_enabled(2)
     yPIDlog = zeros(3,ISE_samples);
 end
-if log_PID_evo(3)
+if log_PID_evo(3) && logs_enabled(3)
     zPIDlog = zeros(3,ISE_samples);
 end
 
@@ -124,24 +130,28 @@ end
 if calcISE
     if logs_enabled(1)
         xLOG = zeros(3,ISE_samples);
-        MISEx = 0;
+        MISEx = zeros(1,ISE_samples);
+        TotMISEx = 0;
         rls(1).out = zeros(1,ISE_samples);
     end
     if logs_enabled(2)
         yLOG = zeros(3,ISE_samples);
-        MISEy = 0;
+        MISEy = zeros(1,ISE_samples);
+        TotMISEy = 0;
         rls(2).out = zeros(1,ISE_samples);
     end
     if logs_enabled(3)
         zLOG = zeros(3,ISE_samples);
         MISEz = zeros(1,ISE_samples);
+        TotMISEz = 0;
         rls(3).out = zeros(1,ISE_samples);
     end
+    U = zeros(3,ISE_samples);
 end
 
 % delta time for simulation. Will be updated in main loop
 global dt;
-%dt = 0.05;
+%dt = 0.010;
 dt = 0.025;
 
 %converting it to iterations
@@ -192,9 +202,14 @@ pid_data = struct(... %alt |   p_x | p_y | v_x |  v_y |  a_roll | a_pitch | comp
     'i_max',          {100,    100,  100,  100,   100,   100,     100,      100,      100,     100,      100},...
     'e',              {0,      0,    0,    0,     0,     0,       0,        0,        0,       0,        0},...
     'prev_e',         {0,      0,    0,    0,     0,     0,       0,        0,        0,       0,        0},...
-    'saturation',     {1,      2,    2,    10,    10     50,      50,       90,       2,       2,        1.5},...
+    'saturation',     {1,      2,    2,    25,    25,     50,      50,       90,       1.5,       1.5,        1.5},...
     'filter',         {ASF,     ASF,    ASF,    ASF,    ASF,    ASF,     ASF,      ASF,      ASF,     ASF,      ASF});
 
+% Zirgel Niclos method
+% Z-axis Mindre Tu ger mindre D men större I
+pid_data(pd_index.g_yaw).Kp = 0.0294%00482;% 0.095 is Ku
+pid_data(pd_index.g_yaw).Ki =  0.2941%.5588%.2891;
+pid_data(pd_index.g_yaw).Kd = 7.3529e-04%588;
 
 % Array of setpoints. Indexed by for ex "set_points(pd_index.roll)"
 set_points  = zeros(1,length(fieldnames(pd_index)));
