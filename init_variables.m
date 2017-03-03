@@ -1,42 +1,44 @@
 %----------------------------- CONFIG SECTION ----------------------------%
 
-adjust_heading = true;       % Heading will be adjust to the trajectory (vrider nosen mot gröna bollen true/false)
-nav_heading_threshold = 0.4; % The distance required for the heading to be set (avstånd från grön kula)
-follow_target = true;        % Follow the position of the green boll 
+adjust_heading = true;              % Heading will be adjust to the trajectory (vrider nosen mot gröna bollen true/false)
+nav_heading_threshold = 0.4;        % The distance required for the heading to be set (avstånd från grön kula)
+follow_target = true;               % Follow the position of the green boll 
 
-use_philips_rls = false;      % RLS phillip
-apply_evo_freq = 200;        % in milliseconds (hur ofta pid tuninge rules ska tillämpas)
-apply_evo_first_offset = 0;
+use_philips_rls = false;            % RLS phillip
+apply_evo_freq = 200;               % in milliseconds (hur ofta pid tuninge rules ska tillämpas)
+apply_evo_first_offset = 200;
 
-calcISE = true;             % If this is true then we will log "ISE_samples" many iterations and calculate the ISE (mean error).
-ISE_samples = 1500;        % Hur många iterationer simuleringen kör
+calcISE = true;                     % If this is true then we will log "ISE_samples" many iterations and calculate the ISE (mean error).
+ISE_samples = 300;                  % Hur många iterationer simuleringen kör
 
-global stop_on_imaginary_numbers;       % Säger sig själv
+impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
+
+global stop_on_imaginary_numbers;   % Säger sig själv
 stop_on_imaginary_numbers = false;
 
 %                   X(roll)   Y(pitch)      Z(yaw)
-logs_enabled    =  [  true      true       true]; % Enable log
+logs_enabled    =  [  true      true       true];    % Enable log
 step_enabled    =  [  false      false       false]; % Didact Delta, korrigerar set points, fjärkontroll och görna kula eller step rerefernser
-impulse_enabled =  [  false     false      false];
+impulse_enabled =  [  false     false      true];
 
-adapt_enabled   =  [  true      true       true]; % RLS startas tillsammans med tuning reglerna men appliceras inte
-apply_evo       =  [  true      true       true]; % Tillämpar tuning reglerna under realtid
+adapt_enabled   =  [  true      true       true];    % RLS startas tillsammans med tuning reglerna men appliceras inte
+apply_evo       =  [  true      true       true];    % Tillämpar tuning reglerna under realtid
 
 rand_RLS_data   =  [  false      false       false]; % If false then its loaded from files
-save_RLS_data   =  [  true      true       true]; % Vikterna för RLS data sparas (obs måste skrivas i command window först)
-log_PID_evo     =  [  true      true       true]; % Loggar pidarna
+save_RLS_data   =  [  true      true       true];    % Vikterna för RLS data sparas (obs måste skrivas i command window först)
+log_PID_evo     =  [  true      true       true];    % Loggar pidarna
 
-freq_resp_test =  [ false     false     false]; % Overwrides the control signal and induces a sine wave
+freq_resp_test =  [ false     false     false];      % Overwrides the control signal and induces a sine wave
 
-freq_resp_params = [ 0.1 0.5 ]; %  [Amplitude Frequency] Freq in hz
+freq_resp_params = [ 0.1 0.5 ]; %[Amplitude Frequency] Freq in hz
 
-rand_steps = false; % if enabled steps will be random in time and amplitude constrained by the next two variables
-step_amplitude   = 5;  % Rotational rate to give as target value
-step_interval_ms = 500; % Needs LDM to work. Revise implementation (in run_control)
-impulse_amplitude = 0.5; % On the control signal
+rand_steps = false;             % if enabled steps will be random in time and amplitude constrained by the next two variables
+step_amplitude   = 5;           % Rotational rate to give as target value
+step_interval_ms = 500;         % Needs LDM to work. Revise implementation (in run_control)
+impulse_amplitude = 0.5;        % On the control signal
 rand_target = false;
-rand_target_amplitude = [2 2 2]; % 
-smooth_moving_target = true;
+rand_target_amplitude = [2 2 2]; 
+smooth_moving_target = false;   % f�ljer gr�n boll enligt phillip m�nster
 
 % plot settings
 plot_FOPDT = false;

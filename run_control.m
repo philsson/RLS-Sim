@@ -168,7 +168,7 @@ for i = 1:3
     if freq_resp_test(i)
         outputs(pd_index.g_roll -1 +i) = sin_generator(freq_resp_params(1),freq_resp_params(2),loop_counter,dt);
     end
-    if impulse_enabled(i) && loop_counter == 100
+    if impulse_enabled(i) && loop_counter == impulse_enabled_count
         outputs(pd_index.g_roll -1 +i) = impulse_amplitude;
     end
 end
