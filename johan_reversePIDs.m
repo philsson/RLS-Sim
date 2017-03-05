@@ -86,10 +86,13 @@ rls_data = struct(...
     'weights',      [w(1); w(2)],...      % 
     'V',            [0 0; 0 0],...  %
     'fi',           [0; 0],...      % Can leave empty 
-    'K',            [0; 0],...      % 
     'error',        0,...           % 
     'RlsOut',       0);             % 
 
+% removed field
+% 'K',            [0; 0],...      % 
+
+rls_data.V = eye(rls_data.complexity)*10e10;
 
 if (rls_data.weights(1) >= 1)
     rls_data.weights(1) = 0.9999;
