@@ -77,7 +77,11 @@ elseif ((calcISE && loop_counter > ISE_samples) || stop_sim)
             fig_MISEx = figure;
             figure(fig_MISEx);
             plot(MISEx(step_size:step_size+1:loop_counter-1)');
-            title('MISEx');
+              if step_enabled(1)
+                title('MISEx - Step');
+            else
+                title('MISEx');
+            end
         end  
     end
     if logs_enabled(2)
@@ -93,7 +97,11 @@ elseif ((calcISE && loop_counter > ISE_samples) || stop_sim)
             fig_MISEy = figure;
             figure(fig_MISEy);
             plot(MISEy(step_size:step_size+1:loop_counter-1)');
-            title('MISEy');
+              if step_enabled(2)
+                title('MISEy - Step');
+            else
+                title('MISEy');
+            end
         end
     end
     if logs_enabled(3)
@@ -109,7 +117,11 @@ elseif ((calcISE && loop_counter > ISE_samples) || stop_sim)
             fig_MISEz = figure;
             figure(fig_MISEz);
             plot(MISEz(step_size:step_size+1:loop_counter-1)');
-            title('MISEz');
+            if step_enabled(3)
+                title('MISEz - Step');
+            else
+                title('MISEz');
+            end
         end
     end
   
@@ -186,7 +198,7 @@ if (loop_counter ~= 0)
     % Om vi kör Johans RLS
     %if plot_RLS
     for i = 1:3
-        if logs_enabled(i) && loop_counter > 1
+        if logs_enabled(i) && loop_counter > 0
             %rls(i).weights(1:rls_data(i).complexity,loop_counter) = rls_data(i).weights;
             if ~use_philips_rls
 
@@ -194,6 +206,12 @@ if (loop_counter ~= 0)
                     %rls.fi(1:rls_data(3).complexity,loop_counter) = rls_data(3).fi;
                     %rls.K(1:rls_data(3).complexity,loop_counter) = rls_data(3).K;
                     %rls.error(loop_counter) = rls_data(3).error; 
+                    
+                    rls(i).weights(:,loop_counter) = rls_data(i).weights;
+
+
+                    %rls(i).V(loop_counter) = rls_data(3).V; 
+                    %rls(3).V(1:4,loop_counter) = rls_data(3).V(1:4); 
 
                     rls(i).out(loop_counter) = rls_data(i).RlsOut;
             else
@@ -219,15 +237,16 @@ if stop_sim
 
         % If using Johans RLS
         if ~use_philips_rls
-            plot(rls.V(1:4,1:loop_counter-1)');
-            plot(rls.fi(1:2,1:loop_counter-1)');
-            plot(rls.K(1:2,1:loop_counter-1)');
-            plot(rls.error(1:loop_counter-1)');
+            %plot(rls(3).V(1:4,1:loop_counter-1)');
+            %plot(rls.fi(1:2,1:loop_counter-1)');
+            %plot(rls.K(1:2,1:loop_counter-1)');
+            %plot(rls.error(1:loop_counter-1)');
+            plot(rls(3).weights(1:2,1:loop_counter-1)');
         else
             plot(rls.error(1:loop_counter-1)');
         end
         title('RLS data')
-        legend('w1','w2','V1','V2','V3','V4','fi1','fi2','k1','k2','e');
+        legend('w1','w2'); %,'V1','V2','V3','V4','fi1','fi2','k1','k2','e');
         hold off
     end
     

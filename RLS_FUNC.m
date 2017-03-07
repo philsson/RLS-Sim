@@ -12,8 +12,11 @@ function [ rls_data] = RLS_FUNC(y, u, rls_data)
 
 % -- RLS  --- 
 
+rls_data.RlsOut = rls_data.fi'*rls_data.weights;
+
 % Forgetting factor
-my = 0.999;
+%my = 0.995;
+my = 1;
 
 
 rls_data.error = y - rls_data.fi'*rls_data.weights;
@@ -43,15 +46,17 @@ rls_data.fi = [y_in u_in]';
 
 %-- Update outputs ---
 
+% Needs to be constrained for PIDs not be imaginary numbers
 if (rls_data.weights(1) >= 1)
-    rls_data.weights(1) = 0.9999;
+    rls_data.weights(1) = 0.995;
 end
 
+
+% Needs to be constrained why? TODO: We think negative K values are bad
 if (rls_data.weights(2) <= 0)
     rls_data.weights(2) = 0.0001;
 end
 
-rls_data.RlsOut = rls_data.fi'*rls_data.weights;
 
 
 

@@ -172,3 +172,5 @@ for i = 1:3
         outputs(pd_index.g_roll -1 +i) = impulse_amplitude;
     end
 end
+
+ %outputs(pd_index.g_roll:pd_index.g_yaw) = [0 0 0];

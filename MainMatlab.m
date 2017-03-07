@@ -48,19 +48,29 @@ clear;
         
         % Now step a few times:
         %for i=0:300
+        
+        % DO NOT CHANGE THESE VALUES OR I WILL KILL YOU PERSONALLY!!!
+        setMassAndInertia(clientID, 0.11999999731779,[8e-06 0.000904 0.000904]);
+        
+        %setMassAndInertia(clientID, 0.11999999731779,[4e-06 0.000104 0.00014]);
         while (1)
         
+            if loop_counter == 1000
+                %setMassAndInertia(clientID, 0.15,[16e-06 0.0018 0.003]);
+                disp(['Doubling inertia! Iteration: ' num2str(loop_counter)])
+            end
+            
             % Print progress in %
             if (~mod(loop_counter,ISE_samples/10))
                 disp(sprintf('Simulation progress: %d%%',sim_progress))
                 sim_progress = sim_progress + 10;
             end
-            
+
             
             %disp('Press a key to step the simulation!');
             %pause;
             
-            
+            %getInertia;
             
             getSensors;
            

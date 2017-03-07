@@ -5,11 +5,11 @@ nav_heading_threshold = 0.4;        % The distance required for the heading to b
 follow_target = true;               % Follow the position of the green boll 
 
 use_philips_rls = false;            % RLS phillip
-apply_evo_freq = 200;               % in milliseconds (hur ofta pid tuninge rules ska tillämpas)
-apply_evo_first_offset = 200;
+apply_evo_freq = 100;               % in milliseconds (hur ofta pid tuninge rules ska tillämpas)
+apply_evo_first_offset = 1500;
 
 calcISE = true;                     % If this is true then we will log "ISE_samples" many iterations and calculate the ISE (mean error).
-ISE_samples = 300;                  % Hur många iterationer simuleringen kör
+ISE_samples = 5000;                  % Hur många iterationer simuleringen kör
 
 impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
 
@@ -17,32 +17,33 @@ global stop_on_imaginary_numbers;   % Säger sig själv
 stop_on_imaginary_numbers = false;
 
 %                   X(roll)   Y(pitch)      Z(yaw)
-logs_enabled    =  [  true      true       true];    % Enable log
-step_enabled    =  [  false      false       false]; % Didact Delta, korrigerar set points, fjärkontroll och görna kula eller step rerefernser
-impulse_enabled =  [  false     false      true];
+logs_enabled    =  [  1 1 1 ];    % Enable log
+step_enabled    =  [  0 0 1 ];    % Didact Delta, korrigerar set points, fjärkontroll och görna kula eller step rerefernser
+impulse_enabled =  [  0 0 0 ];
 
-adapt_enabled   =  [  true      true       true];    % RLS startas tillsammans med tuning reglerna men appliceras inte
-apply_evo       =  [  true      true       true];    % Tillämpar tuning reglerna under realtid
+adapt_enabled   =  [  1 1 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
+apply_evo       =  [  0 0 1 ];    % Tillämpar tuning reglerna under realtid
 
-rand_RLS_data   =  [  false      false       false]; % If false then its loaded from files
-save_RLS_data   =  [  true      true       true];    % Vikterna för RLS data sparas (obs måste skrivas i command window först)
-log_PID_evo     =  [  true      true       true];    % Loggar pidarna
+rand_RLS_data   =  [  0 0 0 ];    % If false then its loaded from files
+save_RLS_data   =  [  1 1 1 ];    % Vikterna för RLS data sparas (obs måste skrivas i command window först)
+log_PID_evo     =  [  1 1 1 ];    % Loggar pidarna
 
-freq_resp_test =  [ false     false     false];      % Overwrides the control signal and induces a sine wave
+freq_resp_test  =  [  0 0 0 ];    % Overwrides the control signal and induces a sine wave
+
 
 freq_resp_params = [ 0.1 0.5 ]; %[Amplitude Frequency] Freq in hz
 
 rand_steps = false;             % if enabled steps will be random in time and amplitude constrained by the next two variables
 step_amplitude   = 5;           % Rotational rate to give as target value
-step_interval_ms = 500;         % Needs LDM to work. Revise implementation (in run_control)
+step_interval_ms = 3000;         % Needs LDM to work. Revise implementation (in run_control)
 impulse_amplitude = 0.5;        % On the control signal
 rand_target = false;
 rand_target_amplitude = [2 2 2]; 
-smooth_moving_target = false;   % f�ljer gr�n boll enligt phillip m�nster
+smooth_moving_target = false;   % Follow the green boll in a smooth way
 
 % plot settings
 plot_FOPDT = false;
-plot_RLS = false;
+plot_RLS = true;
 plot_MISE = true;
 
 % Joystick config. 
@@ -64,6 +65,10 @@ time_fraction = 1; % for rand step. Desides how much of the time step is used. I
 time_since_last_step = step_interval_ms*dt*1000; % Actually interations
 step_sign = 1;
 
+% Variables brought from V-Rep
+mass = 0.11999999731779;
+inertiaMatrix = [0.1209 0 0         0 0.1200 0         0 0 0.0009]
+centerOfMass = [0 0 1] % Not used
 
 rlsfileX = 'rlsdataX.mat'; rlsfileY = 'rlsdataY.mat'; rlsfileZ = 'rlsdataZ.mat';
 
@@ -113,8 +118,10 @@ end
 
 %rls
 if plot_RLS
-    %rls.weights = zeros(2,ISE_samples);
-    %rls.V = zeros(4,ISE_samples);
+    for i=1:3
+        rls(i).weights = zeros(2,ISE_samples);
+    end
+    %rls(3).V = zeros(4,ISE_samples);
     %rls.fi = zeros(2,ISE_samples);
     %rls.K = zeros(2,ISE_samples);
     %rls.error = zeros(ISE_samples);
@@ -207,17 +214,15 @@ filter_index = struct(...
 f_cut = 100; % cutt off frequency
 ASF = [0, dt, 1/(2*pi*f_cut)];
 
-global pid_data;
-pid_data = struct(... %alt |   p_x | p_y | v_x |  v_y |  a_roll | a_pitch | compass | g_roll | g_pitch | g_yaw
-    'Kp',             {0.3,    2.5,  2.5,  1.0,   1.0,   2.2,     2.2,      5,        0.0013,  0.0025,   0.05},...
-    'Ki',             {0,      0,    0,    0,     0,     0,       0,        0,        0.0001,  0.0001,   0.004},...
-    'Kd',             {0.3,    4,    4,    2,     2,     0,       0,        0,        0.0001,  0.0001,   0.00051},...
-    'integral',       {0,      0,    0,    0,     0,     0,       0,        0,        0,       0,        0},...
-    'i_max',          {100,    100,  100,  100,   100,   100,     100,      100,      100,     100,      100},...
-    'e',              {0,      0,    0,    0,     0,     0,       0,        0,        0,       0,        0},...
-    'prev_e',         {0,      0,    0,    0,     0,     0,       0,        0,        0,       0,        0},...
-    'saturation',     {1,      2,    2,    25,    25,     50,      50,       90,       1.5,       1.5,        1.5},...
-    'filter',         {ASF,     ASF,    ASF,    ASF,    ASF,    ASF,     ASF,      ASF,      ASF,     ASF,      ASF});
+defaultPIDs;
+
+Manual_PID_Scale = 1.5;
+for i= 3:3
+    pid_data(pd_index.g_roll -1 +i).Kp = pid_data(pd_index.g_roll -1 +i).Kp*Manual_PID_Scale;
+    pid_data(pd_index.g_roll -1 +i).Ki = pid_data(pd_index.g_roll -1 +i).Ki*Manual_PID_Scale;
+    pid_data(pd_index.g_roll -1 +i).Kd = pid_data(pd_index.g_roll -1 +i).Kd*Manual_PID_Scale;
+end
+
 
 % Zirgel Niclos method
 % Z-axis Mindre Tu ger mindre D men större I
