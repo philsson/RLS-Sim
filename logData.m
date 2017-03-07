@@ -195,7 +195,7 @@ if (loop_counter ~= 0)
     end
 
     
-    % Om vi kör Johans RLS
+    % Om vi k??r Johans RLS
     %if plot_RLS
     for i = 1:3
         if logs_enabled(i) && loop_counter > 0
@@ -207,7 +207,7 @@ if (loop_counter ~= 0)
                     %rls.K(1:rls_data(3).complexity,loop_counter) = rls_data(3).K;
                     %rls.error(loop_counter) = rls_data(3).error; 
                     
-                    rls(i).weights(:,loop_counter) = rls_data(i).weights;
+                    %rls(i).weights(:,loop_counter) = rls_data(i).weights;
 
 
                     %rls(i).V(loop_counter) = rls_data(3).V; 
@@ -241,7 +241,7 @@ if stop_sim
             %plot(rls.fi(1:2,1:loop_counter-1)');
             %plot(rls.K(1:2,1:loop_counter-1)');
             %plot(rls.error(1:loop_counter-1)');
-            plot(rls(3).weights(1:2,1:loop_counter-1)');
+            %plot(rls(3).weights(1:2,1:loop_counter-1)');
         else
             plot(rls.error(1:loop_counter-1)');
         end

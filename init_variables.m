@@ -1,31 +1,31 @@
 %----------------------------- CONFIG SECTION ----------------------------%
 
-adjust_heading = true;              % Heading will be adjust to the trajectory (vrider nosen mot gröna bollen true/false)
-nav_heading_threshold = 0.4;        % The distance required for the heading to be set (avstånd från grön kula)
+adjust_heading = true;              % Heading will be adjust to the trajectory (vrider nosen mot gr??na bollen true/false)
+nav_heading_threshold = 0.4;        % The distance required for the heading to be set (avst??nd fr??n gr??n kula)
 follow_target = true;               % Follow the position of the green boll 
 
 use_philips_rls = false;            % RLS phillip
-apply_evo_freq = 100;               % in milliseconds (hur ofta pid tuninge rules ska tillämpas)
-apply_evo_first_offset = 1500;
+apply_evo_freq = 100;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
+apply_evo_first_offset = 300;
 
 calcISE = true;                     % If this is true then we will log "ISE_samples" many iterations and calculate the ISE (mean error).
-ISE_samples = 5000;                  % Hur många iterationer simuleringen kör
+ISE_samples = 8000;                  % Hur m??nga iterationer simuleringen k??r
 
 impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
 
-global stop_on_imaginary_numbers;   % Säger sig själv
+global stop_on_imaginary_numbers;   % S??ger sig sj??lv
 stop_on_imaginary_numbers = false;
 
 %                   X(roll)   Y(pitch)      Z(yaw)
-logs_enabled    =  [  1 1 1 ];    % Enable log
-step_enabled    =  [  0 0 1 ];    % Didact Delta, korrigerar set points, fjärkontroll och görna kula eller step rerefernser
+logs_enabled    =  [  0 0 1 ];    % Enable log
+step_enabled    =  [  0 0 1 ];    % Didact Delta, korrigerar set points, fj??rkontroll och g??rna kula eller step rerefernser
 impulse_enabled =  [  0 0 0 ];
 
 adapt_enabled   =  [  1 1 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
-apply_evo       =  [  0 0 1 ];    % Tillämpar tuning reglerna under realtid
+apply_evo       =  [  0 0 1 ];    % Till??mpar tuning reglerna under realtid
 
-rand_RLS_data   =  [  0 0 0 ];    % If false then its loaded from files
-save_RLS_data   =  [  1 1 1 ];    % Vikterna för RLS data sparas (obs måste skrivas i command window först)
+rand_RLS_data   =  [  1 1 1 ];    % If false then its loaded from files
+save_RLS_data   =  [  1 1 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
 log_PID_evo     =  [  1 1 1 ];    % Loggar pidarna
 
 freq_resp_test  =  [  0 0 0 ];    % Overwrides the control signal and induces a sine wave
@@ -51,7 +51,7 @@ plot_MISE = true;
 use_joystick = false;         % If enabled joystick can be used
 joy_gyro = true;             % Override the gyro output with RC
 joy_throttle = true;         % Override throttle with RC
-joy_rate = 100; throttle_rate = 1; % Rc rate på radion 
+joy_rate = 100; throttle_rate = 1; % Rc rate p?? radion 
 
 %------------------------------- END CONFIG ------------------------------%
 
@@ -83,7 +83,7 @@ for i=1:3
                 disp('temp fix. Setting manual tuning backtracked values')
                 %rls_data(i).weights = [0.8088; 46.2830]
             else
-                [rls_data(i) FOPDT_data(i,1:2)] = init_rand_rls_data();
+                [rls_data(i) FOPDT_data(i,1:2)] = init_rand_rls_data(2);
                 
                 % TODO: Temp fix. Giving "optimal values" (From tuning)
                 %disp('temp fix. Setting manual tuning backtracked values')
@@ -225,7 +225,7 @@ end
 
 
 % Zirgel Niclos method
-% Z-axis Mindre Tu ger mindre D men större I
+% Z-axis Mindre Tu ger mindre D men st??rre I
 %pid_data(pd_index.g_yaw).Kp = 0.0294%00482;% 0.095 is Ku
 %pid_data(pd_index.g_yaw).Ki =  0.2941%.5588%.2891;
 %pid_data(pd_index.g_yaw).Kd = 7.3529e-04%588;

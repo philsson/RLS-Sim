@@ -56,6 +56,10 @@ function [ motors ] = motormixer( R,P,Y,T )
         outputs(pd_index.g_roll) = R * (motors_max / combined_output);
         outputs(pd_index.g_pitch) = P * (motors_max / combined_output);
         outputs(pd_index.g_yaw) = Y * (motors_max / combined_output);
+    else
+        outputs(pd_index.g_roll) = R;
+        outputs(pd_index.g_pitch) = P;
+        outputs(pd_index.g_yaw) = Y;
     end  
 
     

@@ -1,11 +1,11 @@
-function [ rls_data, FOPDT_Data ] = init_rand_rls_data()
+function [ rls_data, FOPDT_Data ] = init_rand_rls_data(complexity)
 %Initialize a random dataset for RLS data
 %   Detailed explanation goes here
 
 global dt;
 % TODO: Where is the forgetting factor. Should this not be ~0.99?
 
-rls_data.complexity = 2;
+rls_data.complexity = complexity;
 
 if (0) % Johans approach
 
@@ -34,7 +34,7 @@ end
     % Denna fanns inte med i Johans init
     rls_data.RlsOut = 0;
     
-    FOPDT_Data = Get_FOPDT_Data(rls_data_weights,dt);%[1 1];
+    FOPDT_Data = Get_FOPDT_Data(rls_data.weights,dt);%[1 1];
 end
 
 

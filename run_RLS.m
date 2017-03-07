@@ -32,9 +32,9 @@ for i=1:3
                 disp('Negative PIDS')
             end
 
-            pid_data(pd_index.compass + i).Kp = keepPositive(PID_Values(1));
-            pid_data(pd_index.compass + i).Ki = keepPositive(PID_Values(2));
-            pid_data(pd_index.compass + i).Kd = keepPositive(PID_Values(3));
+            pid_data(pd_index.compass + i).Kp = keepPositive(PID_Values(1))/10;
+            pid_data(pd_index.compass + i).Ki = keepPositive(PID_Values(2))/10;
+            pid_data(pd_index.compass + i).Kd = keepPositive(PID_Values(3))/10;
         end
     end
 end

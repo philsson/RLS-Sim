@@ -56,7 +56,11 @@ clear;
         while (1)
         
             if loop_counter == 1000
-                %setMassAndInertia(clientID, 0.15,[16e-06 0.0018 0.003]);
+                setMassAndInertia(clientID, 0.12,[8e-06 0.000904 0.003]);
+                disp(['Doubling inertia! Iteration: ' num2str(loop_counter)])
+            end
+            if loop_counter == 3000
+                setMassAndInertia(clientID, 0.12,[8e-06 0.000904 0.012]);
                 disp(['Doubling inertia! Iteration: ' num2str(loop_counter)])
             end
             
