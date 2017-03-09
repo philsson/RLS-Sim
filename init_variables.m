@@ -6,10 +6,10 @@ follow_target = true;               % Follow the position of the green boll
 
 use_philips_rls = false;            % RLS phillip
 apply_evo_freq = 100;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
-apply_evo_first_offset = 300;
+apply_evo_first_offset = 1000;
 
 calcISE = true;                     % If this is true then we will log "ISE_samples" many iterations and calculate the ISE (mean error).
-ISE_samples = 8000;                  % Hur m??nga iterationer simuleringen k??r
+ISE_samples = 20000;                  % Hur m??nga iterationer simuleringen k??r
 
 impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
 
@@ -22,7 +22,7 @@ step_enabled    =  [  0 0 1 ];    % Didact Delta, korrigerar set points, fj??rko
 impulse_enabled =  [  0 0 0 ];
 
 adapt_enabled   =  [  1 1 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
-apply_evo       =  [  0 0 1 ];    % Till??mpar tuning reglerna under realtid
+apply_evo       =  [  0 0 0 ];    % Till??mpar tuning reglerna under realtid
 
 rand_RLS_data   =  [  1 1 1 ];    % If false then its loaded from files
 save_RLS_data   =  [  1 1 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
@@ -34,8 +34,8 @@ freq_resp_test  =  [  0 0 0 ];    % Overwrides the control signal and induces a 
 freq_resp_params = [ 0.1 0.5 ]; %[Amplitude Frequency] Freq in hz
 
 rand_steps = false;             % if enabled steps will be random in time and amplitude constrained by the next two variables
-step_amplitude   = 5;           % Rotational rate to give as target value
-step_interval_ms = 3000;         % Needs LDM to work. Revise implementation (in run_control)
+step_amplitude   = 6;           % Rotational rate to give as target value
+step_interval_ms = 1000;         % Needs LDM to work. Revise implementation (in run_control)
 impulse_amplitude = 0.5;        % On the control signal
 rand_target = false;
 rand_target_amplitude = [2 2 2]; 
@@ -154,18 +154,21 @@ if calcISE
     if logs_enabled(1)
         xLOG = zeros(4,ISE_samples);
         MISEx = zeros(1,ISE_samples);
+        IAEx = zeros(1,ISE_samples);
         TotMISEx = 0;
         rls(1).out = zeros(1,ISE_samples);
     end
     if logs_enabled(2)
         yLOG = zeros(4,ISE_samples);
         MISEy = zeros(1,ISE_samples);
+        IAEy = zeros(1,ISE_samples);
         TotMISEy = 0;
         rls(2).out = zeros(1,ISE_samples);
     end
     if logs_enabled(3)
         zLOG = zeros(4,ISE_samples);
         MISEz = zeros(1,ISE_samples);
+        IAEz = zeros(1,ISE_samples);
         TotMISEz = 0;
         rls(3).out = zeros(1,ISE_samples);
     end
@@ -216,7 +219,9 @@ ASF = [0, dt, 1/(2*pi*f_cut)];
 
 defaultPIDs;
 
-Manual_PID_Scale = 1.5;
+%pid_data(pd_index.g_yaw).saturation = 0.5;
+
+Manual_PID_Scale = 1.0;
 for i= 3:3
     pid_data(pd_index.g_roll -1 +i).Kp = pid_data(pd_index.g_roll -1 +i).Kp*Manual_PID_Scale;
     pid_data(pd_index.g_roll -1 +i).Ki = pid_data(pd_index.g_roll -1 +i).Ki*Manual_PID_Scale;

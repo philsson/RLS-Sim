@@ -48,7 +48,7 @@ rls_data.fi = [y_in u_in]';
 
 % Needs to be constrained for PIDs not be imaginary numbers
 if (rls_data.weights(1) >= 1)
-    rls_data.weights(1) = 0.995;
+    rls_data.weights(1) = 0.9999;
 end
 
 

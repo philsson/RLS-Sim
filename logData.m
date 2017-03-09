@@ -16,8 +16,10 @@ if (calcISE && loop_counter <= ISE_samples && loop_counter ~= 0 && ~stop_sim)
         if loop_counter > 1
             if step_enabled(1)
                 MISEx(loop_counter) = MISE(set_points(pd_index.g_roll),states(pd_index.g_roll),MISEx(loop_counter-1),time_since_last_step+1);
+                IAEx = IAE(set_points(pd_index.g_roll),states(pd_index.g_roll),IAEx(loop_counter-1),time_since_last_step+1);
             else
                 MISEx(loop_counter) = MISE(set_points(pd_index.g_roll),states(pd_index.g_roll),MISEx(loop_counter-1),loop_counter-1);
+                IAEx(loop_counter) = IAE(set_points(pd_index.g_roll),states(pd_index.g_roll),IAEx(loop_counter-1),loop_counter-1);
             end
             TotMISEx =  MISE(set_points(pd_index.g_roll),states(pd_index.g_roll),TotMISEx,loop_counter);
         end
@@ -31,8 +33,10 @@ if (calcISE && loop_counter <= ISE_samples && loop_counter ~= 0 && ~stop_sim)
         if loop_counter > 1
             if step_enabled(2)
                 MISEy(loop_counter) = MISE(set_points(pd_index.g_pitch),states(pd_index.g_pitch),MISEy(loop_counter-1),time_since_last_step+1);
+                IAEy = IAE(set_points(pd_index.g_roll),states(pd_index.g_roll),IAEy(loop_counter-1),time_since_last_step+1);
             else
                 MISEy(loop_counter) = MISE(set_points(pd_index.g_pitch),states(pd_index.g_pitch),MISEy(loop_counter-1),loop_counter-1);
+                IAEy(loop_counter) = IAE(set_points(pd_index.g_roll),states(pd_index.g_roll),IAEy(loop_counter-1),loop_counter-1);
             end
             TotMISEy =  MISE(set_points(pd_index.g_pitch),states(pd_index.g_pitch),TotMISEy,loop_counter);
         end
@@ -45,8 +49,10 @@ if (calcISE && loop_counter <= ISE_samples && loop_counter ~= 0 && ~stop_sim)
         if loop_counter > 1
             if step_enabled(3)
                 MISEz(loop_counter) = MISE(set_points(pd_index.g_yaw),states(pd_index.g_yaw),MISEz(loop_counter-1),time_since_last_step+1);
+                IAEz(loop_counter) = IAE(set_points(pd_index.g_roll),states(pd_index.g_roll),IAEz(loop_counter-1),time_since_last_step+1);
             else
                 MISEz(loop_counter) = MISE(set_points(pd_index.g_yaw),states(pd_index.g_yaw),MISEz(loop_counter-1),loop_counter-1);
+                IAEz(loop_counter) = IAE(set_points(pd_index.g_roll),states(pd_index.g_roll),IAEz(loop_counter-1),loop_counter-1);
             end
             TotMISEz =  MISE(set_points(pd_index.g_yaw),states(pd_index.g_yaw),TotMISEz,loop_counter);
         end
@@ -81,6 +87,15 @@ elseif ((calcISE && loop_counter > ISE_samples) || stop_sim)
                 title('MISEx - Step');
             else
                 title('MISEx');
+              end
+              
+            fig_IAEx = figure
+            figure(fig_IAEx);
+            plot(IAEx(step_size:step_size+1:loop_counter-1)');
+            if step_enabled(1)
+                title('IAEx - Step');
+            else
+                title('IAEx');
             end
         end  
     end
@@ -101,6 +116,14 @@ elseif ((calcISE && loop_counter > ISE_samples) || stop_sim)
                 title('MISEy - Step');
             else
                 title('MISEy');
+              end
+                 fig_IAEy = figure
+            figure(fig_IAEy);
+            plot(IAEy(step_size:step_size+1:loop_counter-1)');
+            if step_enabled(1)
+                title('IAEy - Step');
+            else
+                title('IAEy');
             end
         end
     end
@@ -121,6 +144,14 @@ elseif ((calcISE && loop_counter > ISE_samples) || stop_sim)
                 title('MISEz - Step');
             else
                 title('MISEz');
+            end
+                 fig_IAEz = figure
+            figure(fig_IAEz);
+            plot(IAEz(step_size:step_size+1:loop_counter-1)');
+            if step_enabled(1)
+                title('IAEz - Step');
+            else
+                title('IAEz');
             end
         end
     end
@@ -148,7 +179,7 @@ elseif ((log_PID_evo(1) && loop_counter > ISE_samples) || stop_sim)
         grid on
         plot(xPIDlog(1:3,1:loop_counter-1)');
         title('PID X')
-        legend('P','I','D')
+        legend('k_P','k_I','l_D')
     end
 end
 
@@ -163,7 +194,7 @@ elseif ((log_PID_evo(2) && loop_counter > ISE_samples) || stop_sim)
         grid on
         plot(yPIDlog(1:3,1:loop_counter-1)');
         title('PID Y')
-        legend('P','I','D')
+        legend('k_P','k_I','l_D')
     end
 end
 
@@ -183,7 +214,7 @@ elseif ((log_PID_evo(3) && loop_counter > ISE_samples) || stop_sim)
         grid on
         plot(zPIDlog(1:3,1:loop_counter-1)');
         title('PID Z')
-        legend('P','I','D')
+        legend('k_P','k_I','l_D')
     end
 end
 
@@ -207,7 +238,7 @@ if (loop_counter ~= 0)
                     %rls.K(1:rls_data(3).complexity,loop_counter) = rls_data(3).K;
                     %rls.error(loop_counter) = rls_data(3).error; 
                     
-                    %rls(i).weights(:,loop_counter) = rls_data(i).weights;
+                    rls(i).weights(:,loop_counter) = rls_data(i).weights;
 
 
                     %rls(i).V(loop_counter) = rls_data(3).V; 
@@ -215,7 +246,7 @@ if (loop_counter ~= 0)
 
                     rls(i).out(loop_counter) = rls_data(i).RlsOut;
             else
-                    rls(i).out(loop_counter) = rls_data(i).out;
+                    rls(i).out(loop_counter) = rls_data(i).RlsOut;
             end
         end
     end
@@ -233,7 +264,7 @@ if stop_sim
     if plot_RLS
         figure
         hold on
-        %plot(rls.weights(1:2,1:loop_counter-1)');
+        plot(rls(3).weights(1:2,1:loop_counter-1)');
 
         % If using Johans RLS
         if ~use_philips_rls
@@ -243,7 +274,8 @@ if stop_sim
             %plot(rls.error(1:loop_counter-1)');
             %plot(rls(3).weights(1:2,1:loop_counter-1)');
         else
-            plot(rls.error(1:loop_counter-1)');
+            %plot(rls(e).error(1:loop_counter-1)');
+            plot(rls(3).weights(1:2,1:loop_counter-1)');
         end
         title('RLS data')
         legend('w1','w2'); %,'V1','V2','V3','V4','fi1','fi2','k1','k2','e');

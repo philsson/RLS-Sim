@@ -4,7 +4,7 @@ disp('Saving data to file')
 
 if ~use_philips_rls
     for i=1:3
-        rls_data(i).V = ones(2,2)*1;
+        rls_data(i).V = ones(2,2)*1e10;
         rls_data(i).fi = rls_data(i).fi*0;
         rls_data(i).error = 0;
         rls_data(i).RlsOut = 0;

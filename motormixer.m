@@ -7,7 +7,7 @@ function [ motors ] = motormixer( R,P,Y,T )
     global outputs;
         
     % Upper motor limit
-    motors_max = 3;
+    motors_max = 2;
     % Check how much the combined output wants to be
     
 
@@ -48,9 +48,18 @@ function [ motors ] = motormixer( R,P,Y,T )
     %motorLimitReached = (floor && roof);
     motorLimitReached = roof;
     
+    persistent count_max;
+    
+    if isempty(count_max)
+        count_max = 0;
+    end
+
     % Simple scaling for RLS to get correct training data
     if roof
 
+        count_max = count_max +1;
+        disp(['Motors maxed out ' num2str(count_max) ' times.'])
+        
         combined_output = abs(R) + abs(P) + abs(Y) + T;
         
         outputs(pd_index.g_roll) = R * (motors_max / combined_output);
