@@ -5,7 +5,19 @@ function [ motors ] = motormixer( R,P,Y,T )
     % These two are used for RLS training
     global pd_index;
     global outputs;
+    global U_rescale;
+    global U_rescale_axis;
         
+    if U_rescale_axis(1)
+        R = R/U_rescale;
+    end
+    if U_rescale_axis(2)
+        P = P/U_rescale;
+    end 
+    if U_rescale_axis(3)
+        Y = Y/U_rescale;
+    end
+            
     % Upper motor limit
     motors_max = 2;
     % Check how much the combined output wants to be

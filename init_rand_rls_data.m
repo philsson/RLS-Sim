@@ -19,13 +19,14 @@ if (0) % Johans approach
 % Min test
 else
     
-    rls_data.weights = ones(1,rls_data.complexity)'*0.5;
+    rls_data.weights = zeros(1,rls_data.complexity)'*0.5;
     rls_data.V = ones(rls_data.complexity,rls_data.complexity)*1;%1e10;
     rls_data.fi = zeros(1,rls_data.complexity)';   
     
     % 
    % rls_data.K = -ones(1,rls_data.complexity)';  
-
+    rls_data.weights(1) = 0.99;
+    rls_data.weights(2) = -100;
     
 end
     

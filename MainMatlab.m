@@ -52,16 +52,16 @@ clear;
         % DO NOT CHANGE THESE VALUES OR I WILL KILL YOU PERSONALLY!!!
         setMassAndInertia(clientID, 0.11999999731779,[8e-06 0.000904 0.000904]);
         
-        %setMassAndInertia(clientID, 0.11999999731779,[4e-06 0.000104 0.00014]);
+        %setMassAndInertia(clientID, 0.11999999731779,[4e-06 0.000104 0.00054]);
         h = waitbar(0,'Running Simulation...');
         while (1)
         
             if loop_counter == round( 0.3 *ISE_samples);
-                setMassAndInertia(clientID, 0.12,[8e-06 0.000904 0.003]);
+                %setMassAndInertia(clientID, 0.12,[8e-06 0.000904 0.003]);
                 disp(['Doubling inertia! Iteration: ' num2str(loop_counter)])
             end
             if loop_counter == round( 0.6 *ISE_samples);
-                setMassAndInertia(clientID, 0.12,[8e-06 0.000904 0.012]);
+                %setMassAndInertia(clientID, 0.12,[8e-06 0.000904 0.012]);
                 disp(['Doubling inertia! Iteration: ' num2str(loop_counter)])
             end
           

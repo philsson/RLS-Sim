@@ -6,10 +6,10 @@ follow_target = true;               % Follow the position of the green boll
 
 use_philips_rls = false;            % RLS phillip
 apply_evo_freq = 100;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
-apply_evo_first_offset = 1000;
+apply_evo_first_offset = 500;
 
 calcISE = true;                     % If this is true then we will log "ISE_samples" many iterations and calculate the ISE (mean error).
-ISE_samples = 20000;                  % Hur m??nga iterationer simuleringen k??r
+ISE_samples = 1000;                  % Hur m??nga iterationer simuleringen k??r
 
 impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
 
@@ -22,9 +22,9 @@ step_enabled    =  [  0 0 1 ];    % Didact Delta, korrigerar set points, fj??rko
 impulse_enabled =  [  0 0 0 ];
 
 adapt_enabled   =  [  1 1 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
-apply_evo       =  [  0 0 0 ];    % Till??mpar tuning reglerna under realtid
+apply_evo       =  [  0 0 1 ];    % Till??mpar tuning reglerna under realtid
 
-rand_RLS_data   =  [  1 1 1 ];    % If false then its loaded from files
+rand_RLS_data   =  [  1 1 0 ];    % If false then its loaded from files
 save_RLS_data   =  [  1 1 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
 log_PID_evo     =  [  1 1 1 ];    % Loggar pidarna
 
@@ -40,6 +40,11 @@ impulse_amplitude = 0.5;        % On the control signal
 rand_target = false;
 rand_target_amplitude = [2 2 2]; 
 smooth_moving_target = false;   % Follow the green boll in a smooth way
+
+global U_rescale_axis;
+U_rescale_axis = [ 0 0 1 ];
+global U_rescale
+U_rescale = 1/50;
 
 % plot settings
 plot_FOPDT = false;
@@ -220,6 +225,19 @@ ASF = [0, dt, 1/(2*pi*f_cut)];
 defaultPIDs;
 
 %pid_data(pd_index.g_yaw).saturation = 0.5;
+
+for i = 1:3
+    if U_rescale_axis(i)
+        fields = fieldnames(pid_data(i))
+        for j = 1:numel(fields)-1 % Excluding the filter
+            pid_data(pd_index.g_roll -1 + i).(fields{j}) = abs(pid_data(pd_index.g_roll -1 + i).(fields{j})*U_rescale);
+          
+        end
+        pid_data(pd_index.g_roll -1 +i).saturation = abs(pid_data(pd_index.g_roll -1 +i).saturation);
+        pid_data(pd_index.g_roll -1 +i).i_max = abs(pid_data(pd_index.g_roll -1 +i).i_max);
+    end
+end
+
 
 Manual_PID_Scale = 1.0;
 for i= 3:3

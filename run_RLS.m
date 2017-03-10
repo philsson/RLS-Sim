@@ -38,9 +38,9 @@ for i=1:3
                 pid_data(pd_index.compass + i).Ki = keepPositive(PID_Values(2))/10;
                 pid_data(pd_index.compass + i).Kd = keepPositive(PID_Values(3))/10;
             else
-                pid_data(pd_index.compass + i).Kp = keepPositive(PID_Values(1)); %/10;
-                pid_data(pd_index.compass + i).Ki = keepPositive(PID_Values(2)); %/10;
-                pid_data(pd_index.compass + i).Kd = keepPositive(PID_Values(3)); %/10;
+                pid_data(pd_index.compass + i).Kp = PID_Values(1)*sign(U_rescale); %/10;
+                pid_data(pd_index.compass + i).Ki = PID_Values(2)*sign(U_rescale); %/10;
+                pid_data(pd_index.compass + i).Kd = PID_Values(3)*sign(U_rescale); %/10;
             end
         end
     end

@@ -10,6 +10,7 @@ function [ rls_data] = RLS_FUNC(y, u, rls_data)
 %V          = matrix
 %K          = matrix
 
+run_approximation = false; % Test if the learnt RLS is good
 % -- RLS  --- 
 
 rls_data.RlsOut = rls_data.fi'*rls_data.weights;
@@ -30,8 +31,10 @@ rls_data.V = (1/my)*rls_data.V - inv(b)*rls_data.V*rls_data.fi*rls_data.fi'*rls_
 K = rls_data.V*rls_data.fi;
 
 %rls_data.weights = rls_data.weights + rls_data.K*rls_data.error;
-rls_data.weights = rls_data.weights + K*rls_data.error;
 
+if ~run_approximation
+    rls_data.weights = rls_data.weights + K*rls_data.error;
+end
 
 
 
@@ -42,7 +45,13 @@ u_in = circshift(rls_data.fi(((length(rls_data.fi))/2) + 1:end),1)';
 y_in(1) = y;
 u_in(1) = u;
 
-rls_data.fi = [y_in u_in]';
+if run_approximation
+    rls_data.fi = [rls_data.fi'*rls_data.weights u_in]';
+else
+    rls_data.fi = [y_in u_in]';
+end
+
+% OBS!! Temporary to test the accuracy of the RLS
 
 %-- Update outputs ---
 
@@ -54,7 +63,7 @@ end
 
 % Needs to be constrained why? TODO: We think negative K values are bad
 if (rls_data.weights(2) <= 0)
-    rls_data.weights(2) = 0.0001;
+    %rls_data.weights(2) = 0.0001;
 end
 
 
