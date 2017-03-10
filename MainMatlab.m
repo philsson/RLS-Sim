@@ -113,6 +113,8 @@ clear;
             end
             
              logData;
+             
+             save_data_for_log;
             
 
         end
@@ -138,6 +140,9 @@ clear;
     end
     vrep.delete(); % call the destructor!
     
+    plot_saved_data_for_log;
+
+
     disp('Program ended');
     loop_counter % prints its value
 %end %End of function
