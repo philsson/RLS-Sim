@@ -1,11 +1,36 @@
 
 
 
-%-------------- Z axiz, outputs / inputs / weights -----------------------%
+%-------------- Z axiz -------------------------------------------------------%
 
 if logs_enabled(3) == true
-    
+      
+    %-------------- Z axiz, PID values / FOPDT data K and T --------------%
+      
     figure(1); clf;
+    subplot(211); hold all; grid on;
+   
+    stairs(1:length(kp_data_z_axis), kp_data_z_axis);
+    stairs(1:length(ki_data_z_axis), ki_data_z_axis);
+    stairs(1:length(kd_data_z_axis), kd_data_z_axis);
+    
+    axis([0 loop_counter -(max(kp_data_z_axis)) (max(kp_data_z_axis)+max(kp_data_z_axis)*0.1)]);
+    ylabel('Pid values');
+    legend('Kp', 'Ki', 'Kd')
+    title('Z axis - PID values and FOPDT');
+    
+    subplot(212); hold all; grid on;
+   
+    stairs(1:length(fopdt_data_z_axis(1,:)), fopdt_data_z_axis(1,:));
+    stairs(1:length(fopdt_data_z_axis(2,:)), fopdt_data_z_axis(2,:));
+    
+    axis([0 loop_counter -(max(fopdt_data_z_axis(2,:))) (max(fopdt_data_z_axis(2,:))+max(fopdt_data_z_axis(2,:)*0.1))]);
+    ylabel('Pid values');
+    legend('T', 'K')
+    
+    %-------------- Z axiz, outputs / inputs / weights -----------------------%
+    
+    figure(2); clf;
     subplot(311); hold all; grid on;
    
     stairs(1:length(y_data_z_axis), y_data_z_axis);
@@ -31,33 +56,5 @@ if logs_enabled(3) == true
     axis([0 loop_counter min(weights_data_z_axis(2,loop_counter*0.01:end)) max(weights_data_z_axis(2,loop_counter*0.01:end))]);
     ylabel('Weights output');
     legend('a1', 'b1');
-    
-    
-    
-    %-------------- Z axiz, PID values / FOPDT data K and T --------------%
-      
-    
-    figure(2); clf;
-    subplot(211); hold all; grid on;
-   
-    stairs(1:length(kp_data_z_axis), kp_data_z_axis);
-    stairs(1:length(ki_data_z_axis), ki_data_z_axis);
-    stairs(1:length(kd_data_z_axis), kd_data_z_axis);
-    
-    axis([0 loop_counter -(max(kp_data_z_axis)) (max(kp_data_z_axis)+max(kp_data_z_axis)*0.1)]);
-    ylabel('Pid values');
-    legend('Kp', 'Ki', 'Kd')
-    title('Z axis - PID values and FOPDT');
-    
-    subplot(212); hold all; grid on;
-   
-    stairs(1:length(fopdt_data_z_axis(1,:)), fopdt_data_z_axis(1,:));
-    stairs(1:length(fopdt_data_z_axis(2,:)), fopdt_data_z_axis(2,:));
-    
-    axis([0 loop_counter -(max(fopdt_data_z_axis(2,:))) (max(fopdt_data_z_axis(2,:))+max(fopdt_data_z_axis(2,:)*0.1))]);
-    ylabel('Pid values');
-    legend('T', 'K')
-       
-
-    
+           
 end
