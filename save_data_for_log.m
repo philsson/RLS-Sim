@@ -14,6 +14,7 @@ if logs_enabled(3) == true
     weights_data_z_axis(:,loop_counter) = rls_data(3).weights; % Weights
     rlsout_data_z_axis(loop_counter) = rls_data(3).RlsOut;   % rls out
     
-    fopdt_data_z_axis(loop_counter) = FOPDT_Data(3,1:2)'; % Fopdt data
+    fopdt_data_z_axis(1,loop_counter) = FOPDT_Data(3,1); % Fopdt data
+    fopdt_data_z_axis(2,loop_counter) = FOPDT_Data(3,2); % Fopdt data
        
 end
