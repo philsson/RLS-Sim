@@ -25,7 +25,7 @@ if logs_enabled(3) == true
     stairs(1:length(fopdt_data_z_axis(2,:)), fopdt_data_z_axis(2,:));
     
     axis([0 loop_counter -(max(fopdt_data_z_axis(2,:))) (max(fopdt_data_z_axis(2,:))+max(fopdt_data_z_axis(2,:)*0.1))]);
-    ylabel('Pid values');
+    ylabel('FOPDT values');
     legend('T', 'K')
     
     %-------------- Z axiz, outputs / inputs / weights -----------------------%
