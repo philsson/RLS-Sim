@@ -8,10 +8,10 @@ Data(1) = h / (1 - weights(1));             % Represents T
 Data(2) = weights(2) / (1 - weights(1));    % Represents K
 
 if (Data(1) < 0)
-    disp(['FOPDT Data (1) is negative!   :' num2str(Data(1))])
+    %disp(['FOPDT Data (1) is negative!   :' num2str(Data(1))])
 end
 if (Data(2) < 0)
-    disp(['FOPDT Data (2) is negative!   :' num2str(Data(2))])
+    %disp(['FOPDT Data (2) is negative!   :' num2str(Data(2))])
 end
 
 if ~isreal(Data)

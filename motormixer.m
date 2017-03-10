@@ -7,7 +7,11 @@ function [ motors ] = motormixer( R,P,Y,T )
     global outputs;
     global U_rescale;
     global U_rescale_axis;
-        
+    
+    R_preserved = R;
+    P_preserved = P;
+    Y_preserved = Y;
+    
     if U_rescale_axis(1)
         R = R/U_rescale;
     end
@@ -74,15 +78,14 @@ function [ motors ] = motormixer( R,P,Y,T )
         
         combined_output = abs(R) + abs(P) + abs(Y) + T;
         
-        outputs(pd_index.g_roll) = R * (motors_max / combined_output);
-        outputs(pd_index.g_pitch) = P * (motors_max / combined_output);
-        outputs(pd_index.g_yaw) = Y * (motors_max / combined_output);
+        outputs(pd_index.g_roll) = R_preserved * (motors_max / combined_output);
+        outputs(pd_index.g_pitch) = P_preserved * (motors_max / combined_output);
+        outputs(pd_index.g_yaw) = Y_preserved * (motors_max / combined_output);
     else
-        outputs(pd_index.g_roll) = R;
-        outputs(pd_index.g_pitch) = P;
-        outputs(pd_index.g_yaw) = Y;
+        %outputs(pd_index.g_roll) = R;
+        %outputs(pd_index.g_pitch) = P;
+        %outputs(pd_index.g_yaw) = Y;
     end  
-
     
 end
 

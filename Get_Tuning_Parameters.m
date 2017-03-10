@@ -10,7 +10,7 @@ function [ PID_Values ] = Get_Tuning_Parameters( FOPDT_data, L )
     K = FOPDT_data(2);
     
     if (T <= 0 || K <= 0)
-        disp(['T or K are <= 0.    T:' num2str(T) ' and K: ' num2str(K)]);
+        %disp(['T or K are <= 0.    T:' num2str(T) ' and K: ' num2str(K)]);
     end
 
     tau = L/T;

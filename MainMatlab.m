@@ -88,6 +88,8 @@ clear;
             % Calculate all PID loop outputs
             run_control;
             
+           % REMOVE THIS_ DEBUG: 
+            rls_data(3).weights'
             
             % Motormixer
             mixedMotors = motormixer(...

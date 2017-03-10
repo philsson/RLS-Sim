@@ -6,10 +6,10 @@ follow_target = true;               % Follow the position of the green boll
 
 use_philips_rls = false;            % RLS phillip
 apply_evo_freq = 100;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
-apply_evo_first_offset = 500;
+apply_evo_first_offset = 100;
 
 calcISE = true;                     % If this is true then we will log "ISE_samples" many iterations and calculate the ISE (mean error).
-ISE_samples = 1000;                  % Hur m??nga iterationer simuleringen k??r
+ISE_samples = 2000;                  % Hur m??nga iterationer simuleringen k??r
 
 impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
 
@@ -24,7 +24,7 @@ impulse_enabled =  [  0 0 0 ];
 adapt_enabled   =  [  1 1 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
 apply_evo       =  [  0 0 1 ];    % Till??mpar tuning reglerna under realtid
 
-rand_RLS_data   =  [  1 1 0 ];    % If false then its loaded from files
+rand_RLS_data   =  [  1 1 1 ];    % If false then its loaded from files
 save_RLS_data   =  [  1 1 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
 log_PID_evo     =  [  1 1 1 ];    % Loggar pidarna
 
@@ -44,7 +44,7 @@ smooth_moving_target = false;   % Follow the green boll in a smooth way
 global U_rescale_axis;
 U_rescale_axis = [ 0 0 1 ];
 global U_rescale
-U_rescale = -80;
+U_rescale = -1/2000;
 
 % plot settings
 plot_FOPDT = false;
