@@ -44,7 +44,7 @@ smooth_moving_target = false;   % Follow the green boll in a smooth way
 global U_rescale_axis;
 U_rescale_axis = [ 0 0 1 ];
 global U_rescale
-U_rescale = 1/50;
+U_rescale = -80;
 
 % plot settings
 plot_FOPDT = false;
@@ -233,8 +233,6 @@ for i = 1:3
             pid_data(pd_index.g_roll -1 + i).(fields{j}) = abs(pid_data(pd_index.g_roll -1 + i).(fields{j})*U_rescale);
           
         end
-        pid_data(pd_index.g_roll -1 +i).saturation = abs(pid_data(pd_index.g_roll -1 +i).saturation);
-        pid_data(pd_index.g_roll -1 +i).i_max = abs(pid_data(pd_index.g_roll -1 +i).i_max);
     end
 end
 
