@@ -5,9 +5,21 @@ function [ motors ] = motormixer( R,P,Y,T )
     % These two are used for RLS training
     global pd_index;
     global outputs;
+    global U_rescale;
+    global U_rescale_axis;
         
+    if U_rescale_axis(1)
+        R = R/U_rescale;
+    end
+    if U_rescale_axis(2)
+        P = P/U_rescale;
+    end 
+    if U_rescale_axis(3)
+        Y = Y/U_rescale;
+    end
+            
     % Upper motor limit
-    motors_max = 3;
+    motors_max = 2;
     % Check how much the combined output wants to be
     
 
@@ -48,14 +60,27 @@ function [ motors ] = motormixer( R,P,Y,T )
     %motorLimitReached = (floor && roof);
     motorLimitReached = roof;
     
+    persistent count_max;
+    
+    if isempty(count_max)
+        count_max = 0;
+    end
+
     % Simple scaling for RLS to get correct training data
     if roof
 
+        count_max = count_max +1;
+        disp(['Motors maxed out ' num2str(count_max) ' times.'])
+        
         combined_output = abs(R) + abs(P) + abs(Y) + T;
         
         outputs(pd_index.g_roll) = R * (motors_max / combined_output);
         outputs(pd_index.g_pitch) = P * (motors_max / combined_output);
         outputs(pd_index.g_yaw) = Y * (motors_max / combined_output);
+    else
+        outputs(pd_index.g_roll) = R;
+        outputs(pd_index.g_pitch) = P;
+        outputs(pd_index.g_yaw) = Y;
     end  
 
     

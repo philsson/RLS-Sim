@@ -4,7 +4,7 @@ global stop_sim;
 for i=1:3
     if (adapt_enabled(i))
         if use_philips_rls
-            rls_data(i) = philip_rls(states(pd_index.compass + i), outputs(pd_index.compass + i), rls_data(i));
+            rls_data(i) = philip_rls2(states(pd_index.compass + i), outputs(pd_index.compass + i), rls_data(i));
         else
             rls_data(i) = RLS_FUNC(states(pd_index.compass + i), outputs(pd_index.compass + i), rls_data(i));
             %rls_data(i) = old_RLS_FUNC(states(pd_index.compass + i), outputs(pd_index.compass + i), rls_data(i));
@@ -32,9 +32,16 @@ for i=1:3
                 disp('Negative PIDS')
             end
 
-            pid_data(pd_index.compass + i).Kp = keepPositive(PID_Values(1));
-            pid_data(pd_index.compass + i).Ki = keepPositive(PID_Values(2));
-            pid_data(pd_index.compass + i).Kd = keepPositive(PID_Values(3));
+            by10 = false;
+            if by10
+                pid_data(pd_index.compass + i).Kp = keepPositive(PID_Values(1))/10;
+                pid_data(pd_index.compass + i).Ki = keepPositive(PID_Values(2))/10;
+                pid_data(pd_index.compass + i).Kd = keepPositive(PID_Values(3))/10;
+            else
+                pid_data(pd_index.compass + i).Kp = PID_Values(1)*sign(U_rescale); %/10;
+                pid_data(pd_index.compass + i).Ki = PID_Values(2)*sign(U_rescale); %/10;
+                pid_data(pd_index.compass + i).Kd = PID_Values(3)*sign(U_rescale); %/10;
+            end
         end
     end
 end

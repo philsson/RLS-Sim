@@ -9,12 +9,12 @@ function [ PID_Values ] = Get_Tuning_Parameters( FOPDT_data, L )
     T = FOPDT_data(1);
     K = FOPDT_data(2);
     
-    if (T < 0 || K < 0)
-        disp(['T or K are < 0.    T:' num2str(T) ' and K: ' num2str(K)]);
+    if (T <= 0 || K <= 0)
+        disp(['T or K are <= 0.    T:' num2str(T) ' and K: ' num2str(K)]);
     end
 
     tau = L/T;
-    %tau = L/max(T,dt); % På förslag av Alexander, men fungerade inge bra.
+    %tau = L/max(T,dt); % Pï¿½ fï¿½rslag av Alexander, men fungerade inge bra.
 
     if tau <= 1
 

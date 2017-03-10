@@ -52,20 +52,20 @@ clear;
         % DO NOT CHANGE THESE VALUES OR I WILL KILL YOU PERSONALLY!!!
         setMassAndInertia(clientID, 0.11999999731779,[8e-06 0.000904 0.000904]);
         
-        %setMassAndInertia(clientID, 0.11999999731779,[4e-06 0.000104 0.00014]);
+        %setMassAndInertia(clientID, 0.11999999731779,[4e-06 0.000104 0.00054]);
+        h = waitbar(0,'Running Simulation...');
         while (1)
         
-            if loop_counter == 1000
-                %setMassAndInertia(clientID, 0.15,[16e-06 0.0018 0.003]);
+            if loop_counter == round( 0.3 *ISE_samples);
+                %setMassAndInertia(clientID, 0.12,[8e-06 0.000904 0.003]);
                 disp(['Doubling inertia! Iteration: ' num2str(loop_counter)])
             end
-            
-            % Print progress in %
-            if (~mod(loop_counter,ISE_samples/10))
-                disp(sprintf('Simulation progress: %d%%',sim_progress))
-                sim_progress = sim_progress + 10;
+            if loop_counter == round( 0.6 *ISE_samples);
+                %setMassAndInertia(clientID, 0.12,[8e-06 0.000904 0.012]);
+                disp(['Doubling inertia! Iteration: ' num2str(loop_counter)])
             end
-
+          
+            waitbar(loop_counter/ISE_samples)
             
             %disp('Press a key to step the simulation!');
             %pause;
@@ -74,6 +74,10 @@ clear;
             
             getSensors;
            
+            % RLS uses information from motormixer
+            % OBS: Unsure of where this should be
+            run_RLS;
+            
             % Now we see the result of previouse actuation
            
             
@@ -93,7 +97,7 @@ clear;
                 outputs(pd_index.height) + 1);
 
             % RLS uses information from motormixer
-            run_RLS;
+            %run_RLS; % Moved to just before get sensors
             
             % Send actuation
             setMotors(clientID, mixedMotors);
@@ -112,6 +116,7 @@ clear;
             
 
         end
+       
         
         if (loop_counter < ISE_samples)
             logData % This last time to plot only
@@ -126,7 +131,7 @@ clear;
         % Saving RLS data to file
         disp('run "saveRLSdata" to save RLS data if it was pleasant');
         %saveRLSdata; % We might not always want to run this
-    
+        close(h)
 
     else
         disp('Failed connecting to remote API server');

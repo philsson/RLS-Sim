@@ -5,6 +5,6 @@ function [ value ] = constrain( value, saturation )
 
 if (abs(value) > saturation)
     value = saturation * sign(value);
-
+end
 end
 
