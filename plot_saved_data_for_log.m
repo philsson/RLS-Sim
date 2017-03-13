@@ -53,7 +53,7 @@ if logs_enabled(3) == true
     stairs(1:loop_counter-1, weights_data_z_axis(1,:));
     stairs(1:loop_counter-1, weights_data_z_axis(2,:));
     
-    axis([0 loop_counter (min(weights_data_z_axis(1,loop_counter*0.01:end))+0.1) max(weights_data_z_axis(2,loop_counter*0.01:end))*1.1]);
+    %axis([0 loop_counter (min(weights_data_z_axis(1,loop_counter*0.01:end))+0.1) max(weights_data_z_axis(1,loop_counter*0.01:end))*1.1]);
 
     ylabel('Weights output');
     legend('a1', 'b1');

@@ -5,6 +5,7 @@ nav_heading_threshold = 0.4;        % The distance required for the heading to b
 follow_target = true;               % Follow the position of the green boll 
 
 use_philips_rls = false;            % RLS phillip
+use_rls_data_simple = true;
 apply_evo_freq = 100;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
 apply_evo_first_offset = 100;
 
@@ -22,7 +23,7 @@ step_enabled    =  [  0 0 1 ];    % Didact Delta, korrigerar set points, fj??rko
 impulse_enabled =  [  0 0 0 ];
 
 adapt_enabled   =  [  1 1 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
-apply_evo       =  [  0 0 1 ];    % Till??mpar tuning reglerna under realtid
+apply_evo       =  [  0 0 0 ];    % Till??mpar tuning reglerna under realtid
 
 rand_RLS_data   =  [  1 1 1 ];    % If false then its loaded from files
 save_RLS_data   =  [  1 1 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
@@ -39,7 +40,7 @@ step_interval_ms = 1000;         % Needs LDM to work. Revise implementation (in 
 impulse_amplitude = 0.5;        % On the control signal
 rand_target = false;
 rand_target_amplitude = [2 2 2]; 
-smooth_moving_target = false;   % Follow the green boll in a smooth way
+smooth_moving_target = true;   % Follow the green boll in a smooth way
 
 global U_rescale_axis;
 U_rescale_axis = [ 0 0 1 ];
@@ -90,6 +91,12 @@ for i=1:3
             else
                 [rls_data(i) FOPDT_data(i,1:2)] = init_rand_rls_data(2);
                 
+                rls_data_simple(i).V = 10e5;
+                rls_data_simple(i).weights = 1;
+                rls_data_simple(i).fi = 0;
+                rls_data_simple(i).RlsOut = 0;
+                rls_data_simple(i).error = 0;
+
                 % TODO: Temp fix. Giving "optimal values" (From tuning)
                 %disp('temp fix. Setting manual tuning backtracked values')
                 %rls_data(i).weights = [0.8088; 46.2830]

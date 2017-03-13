@@ -11,8 +11,18 @@ if logs_enabled(3) == true
     ki_data_z_axis(loop_counter) = pid_data(pd_index.g_yaw).Ki; % Pid data
     kd_data_z_axis(loop_counter) = pid_data(pd_index.g_yaw).Kd; % Pid data
 
-    weights_data_z_axis(:,loop_counter) = rls_data(3).weights; % Weights
-    rlsout_data_z_axis(loop_counter) = rls_data(3).RlsOut;   % rls out
+    if  use_rls_data_simple == true
+        
+        weights_data_z_axis(1,loop_counter) = 0; % Weights
+        weights_data_z_axis(2,loop_counter) = rls_data_simple(3).weights; % Weights
+        rlsout_data_z_axis(loop_counter) = rls_data_simple(3).RlsOut;   % rls out 
+        
+    else
+        
+        weights_data_z_axis(:,loop_counter) = rls_data(3).weights; % Weights
+        rlsout_data_z_axis(loop_counter) = rls_data(3).RlsOut;   % rls out  
+    
+    end
     
     fopdt_data_z_axis(1,loop_counter) = FOPDT_Data(3,1); % Fopdt data
     fopdt_data_z_axis(2,loop_counter) = FOPDT_Data(3,2); % Fopdt data

@@ -7,10 +7,22 @@ for i=1:3
             rls_data(i) = philip_rls2(states(pd_index.compass + i), outputs(pd_index.compass + i), rls_data(i));
         else
             rls_data(i) = RLS_FUNC(states(pd_index.compass + i), outputs(pd_index.compass + i), rls_data(i));
+            rls_data_simple(i) = RLS_FUNC_Simple(states(pd_index.compass + i), outputs(pd_index.compass + i),rls_data_simple(i));
             %rls_data(i) = old_RLS_FUNC(states(pd_index.compass + i), outputs(pd_index.compass + i), rls_data(i));
         end
-        FOPDT_Data(i,1:2) = Get_FOPDT_Data( rls_data(i).weights, dt );
-        PID_Values = Get_Tuning_Parameters( FOPDT_Data(i,1:2), dt/2 );
+        
+        if use_rls_data_simple == true
+            
+            FOPDT_Data(i,2) = rls_data_simple(i).weights;
+            FOPDT_Data(i,1) = dt;
+            PID_Values = Get_Tuning_Parameters( FOPDT_Data(i,1:2), dt/2 );
+            
+        else
+        
+            FOPDT_Data(i,1:2) = Get_FOPDT_Data( rls_data(i).weights, dt );
+            PID_Values = Get_Tuning_Parameters( FOPDT_Data(i,1:2), dt/2 );
+        
+        end
             
        
         if (~isreal(PID_Values))
