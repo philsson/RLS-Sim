@@ -9,8 +9,8 @@ use_rls_data_simple = false;
 apply_evo_freq = 100;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
 apply_evo_first_offset = 50;
 
-calcISE = true;                     % If this is true then we will log "ISE_samples" many iterations and calculate the ISE (mean error).
-ISE_samples = 1500;                  % Hur m??nga iterationer simuleringen k??r
+logSim = true;                     % If this is true then we will log "SIM_samples" many iterations and calculate the ISE (mean error).
+SIM_samples = 500;                  % Hur m??nga iterationer simuleringen k??r
 
 impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
 
@@ -18,18 +18,18 @@ global stop_on_imaginary_numbers;   % S??ger sig sj??lv
 stop_on_imaginary_numbers = false;
 
 %                   X(roll)   Y(pitch)      Z(yaw)
-logs_enabled    =  [  0 0 1 ];    % Enable log
-step_enabled    =  [  0 0 1 ];    % Didact Delta, korrigerar set points, fj??rkontroll och g??rna kula eller step rerefernser
-impulse_enabled =  [  0 0 0 ];
+logs_enabled    =  [ 0 0 1 ];    % Enable log
+step_enabled    =  [ 0 0 1 ];    % Didact Delta, korrigerar set points, fj??rkontroll och g??rna kula eller step rerefernser
+impulse_enabled =  [ 0 0 0 ];
 
-adapt_enabled   =  [  1 1 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
-apply_evo       =  [  0 0 0 ];    % Till??mpar tuning reglerna under realtid
+adapt_enabled   =  [ 1 1 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
+apply_evo       =  [ 0 0 0 ];    % Till??mpar tuning reglerna under realtid
 
-rand_RLS_data   =  [  1 1 1 ];    % If false then its loaded from files
-save_RLS_data   =  [  1 1 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
-log_PID_evo     =  [  1 1 1 ];    % Loggar pidarna
+rand_RLS_data   =  [ 1 1 1 ];    % If false then its loaded from files
+save_RLS_data   =  [ 1 1 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
+log_PID_evo     =  [ 1 1 1 ];    % Loggar pidarna
 
-freq_resp_test  =  [  0 0 0 ];    % Overwrides the control signal and induces a sine wave
+freq_resp_test  =  [ 0 0 0 ];    % Overwrides the control signal and induces a sine wave
 
 
 freq_resp_params = [ 0.5 0.2 ]; %[Amplitude Frequency] Freq in hz
@@ -77,14 +77,9 @@ time_fraction = 1; % for rand step. Desides how much of the time step is used. I
 time_since_last_step = step_interval_ms*dt*1000; % Actually interations
 step_sign = 1;
 
-% Variables brought from V-Rep
-mass = 0.11999999731779;
-inertiaMatrix = [0.1209 0 0         0 0.1200 0         0 0 0.0009]
-centerOfMass = [0 0 1] % Not used
-
 rlsfileX = 'rlsdataX.mat'; rlsfileY = 'rlsdataY.mat'; rlsfileZ = 'rlsdataZ.mat';
 
-% Initialize random rls data or load stored data for axis 'i'
+% Initialize rls data or load stored data for axis 'i'
 for i=1:3
     if adapt_enabled(i)
         FOPDT_Data(i,1:2) = [1 1]; % TODO:  Not sure what good initial values for this is
@@ -95,17 +90,10 @@ for i=1:3
                 disp('temp fix. Setting manual tuning backtracked values')
                 %rls_data(i).weights = [0.8088; 46.2830]
             else
-                [rls_data(i) FOPDT_data(i,1:2)] = init_rand_rls_data(2);
+                rls_data(i) = init_rls_data(2);
                 
-                rls_data_simple(i).V = 10e5;
-                rls_data_simple(i).weights = 1;
-                rls_data_simple(i).fi = 0;
-                rls_data_simple(i).RlsOut = 0;
-                rls_data_simple(i).error = 0;
-
-                % TODO: Temp fix. Giving "optimal values" (From tuning)
-                %disp('temp fix. Setting manual tuning backtracked values')
-                %rls_data(i).weights = [0.8088; 46.2830]
+                rls_data_simple(i) = init_rls_data(1);
+                
             end
 
         else
@@ -131,34 +119,25 @@ end
 
 %%%%%%% TEMP INITIALIZATION FOR DEBUG %%%%%%%%
 if plot_FOPDT
-    logFOPDT = zeros(2,ISE_samples);
+    logFOPDT = zeros(2,SIM_samples);
 end
 
 %rls
 if plot_RLS
     for i=1:3
-        rls(i).weights = zeros(2,ISE_samples);
+        rls(i).weights = zeros(2,SIM_samples);
     end
-    %rls(3).V = zeros(4,ISE_samples);
-    %rls.fi = zeros(2,ISE_samples);
-    %rls.K = zeros(2,ISE_samples);
-    %rls.error = zeros(ISE_samples);
-    %for i = 1:3
-     %   if logs_enabled(i)
-      %      rls(i).out = zeros(ISE_samples);
-       % end
-   % end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if log_PID_evo(1) && logs_enabled(1)
-    xPIDlog = zeros(3,ISE_samples);
+    xPIDlog = zeros(3,SIM_samples);
 end
 if log_PID_evo(2) && logs_enabled(2)
-    yPIDlog = zeros(3,ISE_samples);
+    yPIDlog = zeros(3,SIM_samples);
 end
 if log_PID_evo(3) && logs_enabled(3)
-    zPIDlog = zeros(3,ISE_samples);
+    zPIDlog = zeros(3,SIM_samples);
 end
 
 
@@ -168,34 +147,19 @@ if use_joystick
     joy = vrjoystick(1);
 end
 
-if calcISE
-    if logs_enabled(1)
-        xLOG = zeros(5,ISE_samples);
-        MISEx = zeros(1,ISE_samples);
-        IAEx = zeros(1,ISE_samples);
-        TotMISEx = 0;
-        rls(1).out = zeros(1,ISE_samples);
-    end
-    if logs_enabled(2)
-        yLOG = zeros(5,ISE_samples);
-        MISEy = zeros(1,ISE_samples);
-        IAEy = zeros(1,ISE_samples);
-        TotMISEy = 0;
-        rls(2).out = zeros(1,ISE_samples);
-    end
-    if logs_enabled(3)
-        zLOG = zeros(5,ISE_samples);
-        MISEz = zeros(1,ISE_samples);
-        IAEz = zeros(1,ISE_samples);
-        TotMISEz = 0;
-        rls(3).out = zeros(1,ISE_samples);
-    end
-    U = zeros(3,ISE_samples);
-
+% All values that are logged and used for analysis or plotting
+log_types = {...
+    'r', 'u', 'y', 'y_rls',...
+    'Kp', 'Kd', 'Ki','Ti','Td'...
+    'MISE', 'MAE', 'MISE_blocks', 'MAE_blocks',...
+    'rls_w1', 'rls_w2'...
+};
+ 
+for i = 1:3
+     for j=1:length(log_types)
+         log(i).(log_types{j}) = zeros(1,SIM_samples);
+     end
 end
-    gyro_derivatives = zeros(1,3);
-    gyro_integral = zeros(1,3);
-    u_integral = zeros(1,3);
 
 
 
@@ -235,6 +199,7 @@ filter_index = struct(...
     'RC',      3);
 
 % A standard filter to initialize them all with something
+% This filter is only used for the PIDC_V1
 f_cut = 100; % cutt off frequency
 ASF = [0, dt, 1/(2*pi*f_cut)];
 
@@ -260,12 +225,6 @@ for i= 3:3
     pid_data(pd_index.g_roll -1 +i).Kd = pid_data(pd_index.g_roll -1 +i).Kd*Manual_PID_Scale;
 end
 
-
-% Zirgel Niclos method
-% Z-axis Mindre Tu ger mindre D men st??rre I
-%pid_data(pd_index.g_yaw).Kp = 0.0294%00482;% 0.095 is Ku
-%pid_data(pd_index.g_yaw).Ki =  0.2941%.5588%.2891;
-%pid_data(pd_index.g_yaw).Kd = 7.3529e-04%588;
 
 % Array of setpoints. Indexed by for ex "set_points(pd_index.roll)"
 set_points  = zeros(1,length(fieldnames(pd_index)));

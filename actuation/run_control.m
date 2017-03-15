@@ -27,10 +27,10 @@ pid_data(pd_index.p_y).e    = set_points(pd_index.p_y)      -   states(pd_index.
 if (joy_throttle && (abs(map(RC.throttle,throttle_rate,1)) > 0.05))
     outputs(pd_index.height)    =  RC.throttle;
 else
-    outputs(pd_index.height)    =  PID_CONTROLLER(pd_index.height);
+    outputs(pd_index.height)    =  PIDC_V1(pd_index.height);
 end
-outputs(pd_index.p_x)       =  PID_CONTROLLER(pd_index.p_x);
-outputs(pd_index.p_y)       =  PID_CONTROLLER(pd_index.p_y);
+outputs(pd_index.p_x)       =  PIDC_V1(pd_index.p_x);
+outputs(pd_index.p_y)       =  PIDC_V1(pd_index.p_y);
 
 
 set_points(pd_index.v_x) = outputs(pd_index.p_x);
@@ -40,8 +40,8 @@ set_points(pd_index.v_y) = outputs(pd_index.p_y);
 pid_data(pd_index.v_x).e    = set_points(pd_index.v_x)      -   states(pd_index.v_x);
 pid_data(pd_index.v_y).e    = set_points(pd_index.v_y)      -   states(pd_index.v_y);
 
-outputs(pd_index.v_x)       =  PID_CONTROLLER(pd_index.v_x);
-outputs(pd_index.v_y)       =  PID_CONTROLLER(pd_index.v_y);
+outputs(pd_index.v_x)       =  PIDC_V1(pd_index.v_x);
+outputs(pd_index.v_y)       =  PIDC_V1(pd_index.v_y);
 
 
 set_points(pd_index.a_roll)     =...
@@ -85,9 +85,9 @@ end
 %end
 
 % Generating control data for acc and 
-outputs(pd_index.a_roll)  = PID_CONTROLLER(pd_index.a_roll);
-outputs(pd_index.a_pitch) = PID_CONTROLLER(pd_index.a_pitch);
-outputs(pd_index.compass) = PID_CONTROLLER(pd_index.compass);
+outputs(pd_index.a_roll)  = PIDC_V1(pd_index.a_roll);
+outputs(pd_index.a_pitch) = PIDC_V1(pd_index.a_pitch);
+outputs(pd_index.compass) = PIDC_V1(pd_index.compass);
 
 if (use_joystick && joy_gyro && (RC.roll^2 + RC.pitch^2 + RC.yaw^2) > joy_rate*0.01)
 % Setpoints for gyro
@@ -166,9 +166,9 @@ end
 
 % Control for gyro
 if ~use_PIDC_V2
-    outputs(pd_index.g_roll)  = PID_CONTROLLER(pd_index.g_roll);
-    outputs(pd_index.g_pitch) = PID_CONTROLLER(pd_index.g_pitch);
-    outputs(pd_index.g_yaw)   = PID_CONTROLLER(pd_index.g_yaw);
+    outputs(pd_index.g_roll)  = PIDC_V1(pd_index.g_roll);
+    outputs(pd_index.g_pitch) = PIDC_V1(pd_index.g_pitch);
+    outputs(pd_index.g_yaw)   = PIDC_V1(pd_index.g_yaw);
 else
     [outputs(pd_index.g_roll),  pid_data_V2(1)] = PIDC_V2(pid_data_V2(1));
     [outputs(pd_index.g_pitch), pid_data_V2(2)] = PIDC_V2(pid_data_V2(2));

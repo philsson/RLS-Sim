@@ -66,7 +66,7 @@ dt_s(end,1) = NaN;
 clear timeus time_s loopIteration
 
 %% Init RLS data TODO: Replace for good approximation
-%rls_data(1:3) = init_rand_rls_data;
+%rls_data(1:3) = init_rls_data;
 PTERM_SCALE = 0.032029; ITERM_SCALE = 0.244381; DTERM_SCALE = 0.000529;
 
 rls_data(1:3) = johan_reversePIDs(45*PTERM_SCALE,45*ITERM_SCALE,20*DTERM_SCALE,dt_s(200,1)/2);

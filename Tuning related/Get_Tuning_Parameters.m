@@ -1,4 +1,4 @@
-function [ PID_Values ] = Get_Tuning_Parameters( FOPDT_data, L )
+function [ PID_Values ] = Get_Tuning_Parameters( FOPDT_Data, L )
 
     % used to stop simulation on error
     global stop_sim;
@@ -6,8 +6,8 @@ function [ PID_Values ] = Get_Tuning_Parameters( FOPDT_data, L )
     global dt;
     stop = false;
 
-    T = FOPDT_data(1);
-    K = FOPDT_data(2);
+    T = FOPDT_Data(1);
+    K = FOPDT_Data(2);
     
     if (T <= 0 || K <= 0)
         %disp(['T or K are <= 0.    T:' num2str(T) ' and K: ' num2str(K)]);

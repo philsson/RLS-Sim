@@ -1,4 +1,4 @@
-function [ rls_data, FOPDT_Data ] = init_rand_rls_data(complexity)
+function [ rls_data ] = init_rls_data(complexity)
 %Initialize a random dataset for RLS data
 %   Detailed explanation goes here
 
@@ -7,30 +7,17 @@ global dt;
 
 rls_data.complexity = complexity;
 
-if (0) % Johans approach
-
-    rls_data.weights = rand(1,rls_data.complexity)';
-    rls_data.V = rand(rls_data.complexity,rls_data.complexity);
-    rls_data.fi = rand(1,rls_data.complexity)';     
-    
-    %temp
-    %rls_data.K = rand(1,rls_data.complexity)';  
-
-% Min test
-else
     
     rls_data.weights = zeros(1,rls_data.complexity)';
     rls_data.V = eye(rls_data.complexity,rls_data.complexity)*1e10;
     rls_data.fi = zeros(1,rls_data.complexity)';   
-    
-end
     
     rls_data.error = 0; 
 
     % Denna fanns inte med i Johans init
     rls_data.RlsOut = 0;
     
-    FOPDT_Data = Get_FOPDT_Data(rls_data.weights,dt);%[1 1];
+    
 end
 
 

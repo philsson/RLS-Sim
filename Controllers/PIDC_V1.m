@@ -1,4 +1,4 @@
-function [ Control_Signal ] = PID_CONTROLLER(pd_index)
+function [ Control_Signal ] = PIDC_V1(pd_index)
 
 % Variable to read from motormixer for windup prevention
 global motorLimitReached;

@@ -49,32 +49,29 @@ addpath(genpath(pwd));
             vrep.simxSetObjectPosition(clientID,quad_target,-1,[2*rand-2 2*rand-2 rand+1],vrep.simx_opmode_oneshot);
         end
         
-        % Now step a few times:
-        %for i=0:300
         
-        % DO NOT CHANGE THESE VALUES OR I WILL KILL YOU PERSONALLY!!!
-        %setMassAndInertia(clientID, 0.11999999731779,[8e-06 0.000904 0.000904]);
-        
-        setMassAndInertia(clientID, 1,[1 1 1]);
+        setMassAndInertia(clientID, 1.0,[1.0 1.0 1.0]);
         h = waitbar(0,'Running Simulation...');
         while (1)
         
-            if loop_counter == round( 0.3 *ISE_samples);
+            if loop_counter == round( 0.3 *SIM_samples);
                 %setMassAndInertia(clientID, 0.12,[8e-06 0.000904 0.003]);
                 freq_resp_params = [ 0.2 0.2 ]
                 disp(['Doubling inertia! Iteration: ' num2str(loop_counter)])
             end
-            if loop_counter == round( 0.6 *ISE_samples);
+            if loop_counter == round( 0.6 *SIM_samples);
                 %setMassAndInertia(clientID, 0.12,[8e-06 0.000904 0.012]);
                 freq_resp_params = [ 0.35 0.5 ]
                 disp(['Doubling inertia! Iteration: ' num2str(loop_counter)])
             end
           
-            waitbar(loop_counter/ISE_samples)
+            waitbar(loop_counter/SIM_samples)
             
             %disp('Press a key to step the simulation!');
             %pause;
             
+            % If we want to read the inertia from simulation (Requires the
+            % correct ttt file in V-rep)
             %getInertia;
             
             getSensors;
@@ -89,21 +86,14 @@ addpath(genpath(pwd));
             
             % Now we see the result of previouse actuation
            
-            
-            %set_points
-            %states
-            %outputs
            
             % Calculate all PID loop outputs
             run_control;
             
             logData;
 
-             save_data_for_log;
-           
-             
-      
-            
+            %save_data_for_log;
+              
             % Motormixer
             mixedMotors = motormixer(...
                 outputs(pd_index.g_roll),...
@@ -117,7 +107,7 @@ addpath(genpath(pwd));
             % Send actuation
             setMotors(clientID, mixedMotors);
             
-            % Bring quad back to position
+            % Bring quad back to position (DOES NOT WORK)
             %vrep.simxSetObjectPosition(clientID,quad_target,-1,[1 0 0.5],vrep.simx_opmode_oneshot);
             
             vrep.simxSynchronousTrigger(clientID);
@@ -126,14 +116,11 @@ addpath(genpath(pwd));
             if stop_sim % Set in "logData" after the amount of samples is reached
                 break;
             end
-            
-     
-
 
         end
        
         
-        if (loop_counter < ISE_samples)
+        if (loop_counter < SIM_samples)
             logData % This last time to plot only
         end
         
@@ -152,8 +139,6 @@ addpath(genpath(pwd));
         disp('Failed connecting to remote API server');
     end
     vrep.delete(); % call the destructor!
-    
-    plot_saved_data_for_log;
 
 
     disp('Program ended');

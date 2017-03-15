@@ -1,5 +1,5 @@
 % Init adaptive tuning paramaters
-% This has been added to a function instead "init_rand_rls_data"
+% This has been added to a function instead "init_rls_data"
 
 
 rls_data_roll.complexity = 2;
