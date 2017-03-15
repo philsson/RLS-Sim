@@ -5,12 +5,12 @@ nav_heading_threshold = 0.4;        % The distance required for the heading to b
 follow_target = true;               % Follow the position of the green boll 
 
 use_philips_rls = false;            % RLS phillip
-use_rls_data_simple = true;
+use_rls_data_simple = false;
 apply_evo_freq = 100;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
-apply_evo_first_offset = 100;
+apply_evo_first_offset = 50;
 
 calcISE = true;                     % If this is true then we will log "ISE_samples" many iterations and calculate the ISE (mean error).
-ISE_samples = 2000;                  % Hur m??nga iterationer simuleringen k??r
+ISE_samples = 1500;                  % Hur m??nga iterationer simuleringen k??r
 
 impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
 
@@ -32,25 +32,29 @@ log_PID_evo     =  [  1 1 1 ];    % Loggar pidarna
 freq_resp_test  =  [  0 0 0 ];    % Overwrides the control signal and induces a sine wave
 
 
-freq_resp_params = [ 0.1 0.5 ]; %[Amplitude Frequency] Freq in hz
+freq_resp_params = [ 0.5 0.2 ]; %[Amplitude Frequency] Freq in hz
 
 rand_steps = false;             % if enabled steps will be random in time and amplitude constrained by the next two variables
-step_amplitude   = 6;           % Rotational rate to give as target value
-step_interval_ms = 1000;         % Needs LDM to work. Revise implementation (in run_control)
+step_amplitude   = 5;           % Rotational rate to give as target value
+step_interval_ms = 1500;         % Needs LDM to work. Revise implementation (in run_control)
 impulse_amplitude = 0.5;        % On the control signal
 rand_target = false;
 rand_target_amplitude = [2 2 2]; 
-smooth_moving_target = true;   % Follow the green boll in a smooth way
+smooth_moving_target = false;   % Follow the green boll in a smooth way
 
 global U_rescale_axis;
-U_rescale_axis = [ 0 0 1 ];
-global U_rescale
-U_rescale = -1/2000;
+U_rescale_axis = [ 0 0 0 ];
+global U_rescale;
+U_rescale = 1/100;
 
 % plot settings
 plot_FOPDT = false;
-plot_RLS = true;
-plot_MISE = true;
+plot_RLS = false;
+plot_MISE = false;
+
+% PIDC_V2 settings
+PID_Gain_my = 0.3;
+use_PIDC_V2 = false;
 
 % Joystick config. 
 % INFO: If sticks are centered normal behaviour will resume
@@ -60,6 +64,8 @@ joy_throttle = true;         % Override throttle with RC
 joy_rate = 100; throttle_rate = 1; % Rc rate p?? radion 
 
 %------------------------------- END CONFIG ------------------------------%
+
+
 
 %--- Workspace variables
 % delta time for simulation. Will be updated in main loop
@@ -164,29 +170,32 @@ end
 
 if calcISE
     if logs_enabled(1)
-        xLOG = zeros(4,ISE_samples);
+        xLOG = zeros(5,ISE_samples);
         MISEx = zeros(1,ISE_samples);
         IAEx = zeros(1,ISE_samples);
         TotMISEx = 0;
         rls(1).out = zeros(1,ISE_samples);
     end
     if logs_enabled(2)
-        yLOG = zeros(4,ISE_samples);
+        yLOG = zeros(5,ISE_samples);
         MISEy = zeros(1,ISE_samples);
         IAEy = zeros(1,ISE_samples);
         TotMISEy = 0;
         rls(2).out = zeros(1,ISE_samples);
     end
     if logs_enabled(3)
-        zLOG = zeros(4,ISE_samples);
+        zLOG = zeros(5,ISE_samples);
         MISEz = zeros(1,ISE_samples);
         IAEz = zeros(1,ISE_samples);
         TotMISEz = 0;
         rls(3).out = zeros(1,ISE_samples);
     end
-    U = zeros(4,ISE_samples);
-    gyro_derivatives = zeros(3);
+    U = zeros(3,ISE_samples);
+
 end
+    gyro_derivatives = zeros(1,3);
+    gyro_integral = zeros(1,3);
+    u_integral = zeros(1,3);
 
 
 
@@ -265,3 +274,5 @@ states      = zeros(1,length(fieldnames(pd_index)));
 % Array of contro outputs
 global outputs;
 outputs     = zeros(1,length(fieldnames(pd_index)));
+
+

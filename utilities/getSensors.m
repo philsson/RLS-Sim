@@ -72,6 +72,9 @@ if loop_counter > 1
     for i = 1:3
         gyro_derivatives(i) = (states(pd_index.g_roll -1 +i) - old_gyro_data(i))/dt;
         old_gyro_data(i) = states(pd_index.g_roll -1 +i);
+        
+        gyro_integral(i) = gyro_integral(i) + (states(pd_index.g_roll -1 +i))*dt;
+        u_integral(i) = u_integral(i) + outputs(pd_index.g_roll -1 +i)*dt;
     end
 end
 

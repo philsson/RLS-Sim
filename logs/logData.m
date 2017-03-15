@@ -12,7 +12,7 @@ global stop_sim;
 %disp(['loop counter: ', num2str(loop_counter)])
 if (calcISE && loop_counter <= ISE_samples && loop_counter ~= 0 && ~stop_sim)
     if logs_enabled(1)
-        xLOG(1:4,loop_counter) = [set_points(pd_index.g_roll) states(pd_index.g_roll) pid_data(pd_index.g_roll).e gyro_derivatives(1)];
+        xLOG(1:5,loop_counter) = [set_points(pd_index.g_roll) states(pd_index.g_roll) pid_data(pd_index.g_roll).e gyro_derivatives(1) gyro_integral(1)];
         if loop_counter > 1
             if step_enabled(1)
                 MISEx(loop_counter) = MISE(set_points(pd_index.g_roll),states(pd_index.g_roll),MISEx(loop_counter-1),time_since_last_step+1);
@@ -29,7 +29,7 @@ if (calcISE && loop_counter <= ISE_samples && loop_counter ~= 0 && ~stop_sim)
         %end
     end
     if logs_enabled(2)
-        yLOG(1:4,loop_counter) = [set_points(pd_index.g_pitch) states(pd_index.g_pitch) pid_data(pd_index.g_pitch).e gyro_derivatives(2)];
+        yLOG(1:5,loop_counter) = [set_points(pd_index.g_pitch) states(pd_index.g_pitch) pid_data(pd_index.g_pitch).e gyro_derivatives(2) gyro_integral(2)];
         if loop_counter > 1
             if step_enabled(2)
                 MISEy(loop_counter) = MISE(set_points(pd_index.g_pitch),states(pd_index.g_pitch),MISEy(loop_counter-1),time_since_last_step+1);
@@ -45,7 +45,7 @@ if (calcISE && loop_counter <= ISE_samples && loop_counter ~= 0 && ~stop_sim)
         %end
     end
     if logs_enabled(3)
-        zLOG(1:4,loop_counter) = [set_points(pd_index.g_yaw) states(pd_index.g_yaw) pid_data(pd_index.g_yaw).e gyro_derivatives(3)];
+        zLOG(1:5,loop_counter) = [set_points(pd_index.g_yaw) states(pd_index.g_yaw) pid_data(pd_index.g_yaw).e gyro_derivatives(3) gyro_integral(3)];
         if loop_counter > 1
             if step_enabled(3)
                 MISEz(loop_counter) = MISE(set_points(pd_index.g_yaw),states(pd_index.g_yaw),MISEz(loop_counter-1),time_since_last_step+1);
@@ -312,6 +312,17 @@ if stop_sim
     legend('r','y','y_{rls}')%,'y_d')
     hold off
   end
+  
+  % TEMP: plot derivative
+    figure
+    plot(1:size(zLOG(4,:),2),zLOG(4,:));
+    % TEMP
+    figure
+    plot(1:size(zLOG(5,:),2),zLOG(5,:));
 end
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%

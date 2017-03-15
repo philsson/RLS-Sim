@@ -4,6 +4,9 @@ close all
 clc;
 clear;
 
+% Add functions from the current dir and sub dirs
+addpath(genpath(pwd));
+
 %function MainMatlab()
     disp('Program started');
     % vrep=remApi('remoteApi','extApi.h'); % using the header (requires a compiler)
@@ -58,10 +61,12 @@ clear;
         
             if loop_counter == round( 0.3 *ISE_samples);
                 %setMassAndInertia(clientID, 0.12,[8e-06 0.000904 0.003]);
+                freq_resp_params = [ 0.2 0.2 ]
                 disp(['Doubling inertia! Iteration: ' num2str(loop_counter)])
             end
             if loop_counter == round( 0.6 *ISE_samples);
                 %setMassAndInertia(clientID, 0.12,[8e-06 0.000904 0.012]);
+                freq_resp_params = [ 0.35 0.5 ]
                 disp(['Doubling inertia! Iteration: ' num2str(loop_counter)])
             end
           
@@ -76,7 +81,11 @@ clear;
            
             % RLS uses information from motormixer
             % OBS: Unsure of where this should be
-            run_RLS;
+            if use_PIDC_V2
+                run_rls_gainPID;
+            else
+                run_RLS;
+            end
             
             % Now we see the result of previouse actuation
            
@@ -88,8 +97,12 @@ clear;
             % Calculate all PID loop outputs
             run_control;
             
-           % REMOVE THIS_ DEBUG: 
-            rls_data(3).weights'
+            logData;
+
+             save_data_for_log;
+           
+             
+      
             
             % Motormixer
             mixedMotors = motormixer(...
@@ -114,9 +127,7 @@ clear;
                 break;
             end
             
-             logData;
-
-             save_data_for_log;
+     
 
 
         end

@@ -14,7 +14,7 @@ function [ rls_data] = RLS_FUNC_Simple(y, u, rls_data)
 
 rls_data.RlsOut = rls_data.fi*rls_data.weights;
 
-my = 1;
+my = 0.995;
 
 
 rls_data.error = y - rls_data.fi*rls_data.weights;
@@ -28,8 +28,6 @@ K = rls_data.V*rls_data.fi;
 rls_data.weights = rls_data.weights + K*rls_data.error;
 
 rls_data.fi = u;
-
-
 
 
 

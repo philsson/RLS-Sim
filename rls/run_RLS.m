@@ -7,23 +7,34 @@ for i=1:3
             rls_data(i) = philip_rls2(states(pd_index.compass + i), outputs(pd_index.compass + i), rls_data(i));
         else
             rls_data(i) = RLS_FUNC(states(pd_index.compass + i), outputs(pd_index.compass + i), rls_data(i));
+            
+            
+            % Derivative
+            %rls_data(i) = RLS_FUNC(gyro_derivatives(i), outputs(pd_index.compass + i), rls_data(i));
+            
+            % Integral
+            %rls_data(i) = RLS_FUNC(states(pd_index.compass + i), u_integral(i), rls_data(i));
+            
+            
             rls_data_simple(i) = RLS_FUNC_Simple(states(pd_index.compass + i), outputs(pd_index.compass + i),rls_data_simple(i));
+            %rls_data_simple(i) = RLS_FUNC_Simple(gyro_derivatives(i), outputs(pd_index.compass + i),rls_data_simple(i));
             %rls_data(i) = old_RLS_FUNC(states(pd_index.compass + i), outputs(pd_index.compass + i), rls_data(i));
         end
         
         if use_rls_data_simple == true
             
             FOPDT_Data(i,2) = rls_data_simple(i).weights;
-            FOPDT_Data(i,1) = dt;
-            PID_Values = Get_Tuning_Parameters( FOPDT_Data(i,1:2), dt/2 );
+            FOPDT_Data(i,1) = 1;%dt;
+        
             
         else
         
             FOPDT_Data(i,1:2) = Get_FOPDT_Data( rls_data(i).weights, dt );
-            PID_Values = Get_Tuning_Parameters( FOPDT_Data(i,1:2), dt/2 );
+            
         
         end
-            
+            PID_Values = Get_Tuning_Parameters( FOPDT_Data(i,1:2), dt/2 );
+            %PID_Values = Get_Tuning_Parameters( FOPDT_Data(i,1:2), 0.8 );
        
         if (~isreal(PID_Values))
             disp('PID Data not real numbers!!!')
@@ -44,15 +55,15 @@ for i=1:3
                 disp('Negative PIDS')
             end
 
-            by10 = false;
-            if by10
-                pid_data(pd_index.compass + i).Kp = keepPositive(PID_Values(1))/10;
-                pid_data(pd_index.compass + i).Ki = keepPositive(PID_Values(2))/10;
-                pid_data(pd_index.compass + i).Kd = keepPositive(PID_Values(3))/10;
+            
+            if U_rescale_axis(i)
+                pid_data(pd_index.compass + i).Kp = abs(PID_Values(1)*U_rescale);
+                pid_data(pd_index.compass + i).Ki = abs(PID_Values(2)*U_rescale);
+                pid_data(pd_index.compass + i).Kd = abs(PID_Values(3)*U_rescale);
             else
-                pid_data(pd_index.compass + i).Kp = PID_Values(1)*sign(U_rescale); %/10;
-                pid_data(pd_index.compass + i).Ki = PID_Values(2)*sign(U_rescale); %/10;
-                pid_data(pd_index.compass + i).Kd = PID_Values(3)*sign(U_rescale); %/10;
+                pid_data(pd_index.compass + i).Kp = abs(PID_Values(1));
+                pid_data(pd_index.compass + i).Ki = abs(PID_Values(2));
+                pid_data(pd_index.compass + i).Kd = abs(PID_Values(3));
             end
         end
     end

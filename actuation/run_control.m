@@ -1,5 +1,7 @@
 global outputs;
 global pd_index;
+global U_rescale;
+global U_rescale_axis;
 global dt;
 
 
@@ -150,16 +152,28 @@ if (smooth_moving_target && follow_target)
     vrep.simxSetObjectPosition(clientID,quad_target,-1,[smooth_xPos smooth_yPos smooth_zPos],vrep.simx_opmode_oneshot);
 end
 
-
-pid_data(pd_index.g_roll).e     = set_points(pd_index.g_roll)       -   states(pd_index.g_roll);
-pid_data(pd_index.g_pitch).e    = set_points(pd_index.g_pitch)      -   states(pd_index.g_pitch);
-pid_data(pd_index.g_yaw).e      = set_points(pd_index.g_yaw)        -   states(pd_index.g_yaw);
+if ~use_PIDC_V2
+    pid_data(pd_index.g_roll).e     = set_points(pd_index.g_roll)       -   states(pd_index.g_roll);
+    pid_data(pd_index.g_pitch).e    = set_points(pd_index.g_pitch)      -   states(pd_index.g_pitch);
+    pid_data(pd_index.g_yaw).e      = set_points(pd_index.g_yaw)        -   states(pd_index.g_yaw);
+else
+    pid_data_V2(1).e     = set_points(pd_index.g_roll)       -   states(pd_index.g_roll);
+    pid_data_V2(2).e     = set_points(pd_index.g_pitch)      -   states(pd_index.g_pitch);
+    pid_data_V2(3).e     = set_points(pd_index.g_yaw)        -   states(pd_index.g_yaw);
+    
+end
 
 
 % Control for gyro
-outputs(pd_index.g_roll)  = PID_CONTROLLER(pd_index.g_roll);
-outputs(pd_index.g_pitch) = PID_CONTROLLER(pd_index.g_pitch);
-outputs(pd_index.g_yaw)   = PID_CONTROLLER(pd_index.g_yaw);
+if ~use_PIDC_V2
+    outputs(pd_index.g_roll)  = PID_CONTROLLER(pd_index.g_roll);
+    outputs(pd_index.g_pitch) = PID_CONTROLLER(pd_index.g_pitch);
+    outputs(pd_index.g_yaw)   = PID_CONTROLLER(pd_index.g_yaw);
+else
+    [outputs(pd_index.g_roll),  pid_data_V2(1)] = PIDC_V2(pid_data_V2(1));
+    [outputs(pd_index.g_pitch), pid_data_V2(2)] = PIDC_V2(pid_data_V2(2));
+    [outputs(pd_index.g_yaw),   pid_data_V2(3)] = PIDC_V2(pid_data_V2(3));
+end
 
 if impulse_enabled(1) || impulse_enabled(2) || impulse_enabled(3)
     outputs(pd_index.g_roll:pd_index.g_yaw) = [0 0 0];
@@ -172,8 +186,12 @@ for i = 1:3
         outputs(pd_index.g_roll -1 +i) = impulse_amplitude;
     end
     if U_rescale_axis(i)
-        %outputs(pd_index.g_roll -1 +i) = outputs(pd_index.g_roll -1 +i)*U_rescale;
-        outputs(pd_index.g_roll -1 +i) = sign(U_rescale)*outputs(pd_index.g_roll -1 +i);
+        if ~use_PIDC_V2
+            %outputs(pd_index.g_roll -1 +i) = outputs(pd_index.g_roll -1 +i)*U_rescale;
+            outputs(pd_index.g_roll -1 +i) = U_rescale*outputs(pd_index.g_roll -1 +i);
+        else
+            outputs(pd_index.g_roll -1 +i) = U_rescale*outputs(pd_index.g_roll -1 +i);
+        end
     end
 end
 
