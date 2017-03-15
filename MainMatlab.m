@@ -53,9 +53,9 @@ addpath(genpath(pwd));
         %for i=0:300
         
         % DO NOT CHANGE THESE VALUES OR I WILL KILL YOU PERSONALLY!!!
-        setMassAndInertia(clientID, 0.11999999731779,[8e-06 0.000904 0.000904]);
+        %setMassAndInertia(clientID, 0.11999999731779,[8e-06 0.000904 0.000904]);
         
-        %setMassAndInertia(clientID, 0.11999999731779,[4e-06 0.000104 0.00054]);
+        setMassAndInertia(clientID, 1,[1 1 1]);
         h = waitbar(0,'Running Simulation...');
         while (1)
         
