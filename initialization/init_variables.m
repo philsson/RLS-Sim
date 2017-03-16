@@ -4,17 +4,16 @@ adjust_heading = true;              % Heading will be adjust to the trajectory (
 nav_heading_threshold = 0.4;        % The distance required for the heading to be set (avst??nd fr??n gr??n kula)
 follow_target = true;               % Follow the position of the green boll 
 
-use_philips_rls = false;            % RLS phillip
 use_rls_data_simple = false;
 apply_evo_freq = 100;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
 apply_evo_first_offset = 50;
 
-logSim = true;                     % If this is true then we will log "SIM_samples" many iterations and calculate the ISE (mean error).
+logSim = true;                      % If this is true then we will log "SIM_samples" many iterations and calculate the ISE (mean error).
 SIM_samples = 500;                  % Hur m??nga iterationer simuleringen k??r
 
 impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
 
-global stop_on_imaginary_numbers;   % S??ger sig sj??lv
+global stop_on_imaginary_numbers;
 stop_on_imaginary_numbers = false;
 
 %                   X(roll)   Y(pitch)      Z(yaw)
@@ -26,9 +25,9 @@ adapt_enabled       =  [ 0 0 1 ];    % RLS startas tillsammans med tuning regler
 apply_gain_tuning   =  [ 0 0 1 ];    % Startar Gain tuning istället för de vanliga FOPDT tuning reglerna
 apply_evo           =  [ 0 0 0 ];    % Till??mpar tuning reglerna under realtid
 
-rand_RLS_data   =  [ 1 1 1 ];    % If false then its loaded from files
+init_RLS_data   =  [ 1 1 1 ];    % If false then its loaded from files
 save_RLS_data   =  [ 1 1 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
-log_PID_evo     =  [ 1 1 1 ];    % Loggar pidarna
+log_PID_evo     =  [ 1 1 1 ];    % DONT USED NOW
 
 freq_resp_test  =  [ 0 0 0 ];    % Overwrides the control signal and induces a sine wave
 
@@ -37,7 +36,7 @@ freq_resp_params = [ 0.5 0.2 ]; %[Amplitude Frequency] Freq in hz
 
 rand_steps = false;             % if enabled steps will be random in time and amplitude constrained by the next two variables
 step_amplitude   = 5;           % Rotational rate to give as target value
-step_interval_ms = 1500;         % Needs LDM to work. Revise implementation (in run_control)
+step_interval_ms = 1500;        % Needs LDM to work. Revise implementation (in run_control)
 impulse_amplitude = 0.5;        % On the control signal
 rand_target = false;
 rand_target_amplitude = [2 2 2]; 
@@ -49,9 +48,13 @@ global U_rescale;
 U_rescale = 1/100;
 
 % plot settings
+<<<<<<< HEAD
 plot_FOPDT_Data = true;   % Provides a plot on the FOPDT data and current PID values
 plot_RLS_Data = true;     % Provides a plot on current outputs and estimated rls data and weights
 plot_Error_Data = true;   % Provides a plot on different error data (MISE, MISE blocks, MAE, MAE blocks)
+=======
+plot_MISE = false;
+>>>>>>> origin/master
 
 % PIDC_V2 settings
 PID_Gain_my = 0.3;
@@ -81,25 +84,17 @@ time_fraction = 1; % for rand step. Desides how much of the time step is used. I
 time_since_last_step = step_interval_ms*dt*1000; % Actually interations
 step_sign = 1;
 
-rlsfileX = 'rlsdataX.mat'; rlsfileY = 'rlsdataY.mat'; rlsfileZ = 'rlsdataZ.mat';
+rlsfileX = [pwd,'/rls_data/rls_dataX.mat']; rlsfileY = [pwd,'/rls_data/rls_dataY.mat']; rlsfileZ = [pwd,'/rls_data/rls_dataZ.mat'];
+
 
 % Initialize rls data or load stored data for axis 'i'
 for i=1:3
     if adapt_enabled(i)
         FOPDT_Data(i,1:2) = [1 1]; % TODO:  Not sure what good initial values for this is
-        if rand_RLS_data(i)
-            if use_philips_rls
-                rls_data(i) = philip_init_rls_data(2);
-                
-                disp('temp fix. Setting manual tuning backtracked values')
-                %rls_data(i).weights = [0.8088; 46.2830]
-            else
+        if init_RLS_data(i)
                 rls_data(i) = init_rls_data(2);
                 
                 rls_data_simple(i) = init_rls_data(1);
-                
-            end
-
         else
             switch i
                 case 1
@@ -121,32 +116,7 @@ for i=1:3
     end
 end
 
-%%%%%%% TEMP INITIALIZATION FOR DEBUG %%%%%%%%
-if plot_FOPDT
-    logFOPDT = zeros(2,SIM_samples);
-end
-
-%rls
-if plot_RLS
-    for i=1:3
-        rls(i).weights = zeros(2,SIM_samples);
-    end
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-if log_PID_evo(1) && logs_enabled(1)
-    xPIDlog = zeros(3,SIM_samples);
-end
-if log_PID_evo(2) && logs_enabled(2)
-    yPIDlog = zeros(3,SIM_samples);
-end
-if log_PID_evo(3) && logs_enabled(3)
-    zPIDlog = zeros(3,SIM_samples);
-end
-
-
-
-
+% Joystick enabled
 if use_joystick
     joy = vrjoystick(1);
 end
@@ -221,7 +191,6 @@ for i = 1:3
         end
     end
 end
-
 
 Manual_PID_Scale = 1.0;
 for i= 3:3

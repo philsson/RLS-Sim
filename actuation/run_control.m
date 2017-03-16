@@ -9,9 +9,6 @@ global dt;
 
 % Follow the green boll
 if (follow_target)
-    %set_points(pd_index.height) = constrain(quad_target_pos(3),pid_data(pd_index.height).saturation);
-    %set_points(pd_index.p_x)    = constrain(quad_target_pos(1),pid_data(pd_index.p_x).saturation);
-    %set_points(pd_index.p_y)    = constrain(quad_target_pos(2),pid_data(pd_index.p_y).saturation);
     set_points(pd_index.height) = quad_target_pos(3);
     set_points(pd_index.p_x)    = quad_target_pos(1);
     set_points(pd_index.p_y)    = quad_target_pos(2);
@@ -79,12 +76,7 @@ elseif (pid_data(pd_index.compass).e > 180)
 end
 
 
-%if (abs(quad_angles(3) - set_points(pd_index.compass)) > 20)
-%    pid_data(pd_index.a_roll).e = 0;
-%    pid_data(pd_index.a_pitch).e = 0;
-%end
-
-% Generating control data for acc and 
+% Generating control data for acc and yaw
 outputs(pd_index.a_roll)  = PIDC_V1(pd_index.a_roll);
 outputs(pd_index.a_pitch) = PIDC_V1(pd_index.a_pitch);
 outputs(pd_index.compass) = PIDC_V1(pd_index.compass);
@@ -95,10 +87,6 @@ if (use_joystick && joy_gyro && (RC.roll^2 + RC.pitch^2 + RC.yaw^2) > joy_rate*0
     set_points(pd_index.g_pitch) = RC.pitch;
     set_points(pd_index.g_yaw)   = RC.yaw;
 else
-    %set_points(pd_index.g_roll)  = constrain(outputs(pd_index.a_roll),pid_data(pd_index.g_roll).saturation);
-    %%set_points(pd_index.g_roll) = set_points(pd_index.g_roll) + sin_wave(20)*30;
-    %set_points(pd_index.g_pitch) = constrain(outputs(pd_index.a_pitch),pid_data(pd_index.g_pitch).saturation);
-    %set_points(pd_index.g_yaw)   = constrain(outputs(pd_index.compass),pid_data(pd_index.g_yaw).saturation);
     if ~step_enabled(1)
         set_points(pd_index.g_roll)  = outputs(pd_index.a_roll);
     end
@@ -124,10 +112,8 @@ if (time_since_last_step*dt*1000 >= time_fraction*step_interval_ms)
                 end
                 step_sign = -step_sign;
                 if (rand_steps)
-
                     set_points(pd_index.g_yaw - 3 + i) = step_sign*rand*step_amplitude;
                     time_fraction = rand;
-
                 else
                     set_points(pd_index.g_yaw - 3 + i) = step_sign*step_amplitude; 
                     time_fraction = 1;
@@ -145,35 +131,24 @@ end
 
 % Smooth moving target
 if (smooth_moving_target && follow_target)
-    
     smooth_xPos = 2*rand_target_amplitude(1)*abs(sin(loop_counter/175))^2*abs(cos(loop_counter/450))-rand_target_amplitude(1);
     smooth_yPos = 2*rand_target_amplitude(2)*abs(sin(loop_counter/250))*abs(cos(loop_counter/333))^3-rand_target_amplitude(1);
     smooth_zPos = rand_target_amplitude(3)*abs(cos(loop_counter/1000)) + 1;
     vrep.simxSetObjectPosition(clientID,quad_target,-1,[smooth_xPos smooth_yPos smooth_zPos],vrep.simx_opmode_oneshot);
 end
 
-if ~use_PIDC_V2
-    pid_data(pd_index.g_roll).e     = set_points(pd_index.g_roll)       -   states(pd_index.g_roll);
-    pid_data(pd_index.g_pitch).e    = set_points(pd_index.g_pitch)      -   states(pd_index.g_pitch);
-    pid_data(pd_index.g_yaw).e      = set_points(pd_index.g_yaw)        -   states(pd_index.g_yaw);
-else
-    pid_data_V2(1).e     = set_points(pd_index.g_roll)       -   states(pd_index.g_roll);
-    pid_data_V2(2).e     = set_points(pd_index.g_pitch)      -   states(pd_index.g_pitch);
-    pid_data_V2(3).e     = set_points(pd_index.g_yaw)        -   states(pd_index.g_yaw);
-    
+
+% Gyro
+for i = 1:3
+    if use_PIDC_V2
+        pid_data_V2(i).e                    = set_points(pd_index.g_roll -1 +i) - states(pd_index.g_roll -1 +i);
+        [outputs(pd_index.g_roll -1 +i),  pid_data_V2(i)] = PIDC_V2(pid_data_V2(i));
+    else
+        pid_data(pd_index.g_roll -1 +i).e   = set_points(pd_index.g_roll -1 +i) - states(pd_index.g_roll -1 +i);
+        outputs(pd_index.g_roll -1 +i)  = PIDC_V1(pd_index.g_roll -1 +i);
+    end
 end
 
-
-% Control for gyro
-if ~use_PIDC_V2
-    outputs(pd_index.g_roll)  = PIDC_V1(pd_index.g_roll);
-    outputs(pd_index.g_pitch) = PIDC_V1(pd_index.g_pitch);
-    outputs(pd_index.g_yaw)   = PIDC_V1(pd_index.g_yaw);
-else
-    [outputs(pd_index.g_roll),  pid_data_V2(1)] = PIDC_V2(pid_data_V2(1));
-    [outputs(pd_index.g_pitch), pid_data_V2(2)] = PIDC_V2(pid_data_V2(2));
-    [outputs(pd_index.g_yaw),   pid_data_V2(3)] = PIDC_V2(pid_data_V2(3));
-end
 
 if impulse_enabled(1) || impulse_enabled(2) || impulse_enabled(3)
     outputs(pd_index.g_roll:pd_index.g_yaw) = [0 0 0];
@@ -193,8 +168,5 @@ for i = 1:3
             outputs(pd_index.g_roll -1 +i) = U_rescale*outputs(pd_index.g_roll -1 +i);
         end
     end
-end
-
- %outputs(pd_index.g_roll:pd_index.g_yaw) = [0 0 0];
- 
+end 
  
