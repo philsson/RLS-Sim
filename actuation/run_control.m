@@ -113,7 +113,7 @@ end
 
 % Steps (if active)
 time_since_last_step = time_since_last_step + 1;
-if (time_since_last_step*dt*1000 > time_fraction*step_interval_ms)
+if (time_since_last_step*dt*1000 >= time_fraction*step_interval_ms)
     time_since_last_step = 0; % Reset step time
     
     for i=1:3

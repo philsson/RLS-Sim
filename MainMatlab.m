@@ -78,11 +78,9 @@ addpath(genpath(pwd));
            
             % RLS uses information from motormixer
             % OBS: Unsure of where this should be
-            if use_PIDC_V2
-                run_rls_gainPID;
-            else
-                run_RLS;
-            end
+  
+            run_RLS;
+            
             
             % Now we see the result of previouse actuation
            

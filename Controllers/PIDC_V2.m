@@ -21,7 +21,7 @@ P = pid_data.K * pid_data.e;
 % Integral is only added if saturation is not reached
 I = pid_data.integral;
 if ~motorLimitReached
-    I = pid_data.integral + pid_data.K/pid_data.Ti*(pid_data.e*dt);
+    I = pid_data.integral + (pid_data.K/pid_data.Ti)*(pid_data.e*dt);
 end
 
 % Derivative calculation

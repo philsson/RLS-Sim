@@ -41,11 +41,6 @@ function [ PID_Values ] = Get_Tuning_Parameters( FOPDT_Data, L )
     Kp = (a1/K)*(tau^b1);
     Ti = (T/(a2 + b2*tau));
     Td = a3*T*(tau^b3);
-    Ki = 0; %not calculated yet
-    Kd = 0; %not calculated yet
-
-    %PID_Values = [Kp Ti Td];
-
   
     % Konvert to K values
     if ~isreal(Kp)
@@ -53,40 +48,25 @@ function [ PID_Values ] = Get_Tuning_Parameters( FOPDT_Data, L )
         stop = true;
     end
     
-    if isreal(Ti)
-        Ki = (1/Ti)*Kp; % Eller Kp/Ti
-    else
+    if ~isreal(Ti)
         disp('Ti not real')
         stop = true;
     end
     
-    if isreal(Td)
-        Kd = Kp*Td;
-    else
+    if ~isreal(Td)
         disp('Td not real')
-        stop = true;
-    end
-
-    if ~isreal(Kd)
-        disp('Kd not real')
-        stop = true;
-    end
-
-    if ~isreal(Ki)
-        disp('Ki not real')
         stop = true;
     end
     
     if stop
-        disp(['Kp:' num2str(Kp) ' Ti:' num2str(Ti) ' Td:' num2str(Td) ' Ki:' num2str(Ki) ' Kd:' num2str(Kd)]);
-        %[Kp Ti Td Ki Kd]
+        disp(['Kp:' num2str(Kp) ' Ti:' num2str(Ti) ' Td:' num2str(Td)]);
     end
     
     if (stop_on_imaginary_numbers && stop)
         stop_sim = true;
     end
     
-    PID_Values = [Kp Ki Kd];
+    PID_Values = [Kp Ti Td];
 
 end
 

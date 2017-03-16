@@ -22,8 +22,9 @@ logs_enabled    =  [ 0 0 1 ];    % Enable log
 step_enabled    =  [ 0 0 1 ];    % Didact Delta, korrigerar set points, fj??rkontroll och g??rna kula eller step rerefernser
 impulse_enabled =  [ 0 0 0 ];
 
-adapt_enabled   =  [ 1 1 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
-apply_evo       =  [ 0 0 0 ];    % Till??mpar tuning reglerna under realtid
+adapt_enabled       =  [ 0 0 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
+apply_gain_tuning   =  [ 0 0 1 ];    % Startar Gain tuning istället för de vanliga FOPDT tuning reglerna
+apply_evo           =  [ 0 0 0 ];    % Till??mpar tuning reglerna under realtid
 
 rand_RLS_data   =  [ 1 1 1 ];    % If false then its loaded from files
 save_RLS_data   =  [ 1 1 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
@@ -48,13 +49,13 @@ global U_rescale;
 U_rescale = 1/100;
 
 % plot settings
-plot_FOPDT = false;
-plot_RLS = false;
-plot_MISE = false;
+plot_FOPDT_Data = true;   % Provides a plot on the FOPDT data and current PID values
+plot_RLS_Data = true;     % Provides a plot on current outputs and estimated rls data and weights
+plot_Error_Data = true;   % Provides a plot on different error data (MISE, MISE blocks, MAE, MAE blocks)
 
 % PIDC_V2 settings
 PID_Gain_my = 0.3;
-use_PIDC_V2 = false;
+use_PIDC_V2 = true;
 
 % Joystick config. 
 % INFO: If sticks are centered normal behaviour will resume
@@ -72,6 +73,9 @@ joy_rate = 100; throttle_rate = 1; % Rc rate p?? radion
 global dt;
 %dt = 0.010;
 dt = 0.025;
+
+global dead_time_L;
+dead_time_L = dt/2;
 
 time_fraction = 1; % for rand step. Desides how much of the time step is used. Initialized 1
 time_since_last_step = step_interval_ms*dt*1000; % Actually interations
@@ -153,6 +157,7 @@ log_types = {...
     'Kp', 'Kd', 'Ki','Ti','Td'...
     'MISE', 'MAE', 'MISE_blocks', 'MAE_blocks',...
     'rls_w1', 'rls_w2'...
+    'K', 'T', 'L',...
 };
  
 for i = 1:3
