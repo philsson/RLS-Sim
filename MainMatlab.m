@@ -52,16 +52,18 @@ addpath(genpath(pwd));
         
         setMassAndInertia(clientID, 1.0,[1.0 1.0 1.0]);
         h = waitbar(0,'Running Simulation...');
+        
+        setMassAndInertia(clientID, 1,[1 1 30]);
         while (1)
         
             if loop_counter == round( 0.3 *SIM_samples);
-                %setMassAndInertia(clientID, 0.12,[8e-06 0.000904 0.003]);
-                freq_resp_params = [ 0.2 0.2 ]
+                %setMassAndInertia(clientID, 1,[1 1 30]);
+                %freq_resp_params = [ 0.2 0.2 ];
                 disp(['Doubling inertia! Iteration: ' num2str(loop_counter)])
             end
             if loop_counter == round( 0.6 *SIM_samples);
-                %setMassAndInertia(clientID, 0.12,[8e-06 0.000904 0.012]);
-                freq_resp_params = [ 0.35 0.5 ]
+                %setMassAndInertia(clientID, 1,[1 1 1.5]);
+                %freq_resp_params = [ 0.35 0.5 ];
                 disp(['Doubling inertia! Iteration: ' num2str(loop_counter)])
             end
           
@@ -90,7 +92,6 @@ addpath(genpath(pwd));
             
             logData;
 
-            %save_data_for_log;
               
             % Motormixer
             mixedMotors = motormixer(...
@@ -118,9 +119,9 @@ addpath(genpath(pwd));
         end
        
         
-        if (loop_counter < SIM_samples)
-            logData % This last time to plot only
-        end
+        %if (loop_counter < SIM_samples)
+        %    logData % This last time to plot only
+        %end
         
         % stop the simulation:
         vrep.simxStopSimulation(clientID,vrep.simx_opmode_blocking);

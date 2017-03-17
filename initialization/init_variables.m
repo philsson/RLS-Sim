@@ -4,12 +4,12 @@ adjust_heading = true;              % Heading will be adjust to the trajectory (
 nav_heading_threshold = 0.4;        % The distance required for the heading to be set (avst??nd fr??n gr??n kula)
 follow_target = true;               % Follow the position of the green boll 
 
-use_rls_data_simple = false;
+rls_complexity = 2;
 apply_evo_freq = 100;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
-apply_evo_first_offset = 50;
+apply_evo_first_offset = 1;
 
 logSim = true;                      % If this is true then we will log "SIM_samples" many iterations and calculate the ISE (mean error).
-SIM_samples = 500;                  % Hur m??nga iterationer simuleringen k??r
+SIM_samples = 6000;                  % Hur m??nga iterationer simuleringen k??r
 
 impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
 
@@ -22,10 +22,10 @@ step_enabled    =  [ 0 0 1 ];    % Didact Delta, korrigerar set points, fj??rkon
 impulse_enabled =  [ 0 0 0 ];
 
 adapt_enabled       =  [ 0 0 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
-apply_gain_tuning   =  [ 0 0 1 ];    % Startar Gain tuning istället för de vanliga FOPDT tuning reglerna
-apply_evo           =  [ 0 0 0 ];    % Till??mpar tuning reglerna under realtid
+apply_gain_tuning   =  [ 0 0 1 ];    % Startar Gain tuning istï¿½llet fï¿½r de vanliga FOPDT tuning reglerna
+apply_evo           =  [ 0 0 1 ];    % Till??mpar tuning reglerna under realtid
 
-init_RLS_data   =  [ 1 1 1 ];    % If false then its loaded from files
+init_RLS_data   =  [ 1 1 0 ];    % If false then its loaded from files
 save_RLS_data   =  [ 1 1 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
 log_PID_evo     =  [ 1 1 1 ];    % DONT USED NOW
 
@@ -35,29 +35,27 @@ freq_resp_test  =  [ 0 0 0 ];    % Overwrides the control signal and induces a s
 freq_resp_params = [ 0.5 0.2 ]; %[Amplitude Frequency] Freq in hz
 
 rand_steps = false;             % if enabled steps will be random in time and amplitude constrained by the next two variables
-step_amplitude   = 5;           % Rotational rate to give as target value
-step_interval_ms = 1500;        % Needs LDM to work. Revise implementation (in run_control)
+step_amplitude   = 8;           % Rotational rate to give as target value
+step_interval_ms = 1800;        % Needs LDM to work. Revise implementation (in run_control)
 impulse_amplitude = 0.5;        % On the control signal
 rand_target = false;
 rand_target_amplitude = [2 2 2]; 
 smooth_moving_target = false;   % Follow the green boll in a smooth way
 
-global U_rescale_axis;
-U_rescale_axis = [ 0 0 0 ];
-global U_rescale;
-U_rescale = 1/100;
+global Gain_rescale_axis;
+Gain_rescale_axis = [ 0 0 0 ];
+global Gain_rescale;
+Gain_rescale = 10;
 
 % plot settings
-<<<<<<< HEAD
 plot_FOPDT_Data = true;   % Provides a plot on the FOPDT data and current PID values
 plot_RLS_Data = true;     % Provides a plot on current outputs and estimated rls data and weights
 plot_Error_Data = true;   % Provides a plot on different error data (MISE, MISE blocks, MAE, MAE blocks)
-=======
-plot_MISE = false;
->>>>>>> origin/master
+
 
 % PIDC_V2 settings
-PID_Gain_my = 0.3;
+%PID_Gain_my = 0.01;
+PID_Gain_my = 1000; % 2 weights
 use_PIDC_V2 = true;
 
 % Joystick config. 
@@ -92,9 +90,8 @@ for i=1:3
     if adapt_enabled(i)
         FOPDT_Data(i,1:2) = [1 1]; % TODO:  Not sure what good initial values for this is
         if init_RLS_data(i)
-                rls_data(i) = init_rls_data(2);
+                rls_data(i) = init_rls_data(rls_complexity);
                 
-                rls_data_simple(i) = init_rls_data(1);
         else
             switch i
                 case 1
@@ -183,21 +180,18 @@ defaultPIDs;
 %pid_data(pd_index.g_yaw).saturation = 0.5;
 
 for i = 1:3
-    if U_rescale_axis(i)
-        fields = fieldnames(pid_data(i))
+    if Gain_rescale_axis(i)
+        fields = fieldnames(pid_data(i));
         for j = 1:numel(fields)-1 % Excluding the filter
-            pid_data(pd_index.g_roll -1 + i).(fields{j}) = abs(pid_data(pd_index.g_roll -1 + i).(fields{j})*U_rescale);
-          
+            pid_data(pd_index.g_roll -1 + i).(fields{j}) = abs(pid_data(pd_index.g_roll -1 + i).(fields{j})/Gain_rescale);
         end
+        pid_data_V2(i).K = pid_data_V2(i).K/Gain_rescale;
+        pid_data_V2(i).saturation = pid_data_V2(i).saturation/Gain_rescale;
+        pid_data_V2(i).i_max = pid_data_V2(i).i_max/Gain_rescale;
     end
 end
 
-Manual_PID_Scale = 1.0;
-for i= 3:3
-    pid_data(pd_index.g_roll -1 +i).Kp = pid_data(pd_index.g_roll -1 +i).Kp*Manual_PID_Scale;
-    pid_data(pd_index.g_roll -1 +i).Ki = pid_data(pd_index.g_roll -1 +i).Ki*Manual_PID_Scale;
-    pid_data(pd_index.g_roll -1 +i).Kd = pid_data(pd_index.g_roll -1 +i).Kd*Manual_PID_Scale;
-end
+PID_Values = zeros(3,3);
 
 
 % Array of setpoints. Indexed by for ex "set_points(pd_index.roll)"

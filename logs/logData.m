@@ -13,11 +13,16 @@ if (logSim && loop_counter <= SIM_samples && loop_counter ~= 0 && ~stop_sim)
 
             log(i).y_rls(loop_counter) = rls_data(i).RlsOut;
             log(i).rls_w1(loop_counter) = rls_data(i).weights(1);
-            log(i).rls_w2(loop_counter) = rls_data(i).weights(2);
-
+            if rls_complexity > 1
+                log(i).rls_w2(loop_counter) = rls_data(i).weights(2);
+            end
+            
+            
             log(i).L(loop_counter) = FOPDT_Data(i,3);
             log(i).K(loop_counter) = FOPDT_Data(i,2);
             log(i).T(loop_counter) = FOPDT_Data(i,1); 
+            
+            log(i).Kp_evo(loop_counter) = PID_Values(i,1);
 
             if use_PIDC_V2 == true
                 log(i).Kp(loop_counter) = pid_data_V2(i).K;
@@ -37,12 +42,12 @@ if (logSim && loop_counter <= SIM_samples && loop_counter ~= 0 && ~stop_sim)
 
 
             if  loop_counter > 1
-                if step_enabled(1)
+                if step_enabled(i)
                    log(i).MISE_blocks(loop_counter) = MISE(set_points(pd_index.g_roll -1 +i),states(pd_index.g_roll -1 +i),log(i).MISE_blocks(loop_counter-1),time_since_last_step+1);
                    log(i).MAE_blocks(loop_counter) = MAE(set_points(pd_index.g_roll -1 +i),states(pd_index.g_roll -1 +i),log(i).MAE_blocks(loop_counter-1),time_since_last_step+1);
                 end
-                log(i).MISE_blocks(loop_counter) = MISE(set_points(pd_index.g_roll),states(pd_index.g_roll), log(i).MISE_blocks(loop_counter-1),loop_counter-1);
-                log(i).MAE_blocks(loop_counter) = MAE(set_points(pd_index.g_roll),states(pd_index.g_roll), log(i).MAE_blocks(loop_counter-1),loop_counter-1);
+                log(i).MISE(loop_counter) = MISE(set_points(pd_index.g_roll -1 +i),states(pd_index.g_roll -1 +i), log(i).MISE(loop_counter-1),loop_counter-1);
+                log(i).MAE(loop_counter) = MAE(set_points(pd_index.g_roll -1 +i),states(pd_index.g_roll -1 +i), log(i).MAE(loop_counter-1),loop_counter-1);
             end      
         end
     end
@@ -90,7 +95,9 @@ elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
 
              subplot(3,1,3); hold all; grid on;
              plot(1:length(log(i).rls_w1),log(i).rls_w1);
-             plot(1:length(log(i).rls_w2),log(i).rls_w2);
+             if rls_complexity > 1
+                plot(1:length(log(i).rls_w2),log(i).rls_w2);
+             end
              legend('w1', 'w2');
              ylabel('RLS Weights');
          else
@@ -119,7 +126,7 @@ elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
              ylabel('MISE');
 
              subplot(4,1,2); hold all; grid on;
-             plot(1:length(log(i).MISE_blocks(step_size:step_size+1:length(log(i).MISE_blocks))),log(i).MISE_blocks(step_size:step_size+1:length(log(i).MISE_blocks)));
+             plot(1:length(log(i).MISE_blocks(step_size-1:step_size:length(log(i).MISE_blocks))),log(i).MISE_blocks(step_size-1:step_size:length(log(i).MISE_blocks)));
              legend('MISE/setpoint');
              ylabel('MISE / new setpoint');
 
@@ -129,7 +136,7 @@ elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
              ylabel('MAE');
 
              subplot(4,1,4); hold all; grid on;
-             plot(1:length(log(i).MAE_blocks),log(i).MAE_blocks);
+             plot(1:length(log(i).MAE_blocks(step_size-1:step_size:length(log(i).MAE_blocks))),log(i).MAE_blocks(step_size-1:step_size:length(log(i).MAE_blocks)));
              legend('MAE /setpoint');
              ylabel('MAE/ new setpoint');
          end
@@ -148,9 +155,10 @@ elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
              if use_PIDC_V2 == true
                  subplot(2,1,2); hold all; grid on;
                  plot(1:length(log(i).Kp),log(i).Kp);
-                 plot(1:length(log(i).Ti),log(i).Ti);
-                 plot(1:length(log(i).Td),log(i).Td);
-                 legend('Kp', 'Ti', 'Td');
+                 plot(1:length(log(i).Kp_evo),log(i).Kp_evo);
+                 %plot(1:length(log(i).Ti),log(i).Ti);
+                 %plot(1:length(log(i).Td),log(i).Td);
+                 legend('Kp','Kp evo', 'Ti', 'Td');
                  ylabel('PID values');         
              else
                  subplot(2,1,2); hold all; grid on;
@@ -169,5 +177,5 @@ elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
 %             figure(fig_IAEy);
 %             plot(IAEy(step_size:step_size+1:loop_counter-1)');
    
-
+    stop_sim = true;
 end

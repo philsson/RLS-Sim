@@ -12,5 +12,9 @@ pid_data(pd_index).filter(filter_index.state) =...
     (input - pid_data(pd_index).filter(filter_index.state));
 
 state = pid_data(pd_index).filter(filter_index.state);
+
+% y = y + dt/RC + dt*(x - y)
+% where RC = 1/(2*pi*f_cut)
+% and f_cut = 100
 end
 

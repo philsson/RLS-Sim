@@ -1,7 +1,7 @@
 global outputs;
 global pd_index;
-global U_rescale;
-global U_rescale_axis;
+global Gain_rescale;
+global Gain_rescale_axis;
 global dt;
 
 
@@ -159,14 +159,6 @@ for i = 1:3
     end
     if impulse_enabled(i) && loop_counter == impulse_enabled_count
         outputs(pd_index.g_roll -1 +i) = impulse_amplitude;
-    end
-    if U_rescale_axis(i)
-        if ~use_PIDC_V2
-            %outputs(pd_index.g_roll -1 +i) = outputs(pd_index.g_roll -1 +i)*U_rescale;
-            outputs(pd_index.g_roll -1 +i) = U_rescale*outputs(pd_index.g_roll -1 +i);
-        else
-            outputs(pd_index.g_roll -1 +i) = U_rescale*outputs(pd_index.g_roll -1 +i);
-        end
     end
 end 
  

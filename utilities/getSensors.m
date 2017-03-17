@@ -60,7 +60,7 @@ states(pd_index.g_roll)  = quad_gyro_data(1);
 states(pd_index.g_pitch) = quad_gyro_data(2);
 states(pd_index.g_yaw)   = quad_gyro_data(3);
 
-if isnan(states)
+if sum(isnan(states)) > 0
     disp('some states are NaN!. Maybe quad out of range in simulation')
     stop_sim = true;
 end
@@ -87,4 +87,5 @@ if use_joystick
     end
 end
 %[RC.roll RC.pitch RC.yaw] %DEBUG
+
 
