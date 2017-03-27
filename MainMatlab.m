@@ -18,7 +18,6 @@ addpath(genpath(pwd));
     
     %global loop_counter;
     loop_counter = 0;
-    sim_progress = 0;
     global stop_sim;
     stop_sim = false;
     
@@ -53,18 +52,19 @@ addpath(genpath(pwd));
         setMassAndInertia(clientID, 1.0,[1.0 1.0 1.0]);
         h = waitbar(0,'Running Simulation...');
         
-        setMassAndInertia(clientID, 1,[1 1 30]);
+        %setMassAndInertia(clientID, 1,[1 1 30]);
         while (1)
         
-            if loop_counter == round( 0.3 *SIM_samples);
-                %setMassAndInertia(clientID, 1,[1 1 30]);
+            if loop_counter == round( 0.33 *SIM_samples);
+                % Suitable inertia X  = ?, Y = ?, Z = 12;
+                setMassAndInertia(clientID, sim_inertias(1,2),sim_inertias(2:4,2)');
                 %freq_resp_params = [ 0.2 0.2 ];
-                disp(['Doubling inertia! Iteration: ' num2str(loop_counter)])
+                disp(['Decreasing inertia! Iteration: ' num2str(loop_counter)])
             end
-            if loop_counter == round( 0.6 *SIM_samples);
-                %setMassAndInertia(clientID, 1,[1 1 1.5]);
+            if loop_counter == round( 0.66 *SIM_samples);
+                setMassAndInertia(clientID, sim_inertias(1,3),sim_inertias(2:4,3)');
                 %freq_resp_params = [ 0.35 0.5 ];
-                disp(['Doubling inertia! Iteration: ' num2str(loop_counter)])
+                disp(['Increasing inertia! Iteration: ' num2str(loop_counter)])
             end
           
             waitbar(loop_counter/SIM_samples)
@@ -100,8 +100,6 @@ addpath(genpath(pwd));
                 outputs(pd_index.g_yaw),...
                 outputs(pd_index.height) + 1);
 
-            % RLS uses information from motormixer
-            %run_RLS; % Moved to just before get sensors
             
             % Send actuation
             setMotors(clientID, mixedMotors);
@@ -118,10 +116,7 @@ addpath(genpath(pwd));
 
         end
        
-        
-        %if (loop_counter < SIM_samples)
-        %    logData % This last time to plot only
-        %end
+       
         
         % stop the simulation:
         vrep.simxStopSimulation(clientID,vrep.simx_opmode_blocking);
@@ -133,7 +128,9 @@ addpath(genpath(pwd));
         disp('run "saveRLSdata" to save RLS data if it was pleasant');
         %saveRLSdata; % We might not always want to run this
         close(h)
-
+        
+        % Print MISE
+        disp(['MISE: Roll[ ' num2str(log(1).MISE(end)) ' ] Pitch[ '  num2str(log(2).MISE(end)) ' ] Yaw[ '  num2str(log(3).MISE(end)) ' ]' ]);
     else
         disp('Failed connecting to remote API server');
     end

@@ -10,7 +10,12 @@ rls_data.complexity = complexity;
     
     rls_data.weights = zeros(1,rls_data.complexity)';
     rls_data.V = eye(rls_data.complexity,rls_data.complexity)*5;
-    rls_data.fi = zeros(1,rls_data.complexity)';   
+    
+    if complexity == 3
+        rls_data.fi = zeros(1,4)'; 
+    else
+        rls_data.fi = zeros(1,rls_data.complexity)'; 
+    end
     
     rls_data.error = 0; 
 

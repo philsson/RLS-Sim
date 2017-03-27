@@ -5,7 +5,7 @@ function [ Control_Signal, pid_data ] = PIDC_V2(pid_data)
     %global pid_data;
     global dt;
 
-   
+
 
     N = 20;
     N_tilde = N*pid_data.K;       % Filter variable
@@ -39,6 +39,7 @@ function [ Control_Signal, pid_data ] = PIDC_V2(pid_data)
     pid_data.prev_e = pid_data.e;
 
     Control_Signal = P + I + D;
+    %Control_Signal = P + D;
 
     Control_Signal = constrain(Control_Signal,pid_data.saturation);
 
@@ -46,5 +47,6 @@ function [ Control_Signal, pid_data ] = PIDC_V2(pid_data)
     pid_data.prev_Ud = D;
     pid_data.integral = I;
 
-end
+    pid_data.P = P; pid_data.I = I; pid_data.D = D;
 
+end
