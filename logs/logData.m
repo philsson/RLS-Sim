@@ -93,7 +93,7 @@ elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
          %-------------Process outputs, control signal and weights---------
          if plot_RLS_Data == true
              figure('Name', axis_name(i).figure1, 'Position', [110, 800, 1290,320]); clf;
-             subplot(3,1,1); hold all; grid on;
+             subplot(4,1,1); hold all; grid on;
              plot(1:length(log(i).r),log(i).r);
              plot(1:length(log(i).y),log(i).y);
              plot(1:length(log(i).y_rls),log(i).y_rls);
@@ -101,12 +101,12 @@ elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
              legend('r', 'y', 'y RLS');
              ylabel('Process Outputs');
 
-             subplot(3,1,2); hold all; grid on;
+             subplot(4,1,2); hold all; grid on;
              plot(1:length(log(i).u),log(i).u);
              legend('u');
              ylabel('Control signal u');
 
-             subplot(3,1,3); hold all; grid on;
+             subplot(4,1,3); hold all; grid on;
              plot(1:length(log(i).rls_w1),log(i).rls_w1);
              if rls_complexity == 2
                 plot(1:length(log(i).rls_w2),log(i).rls_w2);
@@ -116,6 +116,15 @@ elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
              end
              legend('w1', 'w2', 'w3');
              ylabel('RLS Weights');
+             
+             subplot(4,1,4); hold all; grid on;
+             plot(1:length(log(i).Kp),log(i).Kp);
+             plot(1:length(log(i).Kp_evo),log(i).Kp_evo);
+             axis([0 length(log(i).Kp_evo) min(log(i).Kp_evo(10:end)) max(log(i).Kp_evo(10:end))]);
+             legend('Kp', 'Kp EVO');
+             ylabel('PID outputs');
+             
+             
          else
              figure('Name', axis_name(i).figure1, 'Position', [110, 800, 1290,320]); clf;
              subplot(2,1,1); hold all; grid on;
@@ -129,7 +138,16 @@ elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
              plot(1:length(log(i).u),log(i).u);
              legend('u');
              ylabel('Control signal u');
+
          end
+         
+         figure('Name', axis_name(i).figure1, 'Position', [110, 800, 1290,320]); clf;
+         hold all; grid on;
+         plot(1:length(log(i).r),log(i).r);
+         plot(1:length(log(i).y),log(i).y);
+         title(axis_name(i).figure1);
+         legend('r', 'y');
+         ylabel('Process Outputs');
 
 
          %---------------Different Errors of output signals---------------
@@ -155,6 +173,13 @@ elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
              plot(1:length(log(i).MAE_blocks(step_size-1:step_size:length(log(i).MAE_blocks))),log(i).MAE_blocks(step_size-1:step_size:length(log(i).MAE_blocks)));
              legend('MAE /setpoint');
              ylabel('MAE/ new setpoint');
+
+             figure('Name',axis_name(i).figure2, 'Position', [800, 200, 620,300]); clf;      
+             plot(1:length(log(i).MISE_blocks(step_size-1:step_size:length(log(i).MISE_blocks))),log(i).MISE_blocks(step_size-1:step_size:length(log(i).MISE_blocks)));
+             legend('MISE/setpoint');
+             ylabel('MISE / New setpoint');
+             grid on;
+             
          end
 
          %------------Pid values and FOPDT Data----------------------------
@@ -185,14 +210,17 @@ elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
                  ylabel('PID values');
              end
          end
-             %--------------- P - I - D --------------------%
-        PID_plot = figure();
-        hold on; grid on;
-        plot(1:length(log(i).P),log(i).P);
-        plot(1:length(log(i).I),log(i).I);
-        plot(1:length(log(i).D),log(i).D);
-        ylabel('U_component');
-        legend('P','I','D');
+
+        %--------------- P - I - D --------------------%
+        if plot_PID_Data
+                PID_plot = figure();
+                hold on; grid on;
+                plot(1:length(log(i).P),log(i).P);
+                plot(1:length(log(i).I),log(i).I);
+                plot(1:length(log(i).D),log(i).D);
+                ylabel('U_component');
+                legend('P','I','D');
+        end
      end
 end
 

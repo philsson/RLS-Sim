@@ -1,0 +1,4 @@
+MISE: Roll[ 67.754 ] Pitch[ 49.8843 ] Yaw[ 423.176 ]
+
+NOTE that pitch was not EVO
+Nor was any changes in inertia applied to it

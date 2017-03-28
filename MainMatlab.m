@@ -124,6 +124,8 @@ addpath(genpath(pwd));
         % Now close the connection to V-REP:    
         vrep.simxFinish(clientID);
         
+        savelog;
+        
         % Saving RLS data to file
         disp('run "saveRLSdata" to save RLS data if it was pleasant');
         %saveRLSdata; % We might not always want to run this
