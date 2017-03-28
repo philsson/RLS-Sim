@@ -9,7 +9,7 @@ apply_evo_freq = 100;               % in milliseconds (hur ofta pid tuninge rule
 apply_evo_first_offset = 200;
 
 logSim = true;                      % If this is true then we will log "SIM_samples" many iterations and calculate the ISE (mean error).
-SIM_samples = 2000;                  % Hur m??nga iterationer simuleringen k??r
+SIM_samples = 9000;                  % Hur m??nga iterationer simuleringen k??r
 
 impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
 
@@ -17,13 +17,13 @@ global stop_on_imaginary_numbers;
 stop_on_imaginary_numbers = false;
 
 %                   X(roll)   Y(pitch)      Z(yaw)
-logs_enabled    =  [ 1 0 0 ];    % Enable log
-step_enabled    =  [ 1 0 0 ];    % Didact Delta, korrigerar set points, fj??rkontroll och g??rna kula eller step rerefernser
+logs_enabled    =  [ 0 0 1 ];    % Enable log
+step_enabled    =  [ 0 0 1 ];    % Didact Delta, korrigerar set points, fj??rkontroll och g??rna kula eller step rerefernser
 impulse_enabled =  [ 0 0 0 ];
 
 adapt_enabled       =  [ 1 1 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
 apply_gain_tuning   =  [ 0 0 0 ];    % Startar Gain tuning ist�llet f�r de vanliga FOPDT tuning reglerna
-apply_evo           =  [ 0 0 0 ];    % Till??mpar tuning reglerna under realtid
+apply_evo           =  [ 0 0 1 ];    % Till??mpar tuning reglerna under realtid
 
 init_RLS_data   =  [ 0 0 0 ];    % If false then its loaded from files
 save_RLS_data   =  [ 1 1 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
@@ -49,7 +49,7 @@ Gain_rescale = 10;
 
 % plot settings
 plot_FOPDT_Data = false;   % Provides a plot on the FOPDT data and current PID values
-plot_RLS_Data = false;     % Provides a plot on current outputs and estimated rls data and weights
+plot_RLS_Data = true;     % Provides a plot on current outputs and estimated rls data and weights
 plot_Error_Data = true;   % Provides a plot on different error data (MISE, MISE blocks, MAE, MAE blocks)
 plot_PID_Data = false;   %
 
@@ -59,15 +59,21 @@ plot_PID_Data = false;   %
 PID_Gain_my = 1000; % 2 weights
 use_PIDC_V2 = true;
 
-change_inertias = [ 0 1 0 0 ];
+change_inertias = [ 0 0 0 1 ];
 inertias = [ ...
-%   33%  66%
-    0.5, 1.5;...    % weight
-    0.4, 1000;...   % roll
-    0.4, 1000;...   % pitch
-    0.004, 25;...   % yaw
+%   0%   33%  66%
+    1.0, 0.5, 1.5;...    % weight
+    1.0, 0.4, 1000;...   % roll
+    1.0, 0.4, 1000;...   % pitch
+    %1.0, 0.004, 25;...   % yaw
+    2, 0.5, 25;...   % yaw
 ];
 
+% BAckup
+%    1.0, 0.5,   1.5;...    % weight
+%    1.0, 0.4,   1000;...   % roll
+%    1.0, 0.4,   1000;...   % pitch
+%    1.0, 0.004, 25;...     % yaw
 
 % Joystick config.
 % INFO: If sticks are centered normal behaviour will resume
@@ -101,8 +107,8 @@ plotfileX = [pwd,'/Results/logX.mat']; plotfileY = [pwd,'/Results/logY.mat']; pl
 sim_inertias = ones(4,3);
 for i= 1:4
     if change_inertias(i) 
-        for j=1:2
-            sim_inertias(i,j + 1) = inertias(i, j);
+        for j=1:3
+            sim_inertias(i,j) = inertias(i, j);
         end
     end
 end

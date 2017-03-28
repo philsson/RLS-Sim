@@ -74,7 +74,7 @@ function [ motors ] = motormixer( R,P,Y,T )
     if roof
 
         count_max = count_max +1;
-        disp(['Motors maxed out ' num2str(count_max) ' times.'])
+        %disp(['Motors maxed out ' num2str(count_max) ' times.'])
         
         combined_output = abs(R) + abs(P) + abs(Y) + T;
         

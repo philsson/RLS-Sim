@@ -52,7 +52,8 @@ addpath(genpath(pwd));
         setMassAndInertia(clientID, 1.0,[1.0 1.0 1.0]);
         h = waitbar(0,'Running Simulation...');
         
-        %setMassAndInertia(clientID, 1,[1 1 30]);
+        %setMassAndInertia(clientID, 1,[1 1 0.004]);
+        setMassAndInertia(clientID, sim_inertias(1,1),sim_inertias(2:4,1)');
         while (1)
         
             if loop_counter == round( 0.33 *SIM_samples);
