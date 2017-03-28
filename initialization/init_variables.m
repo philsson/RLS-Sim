@@ -9,7 +9,7 @@ apply_evo_freq = 100;               % in milliseconds (hur ofta pid tuninge rule
 apply_evo_first_offset = 200;
 
 logSim = true;                      % If this is true then we will log "SIM_samples" many iterations and calculate the ISE (mean error).
-SIM_samples = 9000;                  % Hur m??nga iterationer simuleringen k??r
+SIM_samples = 2000;                  % Hur m??nga iterationer simuleringen k??r
 
 impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
 
@@ -46,6 +46,9 @@ global Gain_rescale_axis;
 Gain_rescale_axis = [ 0 0 0 ];
 global Gain_rescale;
 Gain_rescale = 10;
+global battery_scaling;
+battery_reduction = 0.4; % How much will we discharge the battery
+global use_battery_scaling;
 
 % plot settings
 plot_FOPDT_Data = false;   % Provides a plot on the FOPDT data and current PID values
@@ -59,7 +62,7 @@ plot_PID_Data = false;   %
 PID_Gain_my = 1000; % 2 weights
 use_PIDC_V2 = true;
 
-change_inertias = [ 0 0 0 1 ];
+change_inertias = [ 0 0 0 0 ];
 inertias = [ ...
 %   0%   33%  66%
     1.0, 0.5, 1.5;...    % weight
@@ -91,6 +94,7 @@ joy_rate = 100; throttle_rate = 1; % Rc rate p?? radion
 global dt;
 %dt = 0.010;
 dt = 0.025;
+use_battery_scaling = true;
 
 global dead_time_L;
 %dead_time_L = [0.0115 0.0115 0.0105];

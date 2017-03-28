@@ -67,7 +67,12 @@ addpath(genpath(pwd));
                 %freq_resp_params = [ 0.35 0.5 ];
                 disp(['Increasing inertia! Iteration: ' num2str(loop_counter)])
             end
-          
+            
+            % reduces battery power by the hour
+            if use_battery_scaling
+                battery_scaling = 1-((loop_counter/SIM_samples)*battery_reduction);
+            end
+            
             waitbar(loop_counter/SIM_samples)
             
             %disp('Press a key to step the simulation!');

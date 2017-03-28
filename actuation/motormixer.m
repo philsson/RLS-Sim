@@ -7,6 +7,8 @@ function [ motors ] = motormixer( R,P,Y,T )
     global outputs;
     global Gain_rescale;
     global Gain_rescale_axis;
+    global battery_scaling;
+    global use_battery_scaling;
     
     R_preserved = R;
     P_preserved = P;
@@ -23,7 +25,7 @@ function [ motors ] = motormixer( R,P,Y,T )
     end
             
     % Upper motor limit
-    motors_max = 2;
+    motors_max = 3;
     % Check how much the combined output wants to be
     
 
@@ -85,7 +87,11 @@ function [ motors ] = motormixer( R,P,Y,T )
         %outputs(pd_index.g_roll) = R;
         %outputs(pd_index.g_pitch) = P;
         %outputs(pd_index.g_yaw) = Y;
-    end  
+    end
+    
+    if use_battery_scaling
+        motors = motors*battery_scaling;
+    end
     
 end
 
