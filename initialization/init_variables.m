@@ -23,7 +23,7 @@ impulse_enabled =  [ 0 0 0 ];
 
 adapt_enabled       =  [ 1 1 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
 apply_gain_tuning   =  [ 0 0 0 ];    % Startar Gain tuning ist�llet f�r de vanliga FOPDT tuning reglerna
-apply_evo           =  [ 0 0 1 ];    % Till??mpar tuning reglerna under realtid
+apply_evo           =  [ 0 0 0 ];    % Till??mpar tuning reglerna under realtid
 
 init_RLS_data   =  [ 0 0 0 ];    % If false then its loaded from files
 save_RLS_data   =  [ 1 1 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
