@@ -1,0 +1,5 @@
+EVO MISE Yaw[ 6.6915 ]
+EVO MAE Yaw[ 0.9475]
+
+Manual tuning MISE Yaw [6.7046 ]
+Manual tuning MAE Yaw [0.9234]

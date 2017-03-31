@@ -72,6 +72,8 @@ if (logSim && loop_counter <= SIM_samples && loop_counter ~= 0 && ~stop_sim)
 elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
 %%
     step_size = step_interval_ms/(1000*dt);
+    
+    
 
 %----- Name to figure plots ----------------------------------------------------
     axis_name(1).figure1 = 'X-axis Outputs';
@@ -89,6 +91,10 @@ elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
     close all;
     for i = 1:3
 
+         log(i).MISE_blocks = log(i).MISE_blocks(step_size-1:step_size:length(log(i).MISE_blocks));
+         log(i).MAE_blocks =  log(i).MAE_blocks(step_size-1:step_size:length(log(i).MAE_blocks));
+        
+        
      if (logs_enabled(i))
          %-------------Process outputs, control signal and weights---------
          if plot_RLS_Data == true
@@ -160,7 +166,8 @@ elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
              ylabel('MISE');
 
              subplot(4,1,2); hold all; grid on;
-             plot(1:length(log(i).MISE_blocks(step_size-1:step_size:length(log(i).MISE_blocks))),log(i).MISE_blocks(step_size-1:step_size:length(log(i).MISE_blocks)));
+             %plot(1:length(log(i).MISE_blocks(step_size-1:step_size:length(log(i).MISE_blocks))),log(i).MISE_blocks(step_size-1:step_size:length(log(i).MISE_blocks)));
+             plot(2:length(log(i).MISE_blocks),log(i).MISE_blocks(2:end)); 
              legend('MISE/setpoint');
              ylabel('MISE / new setpoint');
 
@@ -170,7 +177,8 @@ elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
              ylabel('MAE');
 
              subplot(4,1,4); hold all; grid on;
-             plot(1:length(log(i).MAE_blocks(step_size-1:step_size:length(log(i).MAE_blocks))),log(i).MAE_blocks(step_size-1:step_size:length(log(i).MAE_blocks)));
+             %plot(1:length(log(i).MAE_blocks(step_size-1:step_size:length(log(i).MAE_blocks))),log(i).MAE_blocks(step_size-1:step_size:length(log(i).MAE_blocks)));
+             plot(2:length(log(i).MAE_blocks),log(i).MAE_blocks(2:end)); 
              legend('MAE /setpoint');
              ylabel('MAE/ new setpoint');
 

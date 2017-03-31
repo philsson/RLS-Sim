@@ -6,10 +6,10 @@ follow_target = true;               % Follow the position of the green boll
 
 rls_complexity = 3;
 apply_evo_freq = 100;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
-apply_evo_first_offset = 200;
+apply_evo_first_offset = 50;
 
 logSim = true;                      % If this is true then we will log "SIM_samples" many iterations and calculate the ISE (mean error).
-SIM_samples = 2000;                  % Hur m??nga iterationer simuleringen k??r
+SIM_samples = 500;                  % Hur m??nga iterationer simuleringen k??r
 
 impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
 
@@ -21,11 +21,11 @@ logs_enabled    =  [ 0 0 1 ];    % Enable log
 step_enabled    =  [ 0 0 1 ];    % Didact Delta, korrigerar set points, fj??rkontroll och g??rna kula eller step rerefernser
 impulse_enabled =  [ 0 0 0 ];
 
-adapt_enabled       =  [ 1 1 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
+adapt_enabled       =  [ 0 0 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
 apply_gain_tuning   =  [ 0 0 0 ];    % Startar Gain tuning ist�llet f�r de vanliga FOPDT tuning reglerna
-apply_evo           =  [ 0 0 0 ];    % Till??mpar tuning reglerna under realtid
+apply_evo           =  [ 0 0 1 ];    % Till??mpar tuning reglerna under realtid
 
-init_RLS_data   =  [ 0 0 0 ];    % If false then its loaded from files
+init_RLS_data   =  [ 0 0 1 ];    % If false then its loaded from files
 save_RLS_data   =  [ 1 1 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
 log_PID_evo     =  [ 0 0 0 ];    % DONT USED NOW
 
@@ -49,6 +49,7 @@ Gain_rescale = 10;
 global battery_scaling;
 battery_reduction = 0.4; % How much will we discharge the battery
 global use_battery_scaling;
+use_battery_scaling = false;
 
 % plot settings
 plot_FOPDT_Data = false;   % Provides a plot on the FOPDT data and current PID values
@@ -94,7 +95,7 @@ joy_rate = 100; throttle_rate = 1; % Rc rate p?? radion
 global dt;
 %dt = 0.010;
 dt = 0.025;
-use_battery_scaling = true;
+
 
 global dead_time_L;
 %dead_time_L = [0.0115 0.0115 0.0105];
