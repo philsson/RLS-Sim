@@ -5,11 +5,11 @@ nav_heading_threshold = 0.4;        % The distance required for the heading to b
 follow_target = true;               % Follow the position of the green boll
 
 rls_complexity = 3;
-apply_evo_freq = 100;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
+apply_evo_freq = 50;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
 apply_evo_first_offset = 50;
 
 logSim = true;                      % If this is true then we will log "SIM_samples" many iterations and calculate the ISE (mean error).
-SIM_samples = 500;                  % Hur m??nga iterationer simuleringen k??r
+SIM_samples = 2000;                  % Hur m??nga iterationer simuleringen k??r
 
 impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
 
@@ -18,14 +18,14 @@ stop_on_imaginary_numbers = false;
 
 %                   X(roll)   Y(pitch)      Z(yaw)
 logs_enabled    =  [ 0 0 1 ];    % Enable log
-step_enabled    =  [ 0 0 1 ];    % Didact Delta, korrigerar set points, fj??rkontroll och g??rna kula eller step rerefernser
+step_enabled    =  [ 0 0 0 ];    % Didact Delta, korrigerar set points, fj??rkontroll och g??rna kula eller step rerefernser
 impulse_enabled =  [ 0 0 0 ];
 
 adapt_enabled       =  [ 0 0 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
 apply_gain_tuning   =  [ 0 0 0 ];    % Startar Gain tuning ist�llet f�r de vanliga FOPDT tuning reglerna
 apply_evo           =  [ 0 0 1 ];    % Till??mpar tuning reglerna under realtid
 
-init_RLS_data   =  [ 0 0 1 ];    % If false then its loaded from files
+init_RLS_data   =  [ 0 0 0 ];    % If false then its loaded from files
 save_RLS_data   =  [ 1 1 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
 log_PID_evo     =  [ 0 0 0 ];    % DONT USED NOW
 
@@ -40,7 +40,7 @@ step_interval_ms = 1000;        % Needs LDM to work. Revise implementation (in r
 impulse_amplitude = 0.5;        % On the control signal
 rand_target = false;
 rand_target_amplitude = [2 2 2];
-smooth_moving_target = false;   % Follow the green boll in a smooth way
+smooth_moving_target = true;   % Follow the green boll in a smooth way
 
 global Gain_rescale_axis;
 Gain_rescale_axis = [ 0 0 0 ];
@@ -49,7 +49,7 @@ Gain_rescale = 10;
 global battery_scaling;
 battery_reduction = 0.4; % How much will we discharge the battery
 global use_battery_scaling;
-use_battery_scaling = false;
+use_battery_scaling = true;
 
 % plot settings
 plot_FOPDT_Data = false;   % Provides a plot on the FOPDT data and current PID values
@@ -63,14 +63,14 @@ plot_PID_Data = false;   %
 PID_Gain_my = 1000; % 2 weights
 use_PIDC_V2 = true;
 
-change_inertias = [ 0 0 0 0 ];
+change_inertias = [ 0 0 0 1 ];
 inertias = [ ...
 %   0%   33%  66%
     1.0, 0.5, 1.5;...    % weight
     1.0, 0.4, 1000;...   % roll
     1.0, 0.4, 1000;...   % pitch
     %1.0, 0.004, 25;...   % yaw
-    2, 0.5, 25;...   % yaw
+    5, 0.5, 25;...   % yaw
 ];
 
 % BAckup

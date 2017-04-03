@@ -37,7 +37,7 @@ subplot(4,1,3); hold all; grid on;
 plot(2:length(log(1).MAE_blocks),log(1).MAE_blocks(2:end),'--');
 plot(2:length(log(2).MAE_blocks),log(2).MAE_blocks(2:end), '--');
 legend('MAE/setpoint Evo', 'MAE/setpoint Manual tuning');
-ylabel('MAE');
+ylabel('MAE/setpoint');
 
 subplot(4,1,4); hold all; grid on;
 plot(2:length(log(1).MISE_blocks),log(1).MISE_blocks(2:end),'--');

@@ -1,8 +1,8 @@
 function [ ] = savelogfile( log, name )
 
-pathx = ['/' name 'X.mat'];
-pathy = ['/' name 'Y.mat'];
-pathz = ['/' name 'Z.mat'];
+pathx = ['/Results/' name 'X.mat'];
+pathy = ['/Results/' name 'Y.mat'];
+pathz = ['/Results/' name 'Z.mat'];
 
 plotfileX = [pwd, pathx]; 
 plotfileY = [pwd, pathy];

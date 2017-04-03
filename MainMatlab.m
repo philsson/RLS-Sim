@@ -139,6 +139,7 @@ addpath(genpath(pwd));
         
         % Print MISE
         disp(['MISE: Roll[ ' num2str(log(1).MISE(end)) ' ] Pitch[ '  num2str(log(2).MISE(end)) ' ] Yaw[ '  num2str(log(3).MISE(end)) ' ]' ]);
+        disp(['MAE: Roll[ ' num2str(log(1).MAE(end)) ' ] Pitch[ '  num2str(log(2).MAE(end)) ' ] Yaw[ '  num2str(log(3).MAE(end)) ' ]' ]);
     else
         disp('Failed connecting to remote API server');
     end
