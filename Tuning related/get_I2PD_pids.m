@@ -12,8 +12,8 @@ Td = 14.019*tau;
 
 
 % Gemensam test från riktiga regler
-Ti = 2.1552e+03 *tau;
-Td = 1.7586 *tau;
+%Ti = 2.1552e+03 *tau;
+%Td = 1.7586 *tau;
 
 
 C = [Kp Ti Td];

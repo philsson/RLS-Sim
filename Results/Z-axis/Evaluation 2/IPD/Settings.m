@@ -6,7 +6,7 @@ follow_target = true;               % Follow the position of the green boll
 
 rls_complexity = 3;
 apply_evo_freq = 50;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
-apply_evo_first_offset = 50;
+apply_evo_first_offset = 50; %50
 
 logSim = true;                      % If this is true then we will log "SIM_samples" many iterations and calculate the ISE (mean error).
 SIM_samples = 5000;                  % Hur m??nga iterationer simuleringen k??r
@@ -21,7 +21,7 @@ logs_enabled    =  [ 0 0 1 ];    % Enable log
 step_enabled    =  [ 0 0 1 ];    % Didact Delta, korrigerar set points, fj??rkontroll och g??rna kula eller step rerefernser
 impulse_enabled =  [ 0 0 0 ];
 
-adapt_enabled       =  [ 0 0 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
+adapt_enabled       =  [ 1 1 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
 apply_gain_tuning   =  [ 0 0 0 ];    % Startar Gain tuning ist�llet f�r de vanliga FOPDT tuning reglerna
 apply_evo           =  [ 0 0 1 ];    % Till??mpar tuning reglerna under realtid
 
@@ -47,7 +47,7 @@ Gain_rescale_axis = [ 0 0 0 ];
 global Gain_rescale;
 Gain_rescale = 10;
 global battery_scaling;
-battery_reduction = 0.4; % How much will we discharge the battery
+battery_reduction = 0.6; % How much will we discharge the battery
 global use_battery_scaling;
 use_battery_scaling = false;
 
@@ -67,7 +67,8 @@ change_inertias = [ 0 0 0 1 ];
 inertias = [ ...
 %   0%   33%  66%
     1.0, 0.5, 1.5;...    % weight
-    1.0, 0.4, 1000;...   % roll
+%    200, 0.4, 1000;...   % roll
+    1, 1000, 1000;...   % roll
     1.0, 0.4, 1000;...   % pitch
     %1.0, 0.004, 25;...   % yaw
     5, 0.5, 25;...   % yaw

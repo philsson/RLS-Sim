@@ -58,14 +58,20 @@ addpath(genpath(pwd));
         
             if loop_counter == round( 0.33 *SIM_samples);
                 % Suitable inertia X  = ?, Y = ?, Z = 12;
-                setMassAndInertia(clientID, sim_inertias(1,2),sim_inertias(2:4,2)');
+                if any(change_inertias == 1)
+                    setMassAndInertia(clientID, sim_inertias(1,2),sim_inertias(2:4,2)');
+                    disp(['Decreasing inertia! Iteration: ' num2str(loop_counter)])
+                end
                 %freq_resp_params = [ 0.2 0.2 ];
-                disp(['Decreasing inertia! Iteration: ' num2str(loop_counter)])
+                
             end
             if loop_counter == round( 0.66 *SIM_samples);
-                setMassAndInertia(clientID, sim_inertias(1,3),sim_inertias(2:4,3)');
+                if any(change_inertias == 1)
+                    setMassAndInertia(clientID, sim_inertias(1,3),sim_inertias(2:4,3)');
+                    disp(['Increasing inertia! Iteration: ' num2str(loop_counter)])
+                end
                 %freq_resp_params = [ 0.35 0.5 ];
-                disp(['Increasing inertia! Iteration: ' num2str(loop_counter)])
+                
             end
             
             % reduces battery power by the hour
