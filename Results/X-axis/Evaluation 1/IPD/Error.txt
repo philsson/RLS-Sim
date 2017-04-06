@@ -1,0 +1,2 @@
+MISE: Roll[ 23.4946 ] Pitch[ 2.2447 ] Yaw[ 101.3745 ]
+MAE: Roll[ 2.8352 ] Pitch[ 0.63693 ] Yaw[ 2.3034 ]

@@ -1,0 +1,5 @@
+IPD
+MISE: Roll[ 16.6628 ] Pitch[ 8.8878 ] Yaw[ 31.6858 ]
+MAE: Roll[ 2.5869 ] Pitch[ 0.65303 ] Yaw[ 0.84179 ]
+
+
