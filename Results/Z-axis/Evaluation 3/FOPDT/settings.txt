@@ -1,17 +1,15 @@
-%Denna fil  blev ubytt av misstag mot FOPDT
-
 %----------------------------- CONFIG SECTION ----------------------------%
 
 adjust_heading = true;              % Heading will be adjust to the trajectory (vrider nosen mot gr??na bollen true/false)
 nav_heading_threshold = 0.4;        % The distance required for the heading to be set (avst??nd fr??n gr??n kula)
 follow_target = true;               % Follow the position of the green boll
 
-rls_complexity = 3; %3;
+rls_complexity = 2; %3;
 apply_evo_freq = 50;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
 apply_evo_first_offset = 50; %50
 
 logSim = true;                      % If this is true then we will log "SIM_samples" many iterations and calculate the ISE (mean error).
-SIM_samples = 5000;                  % Hur m??nga iterationer simuleringen k??r
+SIM_samples = 2000;                  % Hur m??nga iterationer simuleringen k??r
 
 impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
 
@@ -49,9 +47,9 @@ Gain_rescale_axis = [ 0 0 0 ];
 global Gain_rescale;
 Gain_rescale = 10;
 global battery_scaling;
-battery_reduction = 0.4; % How much will we discharge the battery
+battery_reduction = 0.6; % How much will we discharge the battery
 global use_battery_scaling;
-use_battery_scaling = false;
+use_battery_scaling = true;
 
 % plot settings
 plot_FOPDT_Data = false;   % Provides a plot on the FOPDT data and current PID values
@@ -65,7 +63,7 @@ plot_PID_Data = false;   %
 PID_Gain_my = 1000; % 2 weights
 use_PIDC_V2 = true;
 
-change_inertias = [ 0 0 0 1 ];
+change_inertias = [ 0 0 0 0 ];
 inertias = [ ...
 %   0%   33%  66%
     1.0, 0.5, 1.5;...    % weight
@@ -90,3 +88,4 @@ joy_throttle = true;         % Override throttle with RC
 joy_rate = 100; throttle_rate = 1; % Rc rate p?? radion
 
 %------------------------------- END CONFIG ------------------------------%
+

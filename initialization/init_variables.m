@@ -4,12 +4,12 @@ adjust_heading = true;              % Heading will be adjust to the trajectory (
 nav_heading_threshold = 0.4;        % The distance required for the heading to be set (avst??nd fr??n gr??n kula)
 follow_target = true;               % Follow the position of the green boll
 
-rls_complexity = 3;
+rls_complexity = 2; %3;
 apply_evo_freq = 50;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
-apply_evo_first_offset = 50; %50
+apply_evo_first_offset = 200; %50
 
 logSim = true;                      % If this is true then we will log "SIM_samples" many iterations and calculate the ISE (mean error).
-SIM_samples = 1600;                  % Hur m??nga iterationer simuleringen k??r
+SIM_samples = 1000;                  % Hur m??nga iterationer simuleringen k??r
 
 impulse_enabled_count = 100;        % Enables the impulse at the current count of iterations
 
@@ -25,9 +25,9 @@ adapt_enabled       =  [ 1 1 1 ];    % RLS startas tillsammans med tuning regler
 apply_gain_tuning   =  [ 0 0 0 ];    % Startar Gain tuning ist�llet f�r de vanliga FOPDT tuning reglerna
 apply_evo           =  [ 1 0 0 ];    % Till??mpar tuning reglerna under realtid
 
-init_RLS_data   =  [ 0 0 0 ];    % If false then its loaded from files
-save_RLS_data   =  [ 1 1 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
-log_PID_evo     =  [ 0 0 0 ];    % DONT USED NOW
+init_RLS_data   =  [ 1 1 0 ];    % If false then its loaded from files
+save_RLS_data   =  [ 1 0 0 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
+log_PID_evo     =  [ 0 0 0 ];    % NOT USED NOW
 
 freq_resp_test  =  [ 0 0 0 ];    % Overwrides the control signal and induces a sine wave
 
@@ -47,9 +47,9 @@ Gain_rescale_axis = [ 0 0 0 ];
 global Gain_rescale;
 Gain_rescale = 10;
 global battery_scaling;
-battery_reduction = 0.4; % How much will we discharge the battery
+battery_reduction = 0.6; % How much will we discharge the battery
 global use_battery_scaling;
-use_battery_scaling = true;
+use_battery_scaling = false;
 
 % plot settings
 plot_FOPDT_Data = false;   % Provides a plot on the FOPDT data and current PID values

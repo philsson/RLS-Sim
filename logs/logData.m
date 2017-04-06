@@ -126,7 +126,7 @@ elseif ((logSim && loop_counter > SIM_samples) || stop_sim)
              subplot(4,1,4); hold all; grid on;
              plot(1:length(log(i).Kp),log(i).Kp);
              plot(1:length(log(i).Kp_evo),log(i).Kp_evo);
-             axis([0 length(log(i).Kp_evo) min(log(i).Kp_evo(10:end)) max(log(i).Kp_evo(10:end))]);
+             %axis([0 length(log(i).Kp_evo) min(log(i).Kp_evo(10:end)) max(log(i).Kp_evo(10:end))]);
              legend('Kp', 'Kp EVO');
              ylabel('PID outputs');
              
