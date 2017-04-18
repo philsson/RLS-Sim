@@ -8,6 +8,7 @@ if plot_z_axis
 
     log(1) = load('1EVOZ');
     log(2) = load('Manual_tuningZ');
+    
 
     xLength = (1:length(log(1).y))*xScale;
 
@@ -15,7 +16,7 @@ if plot_z_axis
 
         %% ------- PLot 1 ---------------------------------------------------------
 
-        figure('Name', 'Z-axis Evalution 1') %, 'Position', [110, 800, 1290,320]); clf;
+        figure('Name', 'Z-axis Evalution 1', 'Position', [600 400 600 300]) %, 'Position', [110, 800, 1290,320]); clf;
         subplot(3,1,1); hold all; grid on;
         plot(xLength, log(1).r,'--', 'LineWidth',lineSize + 0.5, 'Color', Ref);
         plot(xLength, log(2).y, 'LineWidth',lineSize, 'Color', Manual)
@@ -36,15 +37,15 @@ if plot_z_axis
         subplot(3,1,3); hold all; grid on;
         stairs(xLength, log(2).Kp,  'LineWidth',lineSize, 'Color', Manual)
         stairs(xLength, log(1).Kp, 'LineWidth',lineSize,'Color', Evo)
-        axis([0 max(xLength) min(log(1).Kp) max(log(1).Kp)])
+        axis([0 max(xLength) min(log(1).Kp)-0.005 max(log(1).Kp)])
         h = ylabel('Kp');
         h1 = xlabel('Time [sec]');
         set(h,'FontSize',textSize+textSize_offset_y);
         set(h1,'FontSize',textSize)
 
-        saveas(gcf,'Results\Z-axis\Evaluation 1\EVO & Manual tuning\1EVOManualtuningZ');
-        saveas(gcf,'Results\Z-axis\Evaluation 1\EVO & Manual tuning\1EVOManualtuningZ','epsc');
-        saveas(gcf,'Results\Z-axis\Evaluation 1\EVO & Manual tuning\1EVOManualtuningZ','svg');
+%         saveas(gcf,'Results\Z-axis\Evaluation 1\EVO & Manual tuning\1EVOManualtuningZ');
+%         saveas(gcf,'Results\Z-axis\Evaluation 1\EVO & Manual tuning\1EVOManualtuningZ','epsc');
+%         saveas(gcf,'Results\Z-axis\Evaluation 1\EVO & Manual tuning\1EVOManualtuningZ','svg');
 
         if get_easy_files
            saveas(gcf,'Results\1EVOManualtuningZ','epsc'); 
@@ -61,7 +62,7 @@ if plot_z_axis
         subplot(2,1,1); hold all; grid on;
         stairs(xLength(1:l1:end), log(2).MISE_blocks, 'LineWidth',lineSize, 'Color', Manual)
         stairs(xLength(1:l1:end), log(1).MISE_blocks, 'LineWidth',lineSize,'Color', Evo)
-        axis([0 max(xLength(1:l1:end)) min(log(1).MISE_blocks) max(log(1).MISE_blocks)+0.5])
+        axis([0 max(xLength(1:l1:end)) 0 max(log(1).MISE_blocks)+0.5])
         h = ylabel('MISE/sp');
         set(h,'FontSize',textSize+textSize_offset_y);
         set(gca,'XTickLabel','');
@@ -69,7 +70,7 @@ if plot_z_axis
         subplot(2,1,2); hold all; grid on;
         stairs(xLength(1:l2:end), log(2).MAE_blocks, 'LineWidth',lineSize, 'Color', Manual)
         stairs(xLength(1:l2:end), log(1).MAE_blocks, 'LineWidth',lineSize,'Color', Evo)
-        axis([0 max(xLength(1:l2:end)) min(log(1).MAE_blocks) max(log(1).MAE_blocks)+0.2])
+        axis([0 max(xLength(1:l2:end)) 0 max(log(1).MAE_blocks)+0.2])
         h = ylabel('MAE/sp');
         h1 = xlabel('Time [sec]');
         set(h,'FontSize',textSize+textSize_offset_y);       
@@ -115,12 +116,21 @@ if plot_x_axis
         h = ylabel('y [deg/sec]');
         set(h,'FontSize',textSize+textSize_offset_y);
         set(gca,'XTickLabel','');
-
+% 
+%         subplot(3,1,2); hold all; grid on;
+%         stairs(xLength, log(2).u,  'LineWidth',lineSize, 'Color', Manual)%,'--', 'Color', 'k');
+%         stairs(xLength, log(1).u, 'LineWidth',lineSize,'Color', Evo)%,'--', 'Color', 'r');
+%         axis([0 max(xLength) min(log(1).u)-0.04 max(log(1).u)+0.01])
+%         h = ylabel('u');
+%         set(h,'FontSize',textSize+textSize_offset_y);
+%         set(gca,'XTickLabel','');
+%         
         subplot(3,1,2); hold all; grid on;
-        stairs(xLength, log(2).u,  'LineWidth',lineSize, 'Color', Manual)%,'--', 'Color', 'k');
-        stairs(xLength, log(1).u, 'LineWidth',lineSize,'Color', Evo)%,'--', 'Color', 'r');
-        axis([0 max(xLength) min(log(1).u)-0.04 max(log(1).u)+0.01])
-        h = ylabel('u');
+        stairs(xLength, log(1).rls_w1,  'LineWidth',lineSize, 'Color', 'k')%,'--', 'Color', 'k');
+        stairs(xLength, log(1).rls_w2, 'LineWidth',lineSize,'Color', 'b')%,'--', 'Color', 'r');
+        stairs(xLength, log(1).rls_w3, 'LineWidth',lineSize,'Color', 'm')%,'--', 'Color', 'r');
+       % axis([0 max(xLength) -1 8])
+        h = ylabel('RLS weights');
         set(h,'FontSize',textSize+textSize_offset_y);
         set(gca,'XTickLabel','');
 

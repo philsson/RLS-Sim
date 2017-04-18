@@ -6,7 +6,7 @@
 if plot_z_axis
 
     log(1) = load('2EVOZ');
-    log(2) = load('2Manual_tuningZ');
+    log(2) = load('2IPDZ');
 
     xLength = (1:length(log(1).y))*xScale;
 
@@ -18,7 +18,7 @@ if plot_z_axis
 
         %% ------- PLot 1 ---------------------------------------------------------
 
-        figure('Name', 'Z-axis Evalution 2') %, 'Position', [110, 800, 1290,320]); clf;
+        figure('Name', 'Z-axis IPD Evalution 2') %, 'Position', [110, 800, 1290,320]); clf;
         subplot(3,1,1); hold all; grid on;
         plot(xLength, log(1).r,'--', 'LineWidth',lineSize + 0.5, 'Color', Ref);
         plot(xLength, log(2).y, 'LineWidth',lineSize, 'Color', Manual)
@@ -45,12 +45,12 @@ if plot_z_axis
         set(h,'FontSize',textSize+textSize_offset_y);
         set(h1,'FontSize',textSize)
 
-        saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuningZ');
-        saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuningZ','epsc');
-        saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuningZ','svg');
+%         saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuningZ');
+%         saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuningZ','epsc');
+%         saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuningZ','svg');
 
         if get_easy_files
-           saveas(gcf,'Results\2EVOManualtuningZ','epsc');
+           saveas(gcf,'Results\2EVOIPDZ','epsc');
         end
 
         %% ------- PLot 2 ---------------------------------------------------------
@@ -58,11 +58,11 @@ if plot_z_axis
         l1 = length(xLength)/length(log(2).MISE_blocks);
         l2 = length(xLength)/length(log(2).MISE_blocks);
 
-        figure('Name', 'Z-axis Evalution 2') %, 'Position', [110, 800, 1290,320]); clf;
+        figure('Name', 'Z-axis IPD Evalution 2') %, 'Position', [110, 800, 1290,320]); clf;
         subplot(2,1,1); hold all; grid on;
         stairs(xLength(1:l1:end), log(2).MISE_blocks, 'LineWidth',lineSize, 'Color', Manual)
         stairs(xLength(1:l1:end), log(1).MISE_blocks, 'LineWidth',lineSize,'Color', Evo)
-        axis([0 max(xLength(1:l1:end)) 0 15])
+        axis([0 max(xLength(1:l1:end)) 0 55])
         h = ylabel('MISE/sp');
         set(h,'FontSize',textSize+textSize_offset_y);
         set(gca,'XTickLabel','');
@@ -70,7 +70,7 @@ if plot_z_axis
         subplot(2,1,2); hold all; grid on;
         stairs(xLength(1:l1:end), log(2).MAE_blocks, 'LineWidth',lineSize, 'Color', Manual)
         stairs(xLength(1:l1:end), log(1).MAE_blocks, 'LineWidth',lineSize,'Color', Evo)
-        axis([0 max(xLength(1:l1:end)) 0 3])
+        axis([0 max(xLength(1:l1:end)) 0 8])
         h = ylabel('MAE/sp');
         h1 = xlabel('Time [sec]');
         set(h,'FontSize',textSize+textSize_offset_y);
@@ -78,20 +78,20 @@ if plot_z_axis
 
 
 
-        saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_errorsZ');
-        saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_errorsZ','epsc');
-        saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_errorsZ','svg');
+%         saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_errorsZ');
+%         saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_errorsZ','epsc');
+%         saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_errorsZ','svg');
 
 
         if get_easy_files
-           saveas(gcf,'Results\2EVOManualtuning_errorsZ','epsc');
+           saveas(gcf,'Results\2EVOIPD_errorsZ','epsc');
         end
 
         %% ------- PLot 3 ---------------------------------------------------------
 
         inertia_offset = 100;
 
-        figure('Name', 'Z-axis Evalution 2') %, 'Position', [110, 800, 1290,320]); clf;
+        figure('Name', 'Z-axis IPD Evalution 2') %, 'Position', [110, 800, 1290,320]); clf;
         subplot(2,3,1); hold all; grid on;
         plot((length1-inertia_offset:length1)*xScale, log(2).r(length1-inertia_offset:length1),'--', 'LineWidth',lineSize, 'Color', Ref)
         plot((length1-inertia_offset:length1)*xScale, log(2).y(length1-inertia_offset:length1), 'LineWidth',lineSize, 'Color', Manual)
@@ -153,18 +153,17 @@ if plot_z_axis
         set(gca,'YTickLabel','');
         h1 = xlabel('Time [sec]');
         set(h1,'FontSize',textSize); 
-
-        saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_inertiaZ');
-        saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_inertiaZ','epsc');
-        saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_inertiaZ','svg');
+% 
+%         saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_inertiaZ');
+%         saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_inertiaZ','epsc');
+%         saveas(gcf,'Results\Z-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_inertiaZ','svg');
 
         if get_easy_files
-           saveas(gcf,'Results\2EVOManualtuning_inertiaZ','epsc');
+           saveas(gcf,'Results\2EVOIPD_inertiaZ','epsc');
         end
 
 
 end
-
 
 
 
@@ -176,7 +175,7 @@ end
 if plot_x_axis
 
     log(1) = load('2EVOX');
-    log(2) = load('2ManualtuningX');
+    log(2) = load('2IPDX');
 
     xLength = (1:length(log(1).y))*xScale;
 
@@ -188,7 +187,7 @@ if plot_x_axis
 
         %% ------- PLot 1 ---------------------------------------------------------
 
-        figure('Name', 'X-axis Evalution 2') %, 'Position', [110, 800, 1290,320]); clf;
+        figure('Name', 'X-axis IPD Evalution 2') %, 'Position', [110, 800, 1290,320]); clf;
         subplot(3,1,1); hold all; grid on;
         plot(xLength, log(1).r,'--', 'LineWidth',lineSize + 0.5, 'Color', Ref);
         plot(xLength, log(2).y, 'LineWidth',lineSize, 'Color', Manual)
@@ -215,12 +214,12 @@ if plot_x_axis
         set(h,'FontSize',textSize+textSize_offset_y);
         set(h1,'FontSize',textSize)
 
-        saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuningX');
-        saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuningX','epsc');
-        saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuningX','svg');
+%         saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuningX');
+%         saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuningX','epsc');
+%         saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuningX','svg');
 
         if get_easy_files
-           saveas(gcf,'Results\2EVOManualtuningX','epsc');
+           saveas(gcf,'Results\2EVOIPDX','epsc');
         end
 
         %% ------- PLot 2 ---------------------------------------------------------
@@ -228,11 +227,11 @@ if plot_x_axis
         l1 = length(xLength)/length(log(2).MISE_blocks);
         l2 = length(xLength)/length(log(2).MISE_blocks);
 
-        figure('Name', 'X-axis Evalution 2') %, 'Position', [110, 800, 1290,320]); clf;
+        figure('Name', 'X-axis IPD Evalution 2') %, 'Position', [110, 800, 1290,320]); clf;
         subplot(2,1,1); hold all; grid on;
         stairs(xLength(1:l1:end), log(2).MISE_blocks, 'LineWidth',lineSize, 'Color', Manual)
         stairs(xLength(1:l1:end), log(1).MISE_blocks, 'LineWidth',lineSize,'Color', Evo)
-        axis([0 max(xLength(1:l1:end)) 0 15])
+        axis([0 max(xLength(1:l1:end)) 0 150])
         h = ylabel('MISE/sp');
         set(h,'FontSize',textSize+textSize_offset_y);
         set(gca,'XTickLabel','');
@@ -240,7 +239,7 @@ if plot_x_axis
         subplot(2,1,2); hold all; grid on;
         stairs(xLength(1:l1:end), log(2).MAE_blocks, 'LineWidth',lineSize, 'Color', Manual)
         stairs(xLength(1:l1:end), log(1).MAE_blocks, 'LineWidth',lineSize,'Color', Evo)
-        axis([0 max(xLength(1:l1:end)) 0 3])
+        axis([0 max(xLength(1:l1:end)) 0 10])
         h = ylabel('MAE/sp');
         h1 = xlabel('Time [sec]');
         set(h,'FontSize',textSize+textSize_offset_y);
@@ -248,21 +247,21 @@ if plot_x_axis
 
 
 
-        saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_errorsX');
-        saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_errorsX','epsc');
-        saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_errorsX','svg');
+%         saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_errorsX');
+%         saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_errorsX','epsc');
+%         saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_errorsX','svg');
 
 
         if get_easy_files
-           saveas(gcf,'Results\2EVOManualtuning_errorsX','epsc');
+           saveas(gcf,'Results\2EVOIPD_errorsX','epsc');
         end
 
         %% ------- PLot 3 ---------------------------------------------------------
 
         inertia_offset = 100;
 
-        figure('Name', 'X-axis Evalution 2') %, 'Position', [110, 800, 1290,320]); clf;
-        subplot(2,2,1); hold all; grid on;
+        figure('Name', 'X-axis IPD Evalution 2') %, 'Position', [110, 800, 1290,320]); clf;
+        subplot(2,3,1); hold all; grid on;
         plot((length1-inertia_offset:length1)*xScale, log(2).r(length1-inertia_offset:length1),'--', 'LineWidth',lineSize, 'Color', Ref)
         plot((length1-inertia_offset:length1)*xScale, log(2).y(length1-inertia_offset:length1), 'LineWidth',lineSize, 'Color', Manual)
         plot((length1-inertia_offset:length1)*xScale, log(1).y(length1-inertia_offset:length1), 'LineWidth',lineSize,'Color', Evo)
@@ -271,19 +270,19 @@ if plot_x_axis
         set(h,'FontSize',textSize+textSize_offset_y);
         set(gca,'XTickLabel','');
 
-%         subplot(2,3,2); hold all; grid on;
-%         plot((length2-inertia_offset:length2)*xScale, log(2).r(length2-inertia_offset:length2),'--', 'LineWidth',lineSize, 'Color', Ref)
-%         plot((length2-inertia_offset:length2)*xScale, log(2).y(length2-inertia_offset:length2), 'LineWidth',lineSize, 'Color', Manual)
-%         plot((length2-inertia_offset:length2)*xScale, log(1).y(length2-inertia_offset:length2), 'LineWidth',lineSize,'Color', Evo)
-%         axis([(length2-inertia_offset)*xScale length2*xScale -11 11]);
-%         h = ylabel({'Inertia 2'});
-%         %h1 = xlabel('Time [sec]');
-%         set(h,'FontSize',textSize+textSize_offset_y);
-%         %set(h1,'FontSize',textSize);
-%         set(gca,'YTickLabel','');
-%         set(gca,'XTickLabel','');
+        subplot(2,3,2); hold all; grid on;
+        plot((length2-inertia_offset:length2)*xScale, log(2).r(length2-inertia_offset:length2),'--', 'LineWidth',lineSize, 'Color', Ref)
+        plot((length2-inertia_offset:length2)*xScale, log(2).y(length2-inertia_offset:length2), 'LineWidth',lineSize, 'Color', Manual)
+        plot((length2-inertia_offset:length2)*xScale, log(1).y(length2-inertia_offset:length2), 'LineWidth',lineSize,'Color', Evo)
+        axis([(length2-inertia_offset)*xScale length2*xScale -11 11]);
+        h = ylabel({'Inertia 2'});
+        %h1 = xlabel('Time [sec]');
+        set(h,'FontSize',textSize+textSize_offset_y);
+        %set(h1,'FontSize',textSize);
+        set(gca,'YTickLabel','');
+        set(gca,'XTickLabel','');
 
-        subplot(2,2,2); hold all; grid on;
+        subplot(2,3,3); hold all; grid on;
         plot((length3-inertia_offset:length3)*xScale, log(2).r(length3-inertia_offset:length3),'--', 'LineWidth',lineSize, 'Color', Ref)
         plot((length3-inertia_offset:length3)*xScale, log(2).y(length3-inertia_offset:length3), 'LineWidth',lineSize, 'Color', Manual)
         plot((length3-inertia_offset:length3)*xScale, log(1).y(length3-inertia_offset:length3), 'LineWidth',lineSize,'Color', Evo)
@@ -293,28 +292,28 @@ if plot_x_axis
         set(gca,'YTickLabel','')
         set(gca,'XTickLabel','');
 
-        subplot(2,2,3); hold all; grid on;
+        subplot(2,3,4); hold all; grid on;
         plot((length1-inertia_offset:length1)*xScale, log(2).r(length1-inertia_offset:length1) - log(2).y(length1-inertia_offset:length1), 'LineWidth',lineSize, 'Color', Manual)
         plot((length1-inertia_offset:length1)*xScale, log(2).r(length1-inertia_offset:length1) - log(1).y(length1-inertia_offset:length1), 'LineWidth',lineSize,'Color', Evo)
         axis([(length1-inertia_offset)*xScale length1*xScale -11 11]);
         h = ylabel({'error'; 'Inertia 1'});
         set(h,'FontSize',textSize+textSize_offset_y);
+            h1 = xlabel('Time [sec]');
+        set(h1,'FontSize',textSize); 
+
+        subplot(2,3,5); hold all; grid on;
+        plot((length2-inertia_offset:length2)*xScale, log(2).r(length2-inertia_offset:length2) - log(2).y(length2-inertia_offset:length2), 'LineWidth',lineSize, 'Color', Manual)
+        plot((length2-inertia_offset:length2)*xScale, log(2).r(length2-inertia_offset:length2) - log(1).y(length2-inertia_offset:length2), 'LineWidth',lineSize,'Color', Evo)
+        axis([(length2-inertia_offset)*xScale length2*xScale -11 11]);
+        h = ylabel({'Inertia 2'});
+        h1 = xlabel('Time [sec]');
+        set(h,'FontSize',textSize+textSize_offset_y);
+        set(h1,'FontSize',textSize);
+        set(gca,'YTickLabel','');
         h1 = xlabel('Time [sec]');
         set(h1,'FontSize',textSize); 
 
-%         subplot(2,3,5); hold all; grid on;
-%         plot((length2-inertia_offset:length2)*xScale, log(2).r(length2-inertia_offset:length2) - log(2).y(length2-inertia_offset:length2), 'LineWidth',lineSize, 'Color', Manual)
-%         plot((length2-inertia_offset:length2)*xScale, log(2).r(length2-inertia_offset:length2) - log(1).y(length2-inertia_offset:length2), 'LineWidth',lineSize,'Color', Evo)
-%         axis([(length2-inertia_offset)*xScale length2*xScale -11 11]);
-%         h = ylabel({'Inertia 2'});
-%         h1 = xlabel('Time [sec]');
-%         set(h,'FontSize',textSize+textSize_offset_y);
-%         set(h1,'FontSize',textSize);
-%         set(gca,'YTickLabel','');
-%         h1 = xlabel('Time [sec]');
-%         set(h1,'FontSize',textSize); 
-
-        subplot(2,2,4); hold all; grid on;
+        subplot(2,3,6); hold all; grid on;
         plot((length3-inertia_offset:length3)*xScale, log(2).r(length3-inertia_offset:length3) - log(2).y(length3-inertia_offset:length3), 'LineWidth',lineSize, 'Color', Manual)
         plot((length3-inertia_offset:length3)*xScale, log(2).r(length3-inertia_offset:length3) - log(1).y(length3-inertia_offset:length3), 'LineWidth',lineSize,'Color', Evo)
         axis([(length3-inertia_offset)*xScale length3*xScale -11 11]);
@@ -324,12 +323,12 @@ if plot_x_axis
         h1 = xlabel('Time [sec]');
         set(h1,'FontSize',textSize); 
 
-        saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_inertiaX');
-        saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_inertiaX','epsc');
-        saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_inertiaX','svg');
+%         saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_inertiaX');
+%         saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_inertiaX','epsc');
+%         saveas(gcf,'Results\X-axis\Evaluation 2\EVO and Manual Tuning\2EVOManualtuning_inertiaX','svg');
 
         if get_easy_files
-           saveas(gcf,'Results\2EVOManualtuning_inertiaX','epsc');
+           saveas(gcf,'Results\2EVOIPD_inertiaX','epsc');
         end
 
 

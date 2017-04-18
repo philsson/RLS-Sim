@@ -24,7 +24,7 @@ lineSize = 1;
 xScale = 0.025;
 
 plot_z_axis = true;
-plot_x_axis = true;
+plot_x_axis = false;
 
 get_easy_files = true;
 
@@ -36,3 +36,24 @@ plotEvaluation2();
 
 %%
 plotEvaluation3();
+
+%%
+appendix_FOPDT_plotEvaluation1();
+
+%%
+appendix_FOPDT_plotEvaluation2();
+
+%%
+appendix_FOPDT_plotEvaluation3();
+
+%%
+appendix_IPD_plotEvaluation1();
+
+%%
+appendix_IPD_plotEvaluation2();
+
+%%
+appendix_IPD_plotEvaluation3();
+
+%%
+plotRLSdata();
