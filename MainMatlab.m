@@ -75,8 +75,13 @@ addpath(genpath(pwd));
             end
             
             % reduces battery power by the hour
+            %if use_battery_scaling
+             %   battery_scaling = 1-((loop_counter/SIM_samples)*battery_reduction);
+            %end
+            
             if use_battery_scaling
-                battery_scaling = 1-((loop_counter/SIM_samples)*battery_reduction);
+                 %battery_scaling = ((1-(loop_counter/SIM_samples))^2)*battery_reduction;
+                 battery_scaling = polyval(bat_polynome,(loop_counter/SIM_samples) * 1.03); % 1.03 ger 0.59 ggr spänningen vid full simulering
             end
             
             waitbar(loop_counter/SIM_samples)
@@ -144,8 +149,13 @@ addpath(genpath(pwd));
         close(h)
         
         % Print MISE
-        disp(['MISE: Roll[ ' num2str(log(1).MISE(end)) ' ] Pitch[ '  num2str(log(2).MISE(end)) ' ] Yaw[ '  num2str(log(3).MISE(end)) ' ]' ]);
-        disp(['MAE: Roll[ ' num2str(log(1).MAE(end)) ' ] Pitch[ '  num2str(log(2).MAE(end)) ' ] Yaw[ '  num2str(log(3).MAE(end)) ' ]' ]);
+        if smooth_moving_target
+            disp(['MISE: Hight[ ' num2str(log(1).MISE(end)) ' ] X_pos[ '  num2str(log(2).MISE(end)) ' ] Y_pos[ '  num2str(log(3).MISE(end)) ' ]' ]);
+            disp(['MAE: Hight[ ' num2str(log(1).MAE(end)) ' ] X_pos[ '  num2str(log(2).MAE(end)) ' ] Y_pos[ '  num2str(log(3).MAE(end)) ' ]' ]);
+        else
+            disp(['MISE: Roll[ ' num2str(log(1).MISE(end)) ' ] Pitch[ '  num2str(log(2).MISE(end)) ' ] Yaw[ '  num2str(log(3).MISE(end)) ' ]' ]);
+            disp(['MAE: Roll[ ' num2str(log(1).MAE(end)) ' ] Pitch[ '  num2str(log(2).MAE(end)) ' ] Yaw[ '  num2str(log(3).MAE(end)) ' ]' ]);
+        end
     else
         disp('Failed connecting to remote API server');
     end
