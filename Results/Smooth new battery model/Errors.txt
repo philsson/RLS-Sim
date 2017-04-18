@@ -1,0 +1,15 @@
+EVO
+MISE: Hight[ 13.0926 ] X_pos[ 10.7823 ] Y_pos[ 188.3194 ]
+MAE: Hight[ 0.9209 ] X_pos[ 0.99832 ] Y_pos[ 4.2211 ]
+
+
+IPD
+N/A
+
+FOPDT
+N/A
+
+
+MT
+MISE: Hight[ 13.4642 ] X_pos[ 10.7638 ] Y_pos[ 194.9428 ]
+MAE: Hight[ 0.97505 ] X_pos[ 0.99621 ] Y_pos[ 4.3587 ]
