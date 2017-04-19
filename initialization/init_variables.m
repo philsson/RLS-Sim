@@ -4,7 +4,7 @@ adjust_heading = true;              % Heading will be adjust to the trajectory (
 nav_heading_threshold = 0.4;        % The distance required for the heading to be set (avst??nd fr??n gr??n kula)
 follow_target = true;               % Follow the position of the green boll
 
-rls_complexity = 3; %3;
+rls_complexity = 2; %3;
 apply_evo_freq = 50;               % in milliseconds (hur ofta pid tuninge rules ska till??mpas)
 apply_evo_first_offset = 50; %50
 
@@ -21,9 +21,9 @@ logs_enabled    =  [ 0 0 1 ];    % Enable log
 step_enabled    =  [ 0 0 1 ];    % Didact Delta, korrigerar set points, fj??rkontroll och g??rna kula eller step rerefernser
 impulse_enabled =  [ 0 0 0 ];
 
-adapt_enabled       =  [ 0 0 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
+adapt_enabled       =  [ 1 1 1 ];    % RLS startas tillsammans med tuning reglerna men appliceras inte
 apply_gain_tuning   =  [ 0 0 0 ];    % Startar Gain tuning ist�llet f�r de vanliga FOPDT tuning reglerna
-apply_evo           =  [ 0 0 0 ];    % Till??mpar tuning reglerna under realtid
+apply_evo           =  [ 0 0 1 ];    % Till??mpar tuning reglerna under realtid
 
 init_RLS_data   =  [ 0 0 0 ];    % If false then its loaded from files
 save_RLS_data   =  [ 0 0 1 ];    % Vikterna f??r RLS data sparas (obs m??ste skrivas i command window f??rst)
@@ -40,7 +40,7 @@ step_interval_ms = 1000;        % Needs LDM to work. Revise implementation (in r
 impulse_amplitude = 0.5;        % On the control signal
 rand_target = false;
 %rand_target_amplitude = [2 2 2];
-rand_target_amplitude = [4 4 1];
+rand_target_amplitude = [3 3 1];
 smooth_moving_target = false;   % Follow the green boll in a smooth way
 
 global Gain_rescale_axis;
@@ -98,6 +98,8 @@ global dt;
 %dt = 0.010;
 dt = 0.025;
 
+global stop_sim;
+
 
 global dead_time_L;
 %dead_time_L = [0.0115 0.0115 0.0105];
@@ -107,7 +109,12 @@ time_fraction = 1; % for rand step. Desides how much of the time step is used. I
 time_since_last_step = step_interval_ms*dt*1000; % Actually interations
 step_sign = 1;
 
-rlsfileX = [pwd,'/rls_data/rls_dataX.mat']; rlsfileY = [pwd,'/rls_data/rls_dataY.mat']; rlsfileZ = [pwd,'/rls_data/rls_dataZ.mat'];
+if rls_complexity == 2
+    rlsfileX = [pwd,'/rls_data/rls_FOPDT_dataX.mat']; rlsfileY = [pwd,'/rls_data/rls_FOPDT_dataY.mat']; rlsfileZ = [pwd,'/rls_data/rls_FOPDT_dataZ.mat'];
+else
+    rlsfileX = [pwd,'/rls_data/rls_dataX.mat']; rlsfileY = [pwd,'/rls_data/rls_dataY.mat']; rlsfileZ = [pwd,'/rls_data/rls_dataZ.mat'];
+end
+
 plotfileX = [pwd,'/Results/logX.mat']; plotfileY = [pwd,'/Results/logY.mat']; plotfileZ = [pwd,'/Results/logZ.mat'];
 
 % Matrix with the inertias to set during simulation
@@ -144,6 +151,10 @@ for i=1:3
                 otherwise
                     disp('no data available')
             end
+        end
+        if rls_complexity ~= rls_data(i).complexity
+           stop_sim = true;
+           disp('Complexity does not match store data');
         end
     end
 end

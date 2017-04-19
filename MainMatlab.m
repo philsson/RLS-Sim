@@ -127,7 +127,7 @@ addpath(genpath(pwd));
             vrep.simxSynchronousTrigger(clientID);
            
             loop_counter = loop_counter + 1;
-            if stop_sim % Set in "logData" after the amount of samples is reached
+            if stop_sim  % Set in "logData" after the amount of samples is reached
                 break;
             end
 

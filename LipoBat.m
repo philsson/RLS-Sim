@@ -7,10 +7,10 @@ capacity = [8.4     7.25    7.1     7.0    6.9 6.85 6.8 6.75    6.65  6.6 6.5 6.
 bat_polynome = polyfit(time,capacity,5);
 
 x1 = linspace(0,1);
-y1 = polyval(bat_polynome,x1);
+y1 = polyval(bat_polynome,x1*1.03);
 %%figure
 %%plot(time,capacity,'o')
 %%hold on
 %%plot(time,capacity)
-%%plot(x1,y1)
+plot(x1,y1)
 %%hold off

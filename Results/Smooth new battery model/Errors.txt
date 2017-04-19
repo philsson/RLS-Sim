@@ -1,7 +1,11 @@
+%%%%%%%%%%% With battery degradation %%%%%%%%%%%%%
 EVO
-MISE: Hight[ 13.0926 ] X_pos[ 10.7823 ] Y_pos[ 188.3194 ]
-MAE: Hight[ 0.9209 ] X_pos[ 0.99832 ] Y_pos[ 4.2211 ]
+MISE: Hight[ 9.7801 ] X_pos[ 11.0693 ] Y_pos[ 180.7628 ]
+MAE: Hight[ 0.82522 ] X_pos[ 0.95877 ] Y_pos[ 4.1187 ]
 
+MT
+MISE: Hight[ 11.4164 ] X_pos[ 12.3033 ] Y_pos[ 192.6716 ]
+MAE: Hight[ 0.93154 ] X_pos[ 1.0026 ] Y_pos[ 4.3051 ]
 
 IPD
 N/A
@@ -10,6 +14,14 @@ FOPDT
 N/A
 
 
+
+
+%%%%%%%%%%% Without battery degradation %%%%%%%%%%%%%
+EVO
+MISE: Hight[ 10.1173 ] X_pos[ 11.223 ] Y_pos[ 155.2981 ]
+MAE: Hight[ 0.84598 ] X_pos[ 0.953 ] Y_pos[ 3.5889 ]
+
 MT
-MISE: Hight[ 13.4642 ] X_pos[ 10.7638 ] Y_pos[ 194.9428 ]
-MAE: Hight[ 0.97505 ] X_pos[ 0.99621 ] Y_pos[ 4.3587 ]
+MISE: Hight[ 11.9917 ] X_pos[ 11.5975 ] Y_pos[ 157.3719 ]
+MAE: Hight[ 0.91366 ] X_pos[ 0.92655 ] Y_pos[ 3.6786 ]
+

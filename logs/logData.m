@@ -7,15 +7,15 @@ if (logSim && loop_counter <= SIM_samples && loop_counter ~= 0 && ~stop_sim)
     % loop through all axis
     for i=1:3
         if (logs_enabled(i))
-            if (smooth_moving_target)
-                log(i).r(loop_counter) = set_points(i);
-                log(i).u(loop_counter) = outputs(i);
-                log(i).y(loop_counter) = states(i);
-            else
+            %if (smooth_moving_target)
+            %    log(i).r(loop_counter) = set_points(i);
+            %    log(i).u(loop_counter) = outputs(i);
+            %    log(i).y(loop_counter) = states(i);
+            %else
                 log(i).r(loop_counter) = set_points(pd_index.g_roll - 1 + i);
                 log(i).u(loop_counter) = outputs(pd_index.g_roll - 1 + i);
                 log(i).y(loop_counter) = states(pd_index.g_roll - 1 + i);
-            end
+            %end
             
             log(i).y_rls(loop_counter) = rls_data(i).RlsOut;
             log(i).rls_w1(loop_counter) = rls_data(i).weights(1);

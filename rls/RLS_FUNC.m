@@ -48,8 +48,11 @@ function [ rls_data] = RLS_FUNC(y, u, rls_data)
              rls_data.fi = u;
             
         case 3
-            
-            rls_data.fi = [y fi(1) u rls_data.fi(3)]';
+            if run_approximation
+                rls_data.fi = [fi'*rls_data.weights fi(1) u rls_data.fi(3)]';
+            else
+                rls_data.fi = [y fi(1) u rls_data.fi(3)]';
+            end
             
         otherwise
             y_in = circshift(rls_data.fi(1:(length(rls_data.fi))/2),1)';
